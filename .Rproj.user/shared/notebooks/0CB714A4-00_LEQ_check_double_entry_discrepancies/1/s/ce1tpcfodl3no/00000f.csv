@@ -1,0 +1,149 @@
+"0","# Convert dataframe to long format"
+"0","# Code originally written by Hilary Killam (script to clean Qualtrics LEQ output), modified to work with checked dataset"
+"0",""
+"0","checked_long_LEQ <- checked_LEQ %>% "
+"0","  rename(num_sits = sit_count,"
+"0","         l1.lang_name = child_l1,"
+"0","         l2.lang_name = child_l2,"
+"0","         l3.lang_name = child_l3,"
+"0","         l4.lang_name = child_l4,"
+"0","         l1.glob_est = glob_est_l1,"
+"0","         l2.glob_est = glob_est_l2,"
+"0","         l3.glob_est = glob_est_l3,"
+"0","         l4.glob_est = glob_est_l4) %>%"
+"0","  select(-response_correct, -ends_with(""mon""), -ends_with(""tue""), -ends_with(""wed""), -ends_with(""thu""), -ends_with(""fri""), -ends_with(""sat""), -ends_with(""sun""), -contains(""cgvr""), -contains(""daycare""), -contains(""trips"")) %>% "
+"0","  rename_with(~ str_swap(string = .x, "
+"0","                         str1 = str_extract(.x, ""^l\\d_""), "
+"0","                         str2 = str_extract(.x, ""sit\\d+_"")), "
+"0","              matches(""l\\d_sit\\d+"")) %>%"
+"0","  rename_with(~ str_replace(.x, ""(?<=l\\d)_"", ""."")) %>% "
+"0","  pivot_longer(starts_with(""sit""), "
+"0","               names_to = c('situation', '.value'),"
+"0","               names_pattern = '(.*)_(.+)') %>% "
+"0","  filter(!is.na(situation)) %>% "
+"0","  group_by(response_id) %>%"
+"0","  mutate(start = case_when(start == 0 ~ start,"
+"0","                           TRUE ~ lag(end))) %>%"
+"0","  ungroup() %>%"
+"0","  filter(parse_number(situation) <= as.numeric(num_sits)) %>%"
+"0",""
+"0","  pivot_longer(matches(""^l\\d.""),"
+"0","               names_to = c('language', '.value'),"
+"0","               names_pattern = '(.*)\\.(.+)')  %>%"
+"0","  filter(!is.na(lang_name))  %>% "
+"0","  # Make numeric columns numeric again"
+"0","  mutate(across(glob_est:hrsperweek, as.numeric)) %>%"
+"0","  # Fix exposure variables, which in Qualtrics is only based on most recent situation (not all of them, but when data is long, this makes no sense)"
+"0","  group_by(response_id, situation) %>%"
+"0","  mutate(curr_exp = round(hrsperweek/sum(hrsperweek), 3),"
+"0","         sit_hrs = sum(hrsperweek)) %>%"
+"0","  group_by(response_id, language) %>%"
+"0","  mutate(cumu_hrs = cumsum(hrsperweek)) %>%"
+"0","  group_by(response_id) %>%"
+"0","  mutate(cumu_exp = round(cumu_hrs/(sit_hrs*parse_number(situation)), 3)) %>%"
+"0","  select(-sit_hrs) %>%"
+"0","  group_by(response_id) %>%"
+"0","  mutate(num_langs = n_distinct(lang_name),"
+"0","         situation = parse_number(situation),"
+"0","         glob_est = glob_est/100,"
+"0","         overall_exp = overall_exp/100,"
+"0","         lang_temp = case_when(language == ""l3"" | language == ""l4"" ~ ""other"","
+"0","                               TRUE ~ language)) %>%"
+"0","  # Flag kids who have multilingual situations where l3 + l4 > 10%"
+"0","  group_by(response_id, situation, lang_temp) %>%"
+"0","  mutate(multilingual = case_when(sum(cumu_exp) > .1 & lang_temp == ""other"" ~ 1,"
+"0","                                  TRUE ~ 0)) %>%"
+"0","  group_by(response_id, situation) %>%"
+"0","  mutate(multilingual = sum(multilingual)) %>%"
+"0","  select(-lang_temp) %>%"
+"0","  group_by(response_id, language) %>%"
+"0","  # Flag kids who have situations where exposure changes more than 20% from previous"
+"0","  mutate(large_change = case_when(lag(cumu_exp) > cumu_exp + .2 | lag(cumu_exp) < cumu_exp - .2 ~ 1,"
+"0","                                  TRUE ~ 0)) %>%"
+"0","  ungroup() %>% "
+"0","  # Remove rows of empty phases"
+"0","  filter(!(is.na(start)))"
+"2","rename: renamed 9 variables (l1.lang_name, l2.lang_name, l3.lang_name, l4.lang_name, num_sits, …)
+"
+"2","select: dropped 339 variables (response_correct, cgvr1, cgvr1_eng_use, cgvr1_eng_var, cgvr1_eng_tochild, …)
+"
+"2","rename_with: renamed 40 variables (sit1_l1_hrsperweek, sit1_l2_hrsperweek, sit1_l3_hrsperweek, sit1_l4_hrsperweek, sit2_l1_hrsperweek, …)
+"
+"2","rename_with: renamed 60 variables (sit1_l1.hrsperweek, sit1_l2.hrsperweek, sit1_l3.hrsperweek, sit1_l4.hrsperweek, sit2_l1.hrsperweek, …)
+"
+"2","pivot_longer: reorganized (sit1, sit1_start, sit1_end, sit1_length, sit1_l1.hrsperweek, …) into (situation, start, end, length, l1.hrsperweek, …) [was 72x120, now 1440x57]
+"
+"2","filter (grouped): removed 720 rows (50%), 720 rows remaining
+"
+"2","group_by: one grouping variable (response_id)
+"
+"2","mutate (grouped): changed 298 values (41%) of 'start' (298 fewer NA)
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed 421 rows (58%), 299 rows remaining
+"
+"2","pivot_longer: reorganized (l1.lang_name, l2.lang_name, l3.lang_name, l4.lang_name, l1.glob_est, …) into (language, lang_name, glob_est, age_acquired, total_hrs, …) [was 299x57, now 1196x34]
+"
+"2","filter: removed 376 rows (31%), 820 rows remaining
+"
+"2","mutate: converted 'glob_est' from character to double (0 new NA)
+"
+"2","        converted 'age_acquired' from character to double (0 new NA)
+"
+"2","        converted 'total_hrs' from character to double (0 new NA)
+"
+"2","        converted 'cumu_exp' from character to double (0 new NA)
+"
+"2","        converted 'curr_exp' from character to double (0 new NA)
+"
+"2","        converted 'overall_exp' from character to double (0 new NA)
+"
+"2","        converted 'hrsperweek' from character to double (0 new NA)
+"
+"2","group_by: 2 grouping variables (response_id, situation)
+"
+"2","mutate (grouped): changed 624 values (76%) of 'curr_exp' (0 new NA)
+"
+"2","                  new variable 'sit_hrs' (double) with 9 unique values and 0% NA
+"
+"2","group_by: 2 grouping variables (response_id, language)
+"
+"2","mutate (grouped): new variable 'cumu_hrs' (double) with 310 unique values and 0% NA
+"
+"2","group_by: one grouping variable (response_id)
+"
+"2","mutate (grouped): changed 660 values (80%) of 'cumu_exp' (0 new NA)
+"
+"2","select: dropped one variable (sit_hrs)
+"
+"2","group_by: one grouping variable (response_id)
+"
+"2","mutate (grouped): converted 'num_langs' from character to integer (0 new NA)
+"
+"2","                  converted 'situation' from character to double (0 new NA)
+"
+"2","                  changed 675 values (82%) of 'glob_est' (0 new NA)
+"
+"2","                  changed 657 values (80%) of 'overall_exp' (0 new NA)
+"
+"2","                  new variable 'lang_temp' (character) with 3 unique values and 0% NA
+"
+"2","group_by: 3 grouping variables (response_id, situation, lang_temp)
+"
+"2","mutate (grouped): new variable 'multilingual' (double) with 2 unique values and 0% NA
+"
+"2","group_by: 2 grouping variables (response_id, situation)
+"
+"2","mutate (grouped): changed 36 values (4%) of 'multilingual' (0 new NA)
+"
+"2","select: dropped one variable (lang_temp)
+"
+"2","group_by: 2 grouping variables (response_id, language)
+"
+"2","mutate (grouped): new variable 'large_change' (double) with 2 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: no rows removed
+"

@@ -1,0 +1,47 @@
+"0","# Estimate word and concept vocabulary scores"
+"0","# Word vocabulary score"
+"0","word_concept_scores <- EngFr_df_agefixed %>%"
+"0","  mutate(words_produced = rowSums(across(c(eng_est_total_produced, fr_est_total_produced)), na.rm = FALSE)) %>%"
+"0"," # Rearrange column orders"
+"0","  relocate(words_produced, .after = n_months) %>%"
+"0","  relocate(eng_est_total_produced, .after = words_produced) %>%"
+"0","  relocate(fr_est_total_produced, .after = eng_est_total_produced) %>%"
+"0","  # Estimate number of TEs produced"
+"0","  mutate(te_acquired = case_when(eng_acquired == 1 & fr_acquired == 1 ~ 1,"
+"0","                                 TRUE ~ 0)) %>%"
+"0","  group_by(study_id, n_months) %>%"
+"0","  mutate(te_produced = sum(te_acquired)) %>%"
+"0","  ungroup() %>%"
+"0","  # Concept vocabulary score"
+"0","  mutate(concepts_produced = words_produced - te_produced) %>%"
+"0","  relocate(concepts_produced, .after = words_produced) %>%"
+"0","  relocate(te_produced, .after = concepts_produced) %>% "
+"0","  # Remove unnecessary columns"
+"0","  relocate(fr_completed, .after = eng_completed) %>%"
+"0","  select(study_id, n_months:fr_completed, num_datapts, age, starting_age, item_id_eng) "
+"2","mutate: new variable 'words_produced' (double) with 639 unique values and 11% NA
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, eng_completed, …)
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, eng_est_total_produced, …)
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, eng_est_total_produced, …)
+"
+"2","mutate: new variable 'te_acquired' (double) with 2 unique values and 0% NA
+"
+"2","group_by: 2 grouping variables (study_id, n_months)
+"
+"2","mutate (grouped): new variable 'te_produced' (double) with 244 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"2","mutate: new variable 'concepts_produced' (double) with 517 unique values and 11% NA
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, concepts_produced, …)
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, concepts_produced, …)
+"
+"2","relocate: columns reordered (study_id, TRUE_months_eng, n_months, words_produced, concepts_produced, …)
+"
+"2","select: dropped 14 variables (TRUE_months_eng, age_eng, english_item, eng_item_num, eng_acquired, …)
+"

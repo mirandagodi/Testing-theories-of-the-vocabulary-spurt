@@ -1,0 +1,49 @@
+"0","# Identify participants based on language exposure criteria: Exposure change greater than 25% at any two points, multilingual participants (10% or more exposure to a third or fourth language)"
+"0","LEQ_df_exposure_change <- LEQ_01_df %>%"
+"0","  group_by(study_id) %>%"
+"0","  mutate(Eng_exclude_exposure_change = case_when((max(cumulative_exp_Eng)-min(cumulative_exp_Eng))>.2 ~ 'exclude'"
+"0","                                             , TRUE ~ 'keep'),"
+"0","         Fr_exclude_exposure_change = case_when((max(cumulative_exp_Fre)-min(cumulative_exp_Fre))>.2 ~ 'exclude'"
+"0","                                             , TRUE ~ 'keep'),"
+"0","         L3_exclude_exposure = case_when(max(cumulative_exp_L3)>=.1 ~ 'exclude'"
+"0","                                             , TRUE ~ 'keep'),"
+"0","         L4_exclude_exposure = case_when(max(cumulative_exp_L4)>=.1 ~ 'exclude'"
+"0","                                             , TRUE ~ 'keep')) %>%"
+"0","  ungroup()"
+"2","group_by: one grouping variable (study_id)
+"
+"2","mutate (grouped): new variable 'Eng_exclude_exposure_change' (character) with one unique value and 0% NA
+"
+"2","                  new variable 'Fr_exclude_exposure_change' (character) with one unique value and 0% NA
+"
+"2","                  new variable 'L3_exclude_exposure' (character) with 2 unique values and 0% NA
+"
+"2","                  new variable 'L4_exclude_exposure' (character) with 2 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"0","# Create df with the study_id of participants that will be excluded based on exposure change and L3 and L4 exposure"
+"0","# English"
+"0","Eng_df_exclude_exposure_change <- LEQ_df_exposure_change %>% filter(Eng_exclude_exposure_change == 'exclude') %>% distinct(study_id)"
+"2","filter: removed all rows (100%)
+"
+"2","distinct: no rows removed
+"
+"0","# French"
+"0","Fr_df_exclude_exposure_change <- LEQ_df_exposure_change %>% filter(Fr_exclude_exposure_change == 'exclude') %>% distinct(study_id)"
+"2","filter: removed all rows (100%)
+"
+"2","distinct: no rows removed
+"
+"0","# L3"
+"0","L3_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L3_exclude_exposure == 'exclude') %>% distinct(study_id)"
+"2","filter: removed 122 rows (98%), 3 rows remaining
+"
+"2","distinct: no rows removed
+"
+"0","# L4"
+"0","L4_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L4_exclude_exposure == 'exclude') %>% distinct(study_id)"
+"2","filter: removed 124 rows (99%), one row remaining
+"
+"2","distinct: no rows removed
+"

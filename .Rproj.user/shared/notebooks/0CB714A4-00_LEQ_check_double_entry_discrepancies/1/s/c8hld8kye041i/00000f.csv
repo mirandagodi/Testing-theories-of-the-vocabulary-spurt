@@ -1,0 +1,12 @@
+"0","# Convert discrepancies dataframe to wide"
+"0",""
+"0","LEQ_wide_discrepancies <- LEQ_discrepancies %>% "
+"0","  select(study_id, variable, info_to_keep) %>% "
+"0","  pivot_wider(names_from = variable, values_from = info_to_keep) %>% "
+"0","  mutate(response_id = ""correct"") "
+"2","select: dropped 9 variables (study_name, first_entry, second_entry, discrepancy, response_id_first_entry, …)
+"
+"2","pivot_wider: reorganized (variable, info_to_keep) into (participation_date, cgvr1_fre_var, cgvr1_l4_variety, other_cgvrs_1, other_cgvrs_2, …) [was 3512x3, now 71x360]
+"
+"2","mutate: new variable 'response_id' (character) with one unique value and 0% NA
+"

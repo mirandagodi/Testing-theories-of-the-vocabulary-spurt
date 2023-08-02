@@ -1,0 +1,69 @@
+"0","# Prepare LEQ data from LimeSurvey to be joined"
+"0","# Create dataframe with the study ID and all months of age from 1 to 30"
+"0","LS_age_df <- data.frame(end_age = 1:30)"
+"0","LS_study_id_df <- LS_LEQ_data %>% distinct(studyid) %>%"
+"0","  rename(study_id = studyid)"
+"2","distinct: removed 237 rows (82%), 53 rows remaining
+"
+"2","rename: renamed one variable (study_id)
+"
+"0","LS_end_age_df <- merge(LS_study_id_df,LS_age_df)"
+"0",""
+"0","# Remove unnecessary columns from the LEQ dataframe (LimeSurvey)"
+"0","LS_LEQ_df_columns <- LS_LEQ_data %>% "
+"0","  # Keep only relevant variables"
+"0","  select(babyid:dob, phase, end_age, cumulative_exp_Eng:cumulative_exp_L4) %>%"
+"0","  # Rename columns so they match CDI dataframes"
+"0","  rename(subject_id = babyid,"
+"0","         study_id = studyid) %>%"
+"0","  # Create rows for each month, instead of each phase, and fill in empty values"
+"0","  full_join(LS_end_age_df, by = c(""study_id"", ""end_age"")) %>%"
+"0","  group_by(study_id) %>%"
+"0","  arrange(end_age) %>%"
+"0","  fill(-c(""study_id"", ""end_age""), .direction = ""up"") %>%"
+"0","  filter(end_age >= 16) %>%"
+"0","  ungroup() %>% "
+"0","  # Format study_id to be ""S"" followed by 3 digits (e.g., S001, S086, S123)"
+"0","  mutate(study_id = case_when(str_length(study_id) == 3 ~ gsub(""^(.{1})(.*)$"","
+"0","                                                               ""\\10\\2"","
+"0","                                                               study_id),"
+"0","                              TRUE ~ study_id)) "
+"2","select: dropped 28 variables (today, phase_length, daycarestart, situation, situation_comment, …)
+"
+"2","rename: renamed 2 variables (subject_id, study_id)
+"
+"2","full_join: added no columns
+"
+"2","           > rows only in x      36
+"
+"2","           > rows only in y   1,336
+"
+"2","           > matched rows       254
+"
+"2","           >                 =======
+"
+"2","           > rows total       1,626
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","fill (grouped): changed 1,336 values (82%) of 'subject_id' (1336 fewer NA)
+"
+"2","                changed 1,336 values (82%) of 'dob' (1336 fewer NA)
+"
+"2","                changed 1,336 values (82%) of 'phase' (1336 fewer NA)
+"
+"2","                changed 1,336 values (82%) of 'cumulative_exp_Eng' (1336 fewer NA)
+"
+"2","                changed 1,336 values (82%) of 'cumulative_exp_Fre' (1336 fewer NA)
+"
+"2","                changed 435 values (27%) of 'cumulative_exp_L3' (435 fewer NA)
+"
+"2","                changed 26 values (2%) of 'cumulative_exp_L4' (26 fewer NA)
+"
+"2","filter (grouped): removed 795 rows (49%), 831 rows remaining
+"
+"2","ungroup: no grouping variables
+"
+"2","mutate: changed 751 values (90%) of 'study_id' (0 new NA)
+"
+"0","  "

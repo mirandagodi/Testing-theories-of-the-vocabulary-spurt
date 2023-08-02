@@ -1,0 +1,3 @@
+"0","# Save dataframe as csv file"
+"0","write_csv(step1_df, 'data/04_analysis_step_1_dataset.csv')"
+"0","write_csv(coefficients_df, 'data/04_analysis_step_1_coefficients.csv')"

@@ -1,0 +1,1180 @@
+"0","# Check data: keep one row per participant with the correct responses"
+"0",""
+"0","checked_LEQ <- LEQ_wide_double_data %>% "
+"0","  # Remove babies from LimeSurvey"
+"0","  filter(!c(study_id == ""S016"" | "
+"0","           study_id == ""S026"" | "
+"0","           study_id == ""S028"" | "
+"0","           study_id == ""S041"" | "
+"0","           study_id == ""S057"")) %>% "
+"0","  arrange(study_id, recorded_date) %>% "
+"0","  group_by(study_id) %>% "
+"0","  # Keep the rows with all the correct situations (some entries do not have all the situations)"
+"0","  filter(sit_count == max(sit_count)) %>%  "
+"0","  # Keep only one row per baby"
+"0","  filter(recorded_date == max(recorded_date)) %>%  "
+"0","  # Turn everything into character to join with discrepancies dataframe"
+"0","  mutate(across(everything(), as.character)) %>% "
+"0","  # Join with discrepancies data"
+"0","  full_join(LEQ_wide_discrepancies) %>% "
+"0","  arrange(study_id, response_id) %>% "
+"0","  # Fill the discrepancy rows with the responses that were not discrepant"
+"0","  group_by(study_id) %>% "
+"0","  fill(c(recorded_date:l4_overall_exp), .direction = ""up"") %>% "
+"0","  # Crete column with 1 as the row to keep (and 2 to be removed) as the first row per baby is either ""correct"" (with the checked discrepancies) or the only row (because there were no discrepancies)"
+"0","  mutate(response_correct = row_number()) %>% "
+"0","  relocate(response_correct, .after = response_id) %>% "
+"0","  mutate(response_id = case_when(response_id == ""correct"" ~ lead(response_id),"
+"0","                                 TRUE ~ response_id)) %>% "
+"0","  filter(response_correct == 1)"
+"2","filter: removed 5 rows (3%), 153 rows remaining
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","filter (grouped): removed 16 rows (10%), 137 rows remaining
+"
+"2","filter (grouped): removed 65 rows (47%), 72 rows remaining
+"
+"2","mutate (grouped): converted 'recorded_date' from double to character (0 new NA)
+"
+"2","                  converted 'participation_date' from Date to character (0 new NA)
+"
+"2","                  converted 'baby_id' from double to character (0 new NA)
+"
+"2","                  converted 'date_of_birth' from Date to character (0 new NA)
+"
+"2","                  converted 'cgvr1_eng_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr1_fre_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr1_l3_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr1_l4_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr2_eng_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr2_fre_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr2_l3_age' from double to character (0 new NA)
+"
+"2","                  converted 'cgvr2_l4_age' from double to character (0 new NA)
+"
+"2","                  converted 'daycare_start' from double to character (0 new NA)
+"
+"2","                  converted 'wake_time' from double to character (0 new NA)
+"
+"2","                  converted 'sleep_time' from double to character (0 new NA)
+"
+"2","                  converted 'hours_nap' from double to character (0 new NA)
+"
+"2","                  converted 'hrs_awake' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_start' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit1_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit1_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit1_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit1_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit1_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit2_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit2_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit2_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit2_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit2_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit3_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit3_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit3_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit3_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit3_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit4_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit4_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit4_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit4_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit4_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit5_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit5_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit5_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit5_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit5_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit6_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit6_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit6_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit6_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit6_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit7_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit7_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit7_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit7_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit7_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit8_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit8_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit8_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit8_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit8_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit9_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit9_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit9_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit9_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit9_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l1_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l2_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l3_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_mon' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_tue' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_wed' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_thu' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_fri' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_sat' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_hrs_l4_sun' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_end' from double to character (0 new NA)
+"
+"2","                  converted 'sit10_length' from double to character (0 new NA)
+"
+"2","                  converted 'l1_sit10_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l2_sit10_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l3_sit10_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'l4_sit10_hrsperweek' from double to character (0 new NA)
+"
+"2","                  converted 'sit_count' from double to character (0 new NA)
+"
+"2","                  converted 'glob_est_l1' from double to character (0 new NA)
+"
+"2","                  converted 'glob_est_l2' from double to character (0 new NA)
+"
+"2","                  converted 'glob_est_l3' from double to character (0 new NA)
+"
+"2","                  converted 'glob_est_l4' from double to character (0 new NA)
+"
+"2","                  converted 'mono_exception' from double to character (0 new NA)
+"
+"2","                  converted 'l1_age_acquired' from double to character (0 new NA)
+"
+"2","                  converted 'l2_age_acquired' from double to character (0 new NA)
+"
+"2","                  converted 'l3_age_acquired' from double to character (0 new NA)
+"
+"2","                  converted 'l4_age_acquired' from double to character (0 new NA)
+"
+"2","                  converted 'baby_age' from double to character (0 new NA)
+"
+"2","                  converted 'num_langs' from double to character (0 new NA)
+"
+"2","                  converted 'l1_total_hrs' from double to character (0 new NA)
+"
+"2","                  converted 'l2_total_hrs' from double to character (0 new NA)
+"
+"2","                  converted 'l3_total_hrs' from double to character (0 new NA)
+"
+"2","                  converted 'l4_total_hrs' from double to character (0 new NA)
+"
+"2","                  converted 'l1_cumu_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l2_cumu_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l3_cumu_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l4_cumu_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l1_curr_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l2_curr_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l3_curr_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l4_curr_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l1_overall_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l2_overall_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l3_overall_exp' from double to character (0 new NA)
+"
+"2","                  converted 'l4_overall_exp' from double to character (0 new NA)
+"
+"2","Joining with `by = join_by(response_id, participation_date, study_id, date_of_birth, child_gender, cgvr1_eng_use, cgvr1_eng_var, cgvr1_eng_accent, cgvr1_fre_use, cgvr1_fre_var, cgvr1_fre_tochild, cgvr1_l3_name, cgvr1_l3_use, cgvr1_l3_variety, cgvr1_l4_use, cgvr1_l4_variety, cgvr2_eng_use, cgvr2_eng_variety, cgvr2_eng_tochild, cgvr2_fre_use, cgvr2_fre_variety, cgvr2_l3_name, cgvr2_l3_variety, cgvr2_l4_yn, cgvr2_l4_name, cgvr2_l4_use, cgvr2_l4_variety, cgvr2_l4_tochild, cgvr2_l4_age, cgvr2_l4_accent, other_cgvrs_1, other_cgvrs_2, daycare_yn, daycare_start, daycare_langs, long_trips, long_trips_details, child_l1, child_l2, child_l3, child_l4, child_langs, sit1, sit1_hrs_l1_mon, sit1_hrs_l1_tue, sit1_hrs_l1_wed, sit1_hrs_l1_thu, sit1_hrs_l1_fri, sit1_hrs_l1_sat, sit1_hrs_l1_sun, sit1_hrs_l2_mon, sit1_hrs_l2_tue, sit1_hrs_l2_wed, sit1_hrs_l2_thu, sit1_hrs_l2_fri, sit1_hrs_l2_sat, sit1_hrs_l2_sun, sit1_hrs_l3_mon, sit1_hrs_l3_tue, sit1_hrs_l3_wed, sit1_hrs_l3_thu, sit1_hrs_l3_fri, sit1_hrs_l3_sat, sit1_hrs_l3_sun, sit1_hrs_l4_mon, sit1_hrs_l4_tue, sit1_hrs_l4_wed, sit1_hrs_l4_thu, sit1_hrs_l4_fri, sit1_hrs_l4_sat, sit1_hrs_l4_sun, sit1_end, sit1_length, sit2, sit2_hrs_l1_mon, sit2_hrs_l1_tue, sit2_hrs_l1_wed, sit2_hrs_l1_thu, sit2_hrs_l1_fri, sit2_hrs_l1_sat, sit2_hrs_l1_sun, sit2_hrs_l2_mon, sit2_hrs_l2_tue, sit2_hrs_l2_wed, sit2_hrs_l2_thu, sit2_hrs_l2_fri, sit2_hrs_l2_sat, sit2_hrs_l2_sun, sit2_hrs_l3_mon, sit2_hrs_l3_tue, sit2_hrs_l3_wed, sit2_hrs_l3_thu, sit2_hrs_l3_fri, sit2_hrs_l3_sat, sit2_hrs_l3_sun, sit2_hrs_l4_mon, sit2_hrs_l4_tue, sit2_hrs_l4_wed, sit2_hrs_l4_thu, sit2_hrs_l4_fri, sit2_hrs_l4_sat, sit2_hrs_l4_sun, sit2_end, sit2_length, sit3, sit3_hrs_l1_mon, sit3_hrs_l1_tue, sit3_hrs_l1_wed, sit3_hrs_l1_thu, sit3_hrs_l1_fri, sit3_hrs_l1_sat, sit3_hrs_l1_sun, sit3_hrs_l2_mon, sit3_hrs_l2_tue, sit3_hrs_l2_wed, sit3_hrs_l2_thu, sit3_hrs_l2_fri, sit3_hrs_l2_sat, sit3_hrs_l2_sun, sit3_hrs_l3_mon, sit3_hrs_l3_tue, sit3_hrs_l3_wed, sit3_hrs_l3_thu, sit3_hrs_l3_fri, sit3_hrs_l3_sat, sit3_hrs_l3_sun, sit3_hrs_l4_mon, sit3_hrs_l4_tue, sit3_hrs_l4_wed, sit3_hrs_l4_thu, sit3_hrs_l4_fri, sit3_hrs_l4_sat, sit3_hrs_l4_sun, sit3_end, sit3_length, sit4, sit4_hrs_l1_mon, sit4_hrs_l1_tue, sit4_hrs_l1_wed, sit4_hrs_l1_thu, sit4_hrs_l1_fri, sit4_hrs_l1_sat, sit4_hrs_l1_sun, sit4_hrs_l2_mon, sit4_hrs_l2_tue, sit4_hrs_l2_wed, sit4_hrs_l2_thu, sit4_hrs_l2_fri, sit4_hrs_l2_sat, sit4_hrs_l2_sun, sit4_hrs_l3_mon, sit4_hrs_l3_tue, sit4_hrs_l3_wed, sit4_hrs_l3_thu, sit4_hrs_l3_fri, sit4_hrs_l3_sat, sit4_hrs_l3_sun, sit4_hrs_l4_mon, sit4_hrs_l4_tue, sit4_hrs_l4_wed, sit4_hrs_l4_thu, sit4_hrs_l4_fri, sit4_hrs_l4_sat, sit4_hrs_l4_sun, sit4_end, sit4_length, sit5, sit5_hrs_l1_mon, sit5_hrs_l1_tue, sit5_hrs_l1_wed, sit5_hrs_l1_thu, sit5_hrs_l1_fri, sit5_hrs_l1_sat, sit5_hrs_l1_sun, sit5_hrs_l2_mon, sit5_hrs_l2_tue, sit5_hrs_l2_wed, sit5_hrs_l2_thu, sit5_hrs_l2_fri, sit5_hrs_l2_sat, sit5_hrs_l2_sun, sit5_hrs_l3_mon, sit5_hrs_l3_tue, sit5_hrs_l3_wed, sit5_hrs_l3_thu, sit5_hrs_l3_fri, sit5_hrs_l3_sat, sit5_hrs_l3_sun, sit5_hrs_l4_mon, sit5_hrs_l4_tue, sit5_hrs_l4_wed, sit5_hrs_l4_thu, sit5_hrs_l4_fri, sit5_hrs_l4_sat, sit5_hrs_l4_sun, sit5_end, sit5_length, sit6, sit6_hrs_l1_mon, sit6_hrs_l1_tue, sit6_hrs_l1_wed, sit6_hrs_l1_thu, sit6_hrs_l1_fri, sit6_hrs_l1_sat, sit6_hrs_l1_sun, sit6_hrs_l2_mon, sit6_hrs_l2_tue, sit6_hrs_l2_wed, sit6_hrs_l2_thu, sit6_hrs_l2_fri, sit6_hrs_l2_sat, sit6_hrs_l2_sun, sit6_hrs_l3_mon, sit6_hrs_l3_tue, sit6_hrs_l3_wed, sit6_hrs_l3_thu, sit6_hrs_l3_fri, sit6_hrs_l3_sat, sit6_hrs_l3_sun, sit6_hrs_l4_mon, sit6_hrs_l4_tue, sit6_hrs_l4_wed, sit6_hrs_l4_thu, sit6_hrs_l4_fri, sit6_hrs_l4_sat, sit6_hrs_l4_sun, sit6_end, sit6_length, sit7, sit7_hrs_l1_mon, sit7_hrs_l1_tue, sit7_hrs_l1_wed, sit7_hrs_l1_thu, sit7_hrs_l1_fri, sit7_hrs_l1_sat, sit7_hrs_l1_sun, sit7_hrs_l2_mon, sit7_hrs_l2_tue, sit7_hrs_l2_wed, sit7_hrs_l2_thu, sit7_hrs_l2_fri, sit7_hrs_l2_sat, sit7_hrs_l2_sun, sit7_hrs_l3_mon, sit7_hrs_l3_tue, sit7_hrs_l3_wed, sit7_hrs_l3_thu, sit7_hrs_l3_fri, sit7_hrs_l3_sat, sit7_hrs_l3_sun, sit7_hrs_l4_mon, sit7_hrs_l4_tue, sit7_hrs_l4_wed, sit7_hrs_l4_thu, sit7_hrs_l4_fri, sit7_hrs_l4_sat, sit7_hrs_l4_sun, sit7_end, sit7_length, sit8, sit8_hrs_l1_mon, sit8_hrs_l1_tue, sit8_hrs_l1_wed, sit8_hrs_l1_thu, sit8_hrs_l1_fri, sit8_hrs_l1_sat, sit8_hrs_l1_sun, sit8_hrs_l2_mon, sit8_hrs_l2_tue, sit8_hrs_l2_wed, sit8_hrs_l2_thu, sit8_hrs_l2_fri, sit8_hrs_l2_sat, sit8_hrs_l2_sun, sit8_hrs_l3_mon, sit8_hrs_l3_tue, sit8_hrs_l3_wed, sit8_hrs_l3_thu, sit8_hrs_l3_fri, sit8_hrs_l3_sat, sit8_hrs_l3_sun, sit8_hrs_l4_mon, sit8_hrs_l4_tue, sit8_hrs_l4_wed, sit8_hrs_l4_thu, sit8_hrs_l4_fri, sit8_hrs_l4_sat, sit8_hrs_l4_sun, sit8_end, sit8_length, sit9, sit9_hrs_l1_mon, sit9_hrs_l1_tue, sit9_hrs_l1_wed, sit9_hrs_l1_thu, sit9_hrs_l1_fri, sit9_hrs_l1_sat, sit9_hrs_l1_sun, sit9_hrs_l2_mon, sit9_hrs_l2_tue, sit9_hrs_l2_wed, sit9_hrs_l2_thu, sit9_hrs_l2_fri, sit9_hrs_l2_sat, sit9_hrs_l2_sun, sit9_hrs_l3_mon, sit9_hrs_l3_tue, sit9_hrs_l3_wed, sit9_hrs_l3_thu, sit9_hrs_l3_fri, sit9_hrs_l3_sat, sit9_hrs_l3_sun, sit9_hrs_l4_mon, sit9_hrs_l4_tue, sit9_hrs_l4_wed, sit9_hrs_l4_thu, sit9_hrs_l4_fri, sit9_hrs_l4_sat, sit9_hrs_l4_sun, sit9_end, sit9_length, sit10, sit10_hrs_l1_mon, sit10_hrs_l1_tue, sit10_hrs_l1_wed, sit10_hrs_l1_thu, sit10_hrs_l1_fri, sit10_hrs_l1_sat, sit10_hrs_l1_sun, sit10_hrs_l2_mon, sit10_hrs_l2_tue, sit10_hrs_l2_wed, sit10_hrs_l2_thu, sit10_hrs_l2_fri, sit10_hrs_l2_sat, sit10_hrs_l2_sun, sit10_hrs_l3_mon, sit10_hrs_l3_tue, sit10_hrs_l3_wed, sit10_hrs_l3_thu, sit10_hrs_l3_fri, sit10_hrs_l3_sat, sit10_hrs_l3_sun, sit10_hrs_l4_mon, sit10_hrs_l4_tue, sit10_hrs_l4_wed, sit10_hrs_l4_thu, sit10_hrs_l4_fri, sit10_hrs_l4_sat, sit10_hrs_l4_sun, sit10_end, sit10_length, glob_est_l1, glob_est_l2, glob_est_l3, glob_est_l4, researcher_notes, l1_curr_exp, l2_curr_exp, l3_curr_exp, l4_curr_exp)`"
+"2","full_join: added no columns
+"
+"2","           > rows only in x    72
+"
+"2","           > rows only in y    71
+"
+"2","           > matched rows       0
+"
+"2","           >                 =====
+"
+"2","           > rows total       143
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","fill (grouped): changed one value (1%) of 'cgvr2_l3_variety' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_name' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_use' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_variety' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_tochild' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_age' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'cgvr2_l4_accent' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'long_trips_details' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'child_l2' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'child_l3' (1 fewer NA)
+"
+"2","                changed 5 values (3%) of 'child_l4' (5 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_fri' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit1_hrs_l1_sat' (2 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l1_sun' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l2_sun' (3 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_mon' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_tue' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_wed' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_thu' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_fri' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit1_hrs_l3_sat' (9 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit1_hrs_l3_sun' (7 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit1_hrs_l4_sun' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l1_mon' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l1_tue' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l1_wed' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l1_thu' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l1_fri' (2 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l1_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l1_sun' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_mon' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_tue' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_wed' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_thu' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_fri' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit2_hrs_l2_sat' (2 fewer NA)
+"
+"2","                changed one value (1%) of 'sit2_hrs_l2_sun' (1 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_mon' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_tue' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_wed' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_thu' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_fri' (9 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit2_hrs_l3_sat' (9 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit2_hrs_l3_sun' (7 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit2_hrs_l4_sun' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l1_mon' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l1_tue' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l1_wed' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l1_thu' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l1_fri' (2 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l1_sat' (3 fewer NA)
+"
+"2","                changed 4 values (3%) of 'sit3_hrs_l1_sun' (4 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l2_sat' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit3_hrs_l2_sun' (2 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_mon' (7 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_tue' (7 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_wed' (7 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_thu' (7 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_fri' (7 fewer NA)
+"
+"2","                changed 9 values (6%) of 'sit3_hrs_l3_sat' (9 fewer NA)
+"
+"2","                changed 7 values (5%) of 'sit3_hrs_l3_sun' (7 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit3_hrs_l4_sun' (3 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_fri' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit4_hrs_l1_sun' (1 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l2_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l2_tue' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit4_hrs_l2_wed' (2 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit4_hrs_l2_thu' (2 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l2_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l2_sat' (3 fewer NA)
+"
+"2","                changed 2 values (1%) of 'sit4_hrs_l2_sun' (2 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit4_hrs_l3_mon' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit4_hrs_l3_tue' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit4_hrs_l3_wed' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit4_hrs_l3_thu' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit4_hrs_l3_fri' (6 fewer NA)
+"
+"2","                changed 5 values (3%) of 'sit4_hrs_l3_sat' (5 fewer NA)
+"
+"2","                changed 5 values (3%) of 'sit4_hrs_l3_sun' (5 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit4_hrs_l4_sun' (3 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l2_sun' (1 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit5_hrs_l3_mon' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit5_hrs_l3_tue' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit5_hrs_l3_wed' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit5_hrs_l3_thu' (6 fewer NA)
+"
+"2","                changed 6 values (4%) of 'sit5_hrs_l3_fri' (6 fewer NA)
+"
+"2","                changed 5 values (3%) of 'sit5_hrs_l3_sat' (5 fewer NA)
+"
+"2","                changed 5 values (3%) of 'sit5_hrs_l3_sun' (5 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_fri' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit5_hrs_l4_sun' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_fri' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l2_sun' (1 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_mon' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_tue' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_wed' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_thu' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_fri' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_sat' (3 fewer NA)
+"
+"2","                changed 3 values (2%) of 'sit6_hrs_l3_sun' (3 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_fri' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit6_hrs_l4_sun' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_mon' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_tue' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_wed' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_thu' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_fri' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_sat' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'sit7_hrs_l3_sun' (1 fewer NA)
+"
+"2","                changed one value (1%) of 'glob_est_l3' (1 fewer NA)
+"
+"2","                changed 5 values (3%) of 'glob_est_l4' (5 fewer NA)
+"
+"2","                changed 14 values (10%) of 'researcher_notes' (14 fewer NA)
+"
+"2","mutate (grouped): new variable 'response_correct' (integer) with 2 unique values and 0% NA
+"
+"2","relocate: columns reordered (response_id, response_correct, recorded_date, user_language, participation_date, …)
+"
+"2","mutate (grouped): changed 71 values (50%) of 'response_id' (71 new NA)
+"
+"2","filter (grouped): removed 71 rows (50%), 72 rows remaining
+"

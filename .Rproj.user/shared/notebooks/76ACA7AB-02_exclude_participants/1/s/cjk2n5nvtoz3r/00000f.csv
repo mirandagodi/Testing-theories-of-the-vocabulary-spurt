@@ -1,0 +1,196 @@
+"0","# Sample descriptives"
+"0",""
+"0","# Sample after exclusion criteria"
+"0","total_keepers <- full_join(Eng_df_keepers, Fr_df_keepers, by = ""study_id"")  %>%"
+"0","  # filter(!(study_id %in% total_excluded$study_id)) %>% "
+"0","  distinct(study_id)"
+"2","full_join: added 774 columns (subject_id.x, TRUE_months.x, n_months.x, completed.x, dob.x, …)
+"
+"2","           > rows only in x     170
+"
+"2","           > rows only in y     157
+"
+"2","           > matched rows     8,851    (includes duplicates)
+"
+"2","           >                 =======
+"
+"2","           > rows total       9,178
+"
+"2","distinct: removed 9,097 rows (99%), 81 rows remaining
+"
+"0","# Babies who were completely excluded (total)"
+"0","completely_excluded <- full_join(Eng_01_df, Fr_01_df, by = ""study_id"") %>% "
+"0","  distinct(study_id) %>% "
+"0","  filter(!(study_id %in% total_keepers$study_id))"
+"2","full_join: added 774 columns (subject_id.x, TRUE_months.x, n_months.x, completed.x, dob.x, …)
+"
+"2","           > rows only in x      167
+"
+"2","           > rows only in y      226
+"
+"2","           > matched rows     12,248    (includes duplicates)
+"
+"2","           >                 ========
+"
+"2","           > rows total       12,641
+"
+"2","distinct: removed 12,524 rows (99%), 117 rows remaining
+"
+"2","filter: removed 81 rows (69%), 36 rows remaining
+"
+"0","# Babies who were completely excluded (due to health)"
+"0","completely_excluded_health <- completely_excluded %>% "
+"0","  filter(study_id %in% Eng_df_exclude_health$study_id | "
+"0","             study_id %in% Fr_df_exclude_health$study_id)"
+"2","filter: removed 27 rows (75%), 9 rows remaining
+"
+"0","# Babies who were completely excluded (due to exposure to L3 or L4)"
+"0","completely_excluded_exposure_L3L4 <- completely_excluded %>% "
+"0","  filter(study_id %in% L3_df_exclude_exposure$study_id |"
+"0","             study_id %in% L4_df_exclude_exposure$study_id)"
+"2","filter: removed 33 rows (92%), 3 rows remaining
+"
+"0","# Babies who were completely excluded (due to exposure to missing data)"
+"0","completely_excluded_missing <- completely_excluded %>% "
+"0","  filter(!(study_id %in% completely_excluded_health$study_id |"
+"0","             study_id %in% completely_excluded_exposure_L3L4$study_id))"
+"2","filter: removed 12 rows (33%), 24 rows remaining
+"
+"0","# Babies that were not completely excluded (because they didn't meet exclusion criteria in one language)"
+"0",""
+"0",""
+"0","# Excluded due to health"
+"0","total_excluded_health <- full_join(Eng_df_exclude_health, Fr_df_exclude_health, by = ""study_id"")  %>%"
+"0","  distinct(study_id)"
+"2","full_join: added no columns
+"
+"2","           > rows only in x   1
+"
+"2","           > rows only in y   2
+"
+"2","           > matched rows     6
+"
+"2","           >                 ===
+"
+"2","           > rows total       9
+"
+"2","distinct (grouped): no rows removed
+"
+"0","# Babies excluded due to health in both languages"
+"0","total_both_health <- total_excluded_health %>%"
+"0","  filter(study_id %in% Eng_df_exclude_health$study_id &"
+"0","           study_id %in% Fr_df_exclude_health$study_id)"
+"2","filter (grouped): removed 3 rows (33%), 6 rows remaining
+"
+"0","# Babies excluded due to health in only one languages"
+"0","total_onlyone_health <- total_excluded_health %>%"
+"0","  filter(study_id %in% Eng_df_exclude_health$study_id & !(study_id %in% Fr_df_exclude_health$study_id) |"
+"0","           !(study_id %in% Eng_df_exclude_health$study_id) & study_id %in% Fr_df_exclude_health$study_id)"
+"2","filter (grouped): removed 6 rows (67%), 3 rows remaining
+"
+"0","# Excluded due to exposure change"
+"0","expchange_dfs <- list(Eng_df_exclude_exposure_change, Fr_df_exclude_exposure_change, L3_df_exclude_exposure, L4_df_exclude_exposure)"
+"0","total_excluded_expchange <- expchange_dfs %>%"
+"0","  reduce(full_join, by = ""study_id"") %>%"
+"0","  distinct(study_id)"
+"2","full_join: added no columns
+"
+"2","           > rows only in x   0
+"
+"2","           > rows only in y   0
+"
+"2","           > matched rows     0
+"
+"2","           >                 ===
+"
+"2","           > rows total       0
+"
+"2","full_join: added no columns
+"
+"2","           > rows only in x   0
+"
+"2","           > rows only in y   3
+"
+"2","           > matched rows     0
+"
+"2","           >                 ===
+"
+"2","           > rows total       3
+"
+"2","full_join: added no columns
+"
+"2","           > rows only in x   3
+"
+"2","           > rows only in y   1
+"
+"2","           > matched rows     0
+"
+"2","           >                 ===
+"
+"2","           > rows total       4
+"
+"2","distinct: no rows removed
+"
+"0","# Excluded due to missing data"
+"0","total_excluded_missing <- full_join(Eng_df_exclude_three_missing, Fr_df_exclude_three_missing, by = ""study_id"")  %>%"
+"0","  distinct(study_id)"
+"2","full_join: added no columns
+"
+"2","           > rows only in x    4
+"
+"2","           > rows only in y   12
+"
+"2","           > matched rows     16
+"
+"2","           >                 ====
+"
+"2","           > rows total       32
+"
+"2","distinct: no rows removed
+"
+"0","total_both_missing <- total_excluded_missing %>%"
+"0","  filter(study_id %in% Eng_df_exclude_three_missing$study_id &"
+"0","           study_id %in% Fr_df_exclude_three_missing$study_id)"
+"2","filter: removed 16 rows (50%), 16 rows remaining
+"
+"0","# Total excluded. This df will be used to exclude babies from word and concept models"
+"0","excluded_dfs <- list(total_excluded_health, total_excluded_expchange, total_excluded_missing)"
+"0","total_excluded <- excluded_dfs %>%"
+"0","  reduce(full_join, by = ""study_id"") %>%"
+"0","  distinct(study_id) %>%"
+"0","  ungroup() %>%"
+"0","  select(study_id)"
+"2","full_join: added no columns
+"
+"2","           > rows only in x    9
+"
+"2","           > rows only in y    4
+"
+"2","           > matched rows      0
+"
+"2","           >                 ====
+"
+"2","           > rows total       13
+"
+"2","full_join: added no columns
+"
+"2","           > rows only in x    9
+"
+"2","           > rows only in y   28
+"
+"2","           > matched rows      4
+"
+"2","           >                 ====
+"
+"2","           > rows total       41
+"
+"2","distinct (grouped): no rows removed
+"
+"2","ungroup: no grouping variables
+"
+"2","select: dropped one variable (subject_id)
+"
+"0","excluded_in_only_one <- total_keepers %>% "
+"0","  filter(study_id %in% total_excluded$study_id)"
+"2","filter: removed 77 rows (95%), 4 rows remaining
+"

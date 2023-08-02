@@ -1,0 +1,11 @@
+"0","# Format date of birth data"
+"0","DOB_data <- DOB_data %>% "
+"0","  # Get study ID"
+"0","  separate(local_lab_id, c(NA, ""study_id"")) %>% "
+"0","  # Format study_id to be ""S"" followed by 3 digits (e.g., S001, S086, S123)"
+"0","  mutate(study_id = case_when(str_length(study_id) == 3 ~ gsub(""^(.{1})(.*)$"","
+"0","                                                               ""\\10\\2"","
+"0","                                                               study_id),"
+"0","                              TRUE ~ study_id))"
+"2","mutate: changed 99 values (72%) of 'study_id' (0 new NA)
+"

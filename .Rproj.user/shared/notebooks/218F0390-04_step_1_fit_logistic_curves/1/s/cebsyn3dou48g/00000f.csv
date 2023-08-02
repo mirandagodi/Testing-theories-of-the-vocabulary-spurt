@@ -1,0 +1,50 @@
+"0","# Clean and wrangle df for Step 1"
+"0",""
+"0","# Keep necessary columns"
+"0","step1_df <- vocabulary_scores_03_df %>%"
+"0","  arrange(item_id_eng) %>%"
+"0","  # Remove participants who were older than 18 months when they joined the study"
+"0","  filter(!(starting_age > 18)) %>%"
+"0","  # Remove duplicated rows (keep 1 row per baby per month) "
+"0","  group_by(study_id, n_months) %>%"
+"0","  summarize(age = first(age), "
+"0","            starting_age = first(starting_age), "
+"0","            eng_completed = first(eng_completed),"
+"0","            fr_completed = first(fr_completed),"
+"0","            eng_est_total_produced = first(eng_est_total_produced), "
+"0","            fr_est_total_produced = first(fr_est_total_produced), "
+"0","            words_produced = first(words_produced),"
+"0","            concepts_produced = first(concepts_produced),"
+"0","            num_datapts = first(num_datapts)) %>%"
+"0","  # Create vocabulary_score column (includes scores for English, French, word, and concept vocabulary scores) and vocabulary_type_step1 column"
+"0","  rename('English' = 'eng_est_total_produced',"
+"0","         'French' = 'fr_est_total_produced',"
+"0","         'word' = 'words_produced',"
+"0","         'concept' = 'concepts_produced') %>%"
+"0","  pivot_longer(-c(study_id:fr_completed, num_datapts), names_to = ""vocabulary_type_step1"", values_to = ""vocabulary_score"") %>%"
+"0","  # Remove rows of monolinguals' non-heard language"
+"0","  ungroup() %>%"
+"0","  filter(!(vocabulary_type_step1 == 'English' & is.na(eng_completed))) %>%"
+"0","  filter(!(vocabulary_type_step1 == 'French' & is.na(fr_completed)))"
+"2","filter: removed 279,048 rows (37%), 483,969 rows remaining
+"
+"2","summarize: now 659 rows and 11 columns, one group variable remaining (study_id)
+"
+"2","rename: renamed 4 variables (English, French, word, concept)
+"
+"2","pivot_longer: reorganized (English, French, word, concept) into (vocabulary_type_step1, vocabulary_score) [was 659x11, now 2636x9]
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed 124 rows (5%), 2,512 rows remaining
+"
+"2","filter: removed 124 rows (5%), 2,388 rows remaining
+"
+"0","# Create df with babies who were older then 18 months when they started study "
+"0","startage_over18 <- vocabulary_scores_03_df %>%"
+"0","  filter(starting_age > 18) %>%"
+"0","  distinct(study_id)"
+"2","filter: removed 483,969 rows (63%), 279,048 rows remaining
+"
+"2","distinct: removed 279,015 rows (>99%), 33 rows remaining
+"

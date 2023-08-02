@@ -1,0 +1,86 @@
+"0","# Prepare LEQ data from Qualtrics to be joined"
+"0","# Create dataframe with the study ID and all months of age from 1 to 30"
+"0","Q_age_df <- data.frame(end_age = 1:30)"
+"0","Q_study_id_df <- Q_LEQ_data %>% distinct(study_id)"
+"2","distinct: removed 748 rows (91%), 72 rows remaining
+"
+"0","Q_end_age_df <- merge(Q_study_id_df,Q_age_df)"
+"0",""
+"0","# Remove unnecessary columns from the LEQ dataframe (Qualtrics)"
+"0","Q_LEQ_df_columns <- Q_LEQ_data %>%"
+"0","  # Keep only relevant variables"
+"0","  select(baby_id, study_id, date_of_birth, situation, end, lang_name, language, cumu_exp) %>%"
+"0","  # Convert date of birth colum into date (make it compatible with LimeSurvey)"
+"0","  mutate(date_of_birth = str_replace_all(date_of_birth, ""/"", ""-"")) %>%"
+"0","  mutate(date_of_birth = as.Date(date_of_birth, format = ""%Y-%m-%d"")) %>% "
+"0","  # Rename columns so they match CDI dataframes"
+"0","  rename(subject_id = baby_id,"
+"0","         dob = date_of_birth,"
+"0","         phase = situation,"
+"0","         end_age = end,"
+"0","         cumulative_exp = cumu_exp) %>%"
+"0","  # Create column to be used to pivot cumulative exposure by language"
+"0","  mutate(lang = case_when(lang_name == ""English"" ~ ""Eng"","
+"0","                          lang_name == ""French"" ~ ""Fre"","
+"0","                          language == ""l3"" ~ ""L3"","
+"0","                          language == ""l4"" ~ ""L4"","
+"0","                          lang_name != ""English"" & lang_name != ""French"" ~ ""L3"")) %>%"
+"0","  # Pivot into wider data (one row per baby per phase)"
+"0","  pivot_wider(id_cols = c(subject_id, study_id, dob, phase, end_age),"
+"0","              names_from = lang,"
+"0","              values_from = cumulative_exp,"
+"0","              names_prefix = ""cumulative_exp_"") %>%"
+"0","  full_join(Q_end_age_df, by = c(""study_id"", ""end_age"")) %>%"
+"0","  group_by(study_id) %>%"
+"0","  arrange(end_age) %>%"
+"0","  fill(-c(""study_id"", ""end_age""), .direction = ""up"") %>%"
+"0","  filter(end_age >= 16) %>%"
+"0","  ungroup() %>%"
+"0","  # Remove rows of months after babies withdrew"
+"0","  filter(!(is.na(phase)))"
+"2","select: dropped 29 variables (response_id, recorded_date, user_language, participation_date, researcher, …)
+"
+"2","mutate: converted 'date_of_birth' from Date to character (0 new NA)
+"
+"2","mutate: converted 'date_of_birth' from character to Date (0 new NA)
+"
+"2","rename: renamed 5 variables (subject_id, dob, phase, end_age, cumulative_exp)
+"
+"2","mutate: new variable 'lang' (character) with 4 unique values and 0% NA
+"
+"2","pivot_wider: reorganized (lang_name, language, cumulative_exp, lang) into (cumulative_exp_Eng, cumulative_exp_Fre, cumulative_exp_L3, cumulative_exp_L4) [was 820x9, now 299x9]
+"
+"2","full_join: added no columns
+"
+"2","           > rows only in x      17
+"
+"2","           > rows only in y   1,878
+"
+"2","           > matched rows       282
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,177
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","fill (grouped): changed 1,502 values (69%) of 'subject_id' (1502 fewer NA)
+"
+"2","                changed 1,502 values (69%) of 'dob' (1502 fewer NA)
+"
+"2","                changed 1,502 values (69%) of 'phase' (1502 fewer NA)
+"
+"2","                changed 1,482 values (68%) of 'cumulative_exp_Eng' (1482 fewer NA)
+"
+"2","                changed 1,502 values (69%) of 'cumulative_exp_Fre' (1502 fewer NA)
+"
+"2","                changed 674 values (31%) of 'cumulative_exp_L3' (674 fewer NA)
+"
+"2","                changed 283 values (13%) of 'cumulative_exp_L4' (283 fewer NA)
+"
+"2","filter (grouped): removed 1,080 rows (50%), 1,097 rows remaining
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed 376 rows (34%), 721 rows remaining
+"

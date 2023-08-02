@@ -1,0 +1,109 @@
+"0","# Append item_id info to CDI data"
+"0","# English"
+"0","Eng_df_itemID <- Eng_df_total_produced %>%"
+"0","  # Remove first 2 columns"
+"0","  select(-c(sex: worried_boolean, eng_total_produced)) %>%"
+"0","  # Convert to long data"
+"0","  pivot_longer(-c(subject_id:eng_est_total_produced), names_to = ""english_item"", values_to = ""eng_acquired"") %>%"
+"0","  # Add item_id for each vocab"
+"0","  group_by(subject_id, n_months) %>%"
+"0","  mutate(english_item_id = row_number(subject_id)) %>%"
+"0","  # Fix typo in english_item_id (*checked with eng_cdi from wordbank)"
+"0","  mutate(english_item_id = case_when(english_item == ""peas"" ~ ""131"","
+"0","                                     english_item == ""peanut_butter"" ~ ""132"","
+"0","                                     english_item == ""rocking_chair"" ~ ""282"","
+"0","                                     english_item == ""refrigerator"" ~ ""283"","
+"0","                                     english_item == ""window"" ~ ""292"","
+"0","                                     english_item == ""washing_machine"" ~ ""293"","
+"0","                                     TRUE ~ as.character(english_item_id))) %>%"
+"0","  mutate(english_item_id = as.numeric(english_item_id)) %>%"
+"0","  ungroup() %>%"
+"0","  select(study_id, TRUE_months, n_months, completed, eng_est_total_produced, age, english_item, english_item_id, eng_acquired) %>% "
+"0","  mutate(item_id = english_item_id) %>% # LAIA: adding this line here for when we need to merge TEs"
+"0","  # Rename columns for when they are joined with French"
+"0","  rename(eng_item_num = english_item_id,"
+"0","         age_eng = age,"
+"0","         eng_completed = completed) %>%"
+"0","  # Append translation equivalents (TE) list to data"
+"0","  left_join(TE_list, by = ""eng_item_num"")"
+"2","select: dropped 30 variables (sex, birth_order, birth_weight_lb, multi_birth_boolean, born_on_due_date, …)
+"
+"2","pivot_longer: reorganized (baa_baa, choo_choo, cockadoodledoo, grrr, meow, …) into (english_item, eng_acquired) [was 863x689, now 586840x11]
+"
+"2","group_by: 2 grouping variables (subject_id, n_months)
+"
+"2","mutate (grouped): new variable 'english_item_id' (integer) with 680 unique values and 0% NA
+"
+"2","mutate (grouped): converted 'english_item_id' from integer to character (0 new NA)
+"
+"2","mutate (grouped): converted 'english_item_id' from character to double (0 new NA)
+"
+"2","ungroup: no grouping variables
+"
+"2","select: dropped 3 variables (subject_id, dob, last_modified)
+"
+"2","mutate: new variable 'item_id' (double) with 680 unique values and 0% NA
+"
+"2","rename: renamed 3 variables (eng_completed, age_eng, eng_item_num)
+"
+"2","left_join: added 2 columns (fr_item_num, te_id)
+"
+"2","           > rows only in x    73,355
+"
+"2","           > rows only in y  (      0)
+"
+"2","           > matched rows     527,293    (includes duplicates)
+"
+"2","           >                 =========
+"
+"2","           > rows total       600,648
+"
+"0","# French"
+"0","Fr_df_itemID <- Fr_df_total_produced %>%"
+"0","  # Remove first 2 columns"
+"0","  select(-c(sex: worried_boolean, fr_total_produced)) %>%"
+"0","  # Convert to long data"
+"0","  pivot_longer(-c(subject_id:fr_est_total_produced), names_to = ""french_item"", values_to = ""fr_acquired"") %>%"
+"0","  # Add item_id for each vocab"
+"0","  group_by(subject_id, n_months) %>%"
+"0","  mutate(french_item_id = row_number(subject_id)) %>%"
+"0","  mutate(french_item_id = as.numeric(french_item_id)) %>%"
+"0","  ungroup() %>%"
+"0","  select(study_id, TRUE_months, n_months, completed, fr_est_total_produced, age, french_item, french_item_id, fr_acquired) %>% "
+"0","  mutate(item_id = french_item_id) %>% # LAIA: adding this line here for when we need to merge TEs"
+"0","  # Rename columns for when they are joined with English"
+"0","  rename(fr_item_num = french_item_id,"
+"0","         age_fr = age,"
+"0","         fr_completed = completed) %>%"
+"0","  # Append translation equivalents (TE) list to data"
+"0","  left_join(TE_list, by = ""fr_item_num"")"
+"2","select: dropped 30 variables (sex, birth_order, birth_weight_lb, multi_birth_boolean, born_on_due_date, …)
+"
+"2","pivot_longer: reorganized (aie, beee_beee, cocorico, coin_coin, grr, …) into (french_item, fr_acquired) [was 864x673, now 573696x11]
+"
+"2","group_by: 2 grouping variables (subject_id, n_months)
+"
+"2","mutate (grouped): new variable 'french_item_id' (integer) with 664 unique values and 0% NA
+"
+"2","mutate (grouped): converted 'french_item_id' from integer to double (0 new NA)
+"
+"2","ungroup: no grouping variables
+"
+"2","select: dropped 3 variables (subject_id, dob, last_modified)
+"
+"2","mutate: new variable 'item_id' (double) with 664 unique values and 0% NA
+"
+"2","rename: renamed 3 variables (fr_completed, age_fr, fr_item_num)
+"
+"2","left_join: added 2 columns (eng_item_num, te_id)
+"
+"2","           > rows only in x    57,888
+"
+"2","           > rows only in y  (      0)
+"
+"2","           > matched rows     527,904    (includes duplicates)
+"
+"2","           >                 =========
+"
+"2","           > rows total       585,792
+"

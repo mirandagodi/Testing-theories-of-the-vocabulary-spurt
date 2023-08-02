@@ -1,0 +1,68 @@
+"0","# Merge Eng and Fr dataframes "
+"0",""
+"0","EngFr_df <- full_join(Eng_df_itemID, Fr_df_itemID, by = c(""study_id"", ""n_months"", ""te_id"", ""eng_item_num"", ""fr_item_num""), suffix = c(""_eng"", ""_fr"")) %>%"
+"0","  # Replace with 0 the NAs in total produced in eng and fre because those children are in fact monolinguals."
+"0","  mutate(eng_est_total_produced = case_when(is.na(eng_est_total_produced) ~ 0,"
+"0","                           TRUE ~ eng_est_total_produced),"
+"0","         fr_est_total_produced = case_when(is.na(fr_est_total_produced) ~ 0,"
+"0","                           TRUE ~ fr_est_total_produced)) %>%"
+"0","  # Replace with NA the 0s in est_total_produced when a bilingual baby did not complete the CDI in one language, but did in the other"
+"0","  mutate(eng_est_total_produced = case_when(eng_completed == FALSE ~ as.numeric(NA), "
+"0","                                            TRUE ~ eng_est_total_produced),"
+"0","         fr_est_total_produced = case_when(fr_completed == FALSE ~ as.numeric(NA), "
+"0","                                            TRUE ~ fr_est_total_produced),"
+"0","         age_eng = case_when(age_eng == 999 ~ as.numeric(NA),"
+"0","                             TRUE ~ age_eng),"
+"0","         age_fr = case_when(age_fr == 999 ~ as.numeric(NA),"
+"0","                             TRUE ~ age_fr),"
+"0","         num_datapts = case_when(is.na(TRUE_months_eng) ~ TRUE_months_fr,"
+"0","                                 is.na(TRUE_months_fr) ~ TRUE_months_eng,"
+"0","                                 TRUE_months_eng > TRUE_months_fr ~ TRUE_months_eng,"
+"0","                                 TRUE_months_fr > TRUE_months_eng ~ TRUE_months_fr,"
+"0","                                 TRUE ~ TRUE_months_eng))"
+"2","full_join: added 9 columns (TRUE_months_eng, item_id_eng, TRUE_months_fr, fr_completed, fr_est_total_produced, …)
+"
+"2","           > rows only in x   177,225
+"
+"2","           > rows only in y   162,369
+"
+"2","           > matched rows     423,423
+"
+"2","           >                 =========
+"
+"2","           > rows total       763,017
+"
+"2","mutate: changed 162,369 values (21%) of 'eng_est_total_produced' (162369 fewer NA)
+"
+"2","        changed 177,225 values (23%) of 'fr_est_total_produced' (177225 fewer NA)
+"
+"2","mutate: changed 57,072 values (7%) of 'eng_est_total_produced' (57072 new NA)
+"
+"2","        changed 57,630 values (8%) of 'fr_est_total_produced' (57630 new NA)
+"
+"2","        new variable 'num_datapts' (double) with 10 unique values and 0% NA
+"
+"0","# Fix age (Due to the nature of the administration process where the questionnaires are sent on the 1st of each month, there would be overlaps in the age when the questionnaires are filled. So when generating the report, we rely on the n_month variable to generate an estimate age to avoid overlaps.)"
+"0","EngFr_df_agefixed <- EngFr_df %>% "
+"0","  # Sometimes parents may have missed a language (i.e., no data), so replace NA in a missing language with the age in the other language"
+"0","     mutate(age_fixed = case_when(is.na(age_eng) ~ age_fr, "
+"0","                           is.na(age_fr) ~ age_eng,"
+"0","                            # When both languages are available, compare the age across two languages and keep the smaller number (i.e., the age they first joined the project)"
+"0","                           age_eng < age_fr ~ age_eng,"
+"0","                           age_eng > age_fr ~ age_fr,"
+"0","                           # Otherwise, return the age in the English form (since this should be the same as the age in the French form)"
+"0","                           TRUE ~ age_eng)) %>% "
+"0","  group_by(study_id) %>%"
+"0","  mutate(starting_age = min(age_fixed, na.rm = TRUE)) %>% # Extract the minimum age as the starting age of the project"
+"0","  ungroup() %>%"
+"0","  mutate(age = age_fixed) "
+"2","mutate: new variable 'age_fixed' (double) with 1,045 unique values and 0% NA
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","mutate (grouped): new variable 'starting_age' (double) with 79 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"2","mutate: new variable 'age' (double) with 1,045 unique values and 0% NA
+"

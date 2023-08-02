@@ -1,0 +1,43 @@
+"0","# Merge LimeSurvey and Qualtrics LEQ dataframes"
+"0","LEQ_df_columns <-"
+"0","  full_join(LS_LEQ_df_columns, Q_LEQ_df_columns) %>% "
+"0","  group_by(study_id) %>% "
+"0","  filter(end_age == max(end_age)) %>% "
+"0","  mutate(lang_status = case_when(cumulative_exp_Fre>.9 ~ ""fr_mono"","
+"0","                                 cumulative_exp_Eng>.9 ~ ""eng_mono"","
+"0","                                 TRUE ~ ""bilingual""),"
+"0","         dominant_lang = case_when(cumulative_exp_Fre>cumulative_exp_Eng ~ ""fr_dom"","
+"0","                                   cumulative_exp_Fre<cumulative_exp_Eng ~ ""eng_dom"","
+"0","                                   cumulative_exp_Fre==cumulative_exp_Eng ~ ""balanced""))"
+"2","Joining with `by = join_by(subject_id, study_id, dob, phase, end_age, cumulative_exp_Eng, cumulative_exp_Fre, cumulative_exp_L3, cumulative_exp_L4)`"
+"2","full_join: added no columns
+"
+"2","           > rows only in x     831
+"
+"2","           > rows only in y     721
+"
+"2","           > matched rows         0
+"
+"2","           >                 =======
+"
+"2","           > rows total       1,552
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","filter (grouped): removed 1,427 rows (92%), 125 rows remaining
+"
+"2","mutate (grouped): new variable 'lang_status' (character) with 3 unique values and 0% NA
+"
+"2","                  new variable 'dominant_lang' (character) with 4 unique values and 1% NA
+"
+"0","# Create dataframe with monolinguals (exposure < 10% to English or French) to later remove their CDI data in their second language if they completed it"
+"0","# English monolinguals"
+"0","eng_monolingual_df <- LEQ_df_columns %>% "
+"0","  filter(lang_status == ""eng_mono"")"
+"2","filter (grouped): removed 112 rows (90%), 13 rows remaining
+"
+"0","# French monolinguals"
+"0","fr_monolingual_df <- LEQ_df_columns %>% "
+"0","  filter(lang_status == ""fr_mono"")"
+"2","filter (grouped): removed 108 rows (86%), 17 rows remaining
+"

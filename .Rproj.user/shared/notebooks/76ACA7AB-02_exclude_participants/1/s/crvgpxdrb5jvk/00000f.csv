@@ -1,0 +1,112 @@
+"0","# Identify participants with three consecutive missing months"
+"0",""
+"0","# Get IDs of infants who withdrew"
+"0","activity_status_df <- activity_status_recruitment_log %>% "
+"0","    # Get study ID"
+"0","  separate(""Study ID"", c(NA, ""study_id"")) %>% "
+"0","  # Format study_id to be ""S"" followed by 3 digits (e.g., S001, S086, S123)"
+"0","  mutate(study_id = case_when(str_length(study_id) == 3 ~ gsub(""^(.{1})(.*)$"","
+"0","                                                               ""\\10\\2"","
+"0","                                                               study_id),"
+"0","                              TRUE ~ study_id)) %>% "
+"0","  select(study_id, Enrolled)"
+"2","mutate: changed 99 values (72%) of 'study_id' (0 new NA)
+"
+"2","select: dropped 7 variables (Completed_Notes, Final parental report sent (Yes/No), LangGroup, Contacted on:, Signed up on:, …)
+"
+"0","# English"
+"0","Eng_df_three_missing <- Eng_01_df %>%"
+"0","  # Add activity_status column"
+"0","  left_join(activity_status_df, by = ""study_id"") %>% "
+"0","  relocate(Enrolled, .after = study_id) %>% "
+"0","# Arrange in chronological order"
+"0","  arrange(last_modified) %>%"
+"0","# Group by baby; it will produce several THREE MISSING if not done"
+"0","  group_by(study_id) %>%"
+"0","# Create column where it says THREE MISSING on the third consecutive missing month"
+"0","  mutate(exclude_three_missing ="
+"0","           case_when(Enrolled  == ""asked_withdraw"" ~ 'exclude',"
+"0","                     Enrolled  == ""inactivity_withdraw"" ~ 'exclude',"
+"0","                     completed == FALSE & lag(completed) == FALSE & lag(completed, n=2) == FALSE  ~ 'exclude',"
+"0","                     TRUE ~ 'keep'"
+"0","                     )) %>%"
+"0","  ungroup() %>%"
+"0","  relocate(exclude_three_missing, .after = age)"
+"2","left_join: added one column (Enrolled)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y  (   41)
+"
+"2","           > matched rows     1,155
+"
+"2","           >                 =======
+"
+"2","           > rows total       1,155
+"
+"2","relocate: columns reordered (subject_id, study_id, Enrolled, TRUE_months, n_months, …)
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","mutate (grouped): new variable 'exclude_three_missing' (character) with 2 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"2","relocate: columns reordered (subject_id, study_id, Enrolled, TRUE_months, n_months, …)
+"
+"0","# Create df with the study_id of participants with three consecutive months missing"
+"0","Eng_df_exclude_three_missing <- Eng_df_three_missing %>%"
+"0","  filter(exclude_three_missing == 'exclude') %>%"
+"0","  distinct(study_id)"
+"2","filter: removed 1,012 rows (88%), 143 rows remaining
+"
+"2","distinct: removed 123 rows (86%), 20 rows remaining
+"
+"0","# French"
+"0","Fr_df_three_missing <- Fr_01_df %>%"
+"0","  # Add activity_status column"
+"0","  left_join(activity_status_df, by = ""study_id"") %>% "
+"0","  relocate(Enrolled, .after = study_id) %>% "
+"0","# Arrange in chronological order"
+"0","  arrange(last_modified) %>%"
+"0","# Group by baby; it will produce several THREE MISSING if not done"
+"0","  group_by(study_id) %>%"
+"0","# Create column where it says THREE MISSING on the third consecutive missing month"
+"0","  mutate(exclude_three_missing ="
+"0","           case_when(Enrolled  == ""asked_withdraw"" ~ 'exclude',"
+"0","                     Enrolled  == ""inactivity_withdraw"" ~ 'exclude',"
+"0","                     completed == FALSE & lag(completed) == FALSE & lag(completed, n=2) == FALSE  ~ 'exclude',"
+"0","                     TRUE ~ 'keep'"
+"0","                     )) %>%"
+"0","  ungroup() %>%"
+"0","  relocate(exclude_three_missing, .after = age)"
+"2","left_join: added one column (Enrolled)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y  (   34)
+"
+"2","           > matched rows     1,236
+"
+"2","           >                 =======
+"
+"2","           > rows total       1,236
+"
+"2","relocate: columns reordered (subject_id, study_id, Enrolled, TRUE_months, n_months, …)
+"
+"2","group_by: one grouping variable (study_id)
+"
+"2","mutate (grouped): new variable 'exclude_three_missing' (character) with 2 unique values and 0% NA
+"
+"2","ungroup: no grouping variables
+"
+"2","relocate: columns reordered (subject_id, study_id, Enrolled, TRUE_months, n_months, …)
+"
+"0","# Create df with the study_id of participants with three consecutive months missing"
+"0","Fr_df_exclude_three_missing <- Fr_df_three_missing %>%"
+"0","  filter(exclude_three_missing == 'exclude') %>%"
+"0","  distinct(study_id)"
+"2","filter: removed 1,023 rows (83%), 213 rows remaining
+"
+"2","distinct: removed 185 rows (87%), 28 rows remaining
+"

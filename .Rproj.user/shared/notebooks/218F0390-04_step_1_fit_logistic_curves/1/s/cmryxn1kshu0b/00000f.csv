@@ -1,0 +1,39 @@
+"0","# Sample descriptives"
+"0","sample_descriptives <- step1_df %>% "
+"0","# Keep only one row per infant"
+"0","  group_by(study_id) %>%"
+"0","  filter(age == last(age),"
+"0","         vocabulary_type_step1 == last(vocabulary_type_step1)) %>%"
+"0","  ungroup() %>%"
+"0","  # Join with LEQ data"
+"0","  full_join(lang_status_df, by = c(""study_id"", ""starting_age"")) %>% "
+"0","  summarise(mean_startage = mean(starting_age),"
+"0","            min_startage = min(starting_age),"
+"0","            max_startage = max(starting_age),"
+"0","            sd_startage = sd(starting_age),"
+"0","            mean_datapts = mean(num_datapts),"
+"0","            min_datapts = min(num_datapts),"
+"0","            max_datapts = max(num_datapts),"
+"0","            sd_datapts = sd(num_datapts),"
+"0","            mean_expbal = mean(exposure_balance),"
+"0","            min_expbal = min(exposure_balance),"
+"0","            max_expbal = max(exposure_balance),"
+"0","            sd_expbal = sd(exposure_balance))"
+"2","filter (grouped): removed 2,340 rows (98%), 48 rows remaining
+"
+"2","ungroup: no grouping variables
+"
+"2","full_join: added 6 columns (lang_status, cumulative_exp_Eng, cumulative_exp_Fre, cumulative_exp_L3, cumulative_exp_L4, …)
+"
+"2","           > rows only in x    0
+"
+"2","           > rows only in y    0
+"
+"2","           > matched rows     48
+"
+"2","           >                 ====
+"
+"2","           > rows total       48
+"
+"2","summarise: now one row and 12 columns, ungrouped
+"

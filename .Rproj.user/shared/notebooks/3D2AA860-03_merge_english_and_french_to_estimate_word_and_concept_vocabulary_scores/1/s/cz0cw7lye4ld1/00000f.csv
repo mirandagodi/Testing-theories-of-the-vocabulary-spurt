@@ -1,0 +1,24 @@
+"0","# Re estimate total_produced (sum all the produced words at a given month)"
+"0","# Eng"
+"0","Eng_df_total_produced <- Eng_02_df %>%"
+"0","  # Create column for the sum the produced words"
+"0","  mutate(eng_est_total_produced = rowSums(across(baa_baa:then), na.rm = TRUE)) %>% "
+"0","  # Rearrange column orders"
+"0","  relocate(eng_est_total_produced, .after = age)"
+"2","mutate: new variable 'eng_est_total_produced' (double) with 380 unique values and 0% NA
+"
+"2","relocate: columns reordered (subject_id, study_id, TRUE_months, n_months, completed, …)
+"
+"0","  "
+"0","# Fr"
+"0","Fr_df_total_produced <- Fr_02_df %>%"
+"0","  # Create column for the sum the produced words"
+"0","  mutate(fr_est_total_produced = rowSums(across(aie:si), na.rm = TRUE)) %>%"
+"0","  # Rearrange column orders"
+"0","  relocate(fr_est_total_produced, .after = age)"
+"2","mutate: new variable 'fr_est_total_produced' (double) with 392 unique values and 0% NA
+"
+"2","relocate: columns reordered (subject_id, study_id, TRUE_months, n_months, completed, …)
+"
+"0","# S01, S06, and S81 have 0 in the first months because they did not know any words in French"
+"0",""

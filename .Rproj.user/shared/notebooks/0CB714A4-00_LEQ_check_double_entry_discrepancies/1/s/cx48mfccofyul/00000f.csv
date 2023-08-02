@@ -1,0 +1,23 @@
+"0","# Read files (file names are saved with the date by default, remove the date from the name before reading file)"
+"0","LEQ_discrepancies <- read_csv(""data/discrepancies_to_check.csv"")"
+"2","[1mRows: [22m[34m3512[39m [1mColumns: [22m[34m12[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m  (9): study_id, study_name, variable, first_entry, second_entry, discrepancy, response_id_first_entry, response_id_second_entry, info_to_keep
+[33mlgl[39m  (1): comment
+[34mdttm[39m (2): recorded_date_first_entry, recorded_date_second_entry"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","LEQ_wide_double_data <- read_csv(""data/wide_detailed_leq.csv"")"
+"2","[1mRows: [22m[34m158[39m [1mColumns: [22m[34m458[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m   (72): response_id, user_language, researcher, study_id, study_name, child_gender, cgvr1, cgvr1_eng_use, cgvr1_eng_var, cgvr1_eng_tochild, cgvr1_eng_ac...
+[32mdbl[39m  (381): baby_id, cgvr1_eng_age, cgvr1_fre_age, cgvr1_l3_age, cgvr1_l4_age, cgvr2_eng_age, cgvr2_fre_age, cgvr2_l3_age, cgvr2_l4_age, daycare_start, hour...
+[34mdttm[39m   (1): recorded_date
+[34mdate[39m   (2): participation_date, date_of_birth
+[34mtime[39m   (2): wake_time, sleep_time"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."

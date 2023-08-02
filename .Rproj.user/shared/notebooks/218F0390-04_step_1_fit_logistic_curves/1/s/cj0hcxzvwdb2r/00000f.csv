@@ -1,0 +1,4 @@
+"0","# # Put both graphs into a single figure"
+"0","# both_graphs <- arrangeGrob(midpoint_graphs, slope_graphs, nrow=2) "
+"0","# ggsave(file=""midpoint_slope_graphs.png"", both_graphs) "
+"0","# both_graphs"

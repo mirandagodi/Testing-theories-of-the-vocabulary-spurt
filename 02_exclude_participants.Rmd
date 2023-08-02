@@ -1,0 +1,272 @@
+---
+title: "02 Exclude Participants"
+author: "Miranda Gómez Díaz"
+date: "2023-02-03"
+output: html_document
+---
+
+```{r}
+# Read needed packages
+library(tidyverse)
+```
+
+```{r}
+# Read files from previous step
+LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
+
+Eng_01_df <- read_csv("data/01_Eng_columns.csv") 
+
+Fr_01_df <- read_csv("data/01_Fr_columns.csv") 
+
+activity_status_recruitment_log <- read_csv("data/BabysNewWords_activity_status_from_recruitment_log.csv") %>%
+  slice(1:138)
+```
+
+```{r}
+# Identify participants with health or developmental issues
+# Low weight at birth, not full-term, hearing loss, major illness, speech/language/developmental issues
+# Has your child experienced chronic ear infections (5 or more)?: ear_infections_boolean: 0=no, 1=yes
+# Do you suspect that your child may have hearing loss?: hearing_loss_boolean: 0=no, 1=yes
+# Has your child had any major illnesses, hospitalizations, or diagnosed disabilities?: illnesses_boolean: 0=no, 1=yes
+# Has your child ever received any services for speech, language, or development issues?: services_boolean: 0=no, 1=yes
+# Are you worried about your child's progress in language or communication?: worried_boolean: 0=no, 1=yes
+
+# English
+# Identify participants with one or more health exclusion criteria, label them as 'exclude'
+Eng_df_health <- Eng_01_df %>%
+  group_by(subject_id) %>%
+  mutate(exclude_health = case_when((birth_weight_lb > 0 & birth_weight_lb < 5.5)
+                                    | (early_or_late == 'Early' & due_date_diff >= 4) 
+                                    #| ear_infections_boolean == 1 
+                                    | hearing_loss_boolean == 1 
+                                    # | illnesses_boolean == 1 
+                                    # | services_boolean == 1 
+                                    # | worried_boolean == 1 
+                                    # Babies with health issues specified in conversation with parents 
+                                    | study_id == 'S043' | study_id == 'S048' | study_id == 'S060' | study_id == 'S068' | study_id == 'S127'  
+                                    # Check S101, S132
+                                    ~ 'exclude', 
+                                    TRUE ~ 'keep')) %>%
+  relocate(exclude_health, .after = age)
+
+# Create df with the study_id of participants that will be excluded based on health criteria
+Eng_df_exclude_health <- Eng_df_health %>% 
+  filter(exclude_health == 'exclude') %>% 
+  distinct(study_id)
+
+# French
+# Identify participants with one or more health exclusion criteria, label them as 'exclude'
+Fr_df_health <- Fr_01_df %>%
+  mutate(exclude_health = case_when((birth_weight_lb > 0 & birth_weight_lb < 5.5) 
+                                    | (early_or_late == 'Early' & due_date_diff >= 4) 
+                                    #| ear_infections_boolean == 1 
+                                    | hearing_loss_boolean == 1 
+                                    # | illnesses_boolean == 1 
+                                    # | services_boolean == 1 
+                                    # | worried_boolean == 1
+                                    # Babies with health issues specified in conversation with parents
+                                    | study_id == 'S043' | study_id == 'S048' | study_id == 'S060' | study_id == 'S068' | study_id == 'S127' 
+                                    # Check S101, S132 
+                                    ~ 'exclude', 
+                                    TRUE ~ 'keep')) %>%
+  relocate(exclude_health, .after = age)
+
+# Create df with the study_id of participants that will be excluded based on health criteria
+Fr_df_exclude_health <- Fr_df_health %>% 
+  filter(exclude_health == 'exclude') %>% 
+  distinct(study_id)
+```
+
+```{r}
+# Identify participants based on language exposure criteria: Exposure change greater than 25% at any two points, multilingual participants (10% or more exposure to a third or fourth language)
+LEQ_df_exposure_change <- LEQ_01_df %>%
+  group_by(study_id) %>%
+  mutate(Eng_exclude_exposure_change = case_when((max(cumulative_exp_Eng)-min(cumulative_exp_Eng))>.2 ~ 'exclude'
+                                             , TRUE ~ 'keep'),
+         Fr_exclude_exposure_change = case_when((max(cumulative_exp_Fre)-min(cumulative_exp_Fre))>.2 ~ 'exclude'
+                                             , TRUE ~ 'keep'),
+         L3_exclude_exposure = case_when(max(cumulative_exp_L3)>=.1 ~ 'exclude'
+                                             , TRUE ~ 'keep'),
+         L4_exclude_exposure = case_when(max(cumulative_exp_L4)>=.1 ~ 'exclude'
+                                             , TRUE ~ 'keep')) %>%
+  ungroup()
+
+# Create df with the study_id of participants that will be excluded based on exposure change and L3 and L4 exposure
+# English
+Eng_df_exclude_exposure_change <- LEQ_df_exposure_change %>% filter(Eng_exclude_exposure_change == 'exclude') %>% distinct(study_id)
+# French
+Fr_df_exclude_exposure_change <- LEQ_df_exposure_change %>% filter(Fr_exclude_exposure_change == 'exclude') %>% distinct(study_id)
+# L3
+L3_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L3_exclude_exposure == 'exclude') %>% distinct(study_id)
+# L4
+L4_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L4_exclude_exposure == 'exclude') %>% distinct(study_id)
+```
+
+```{r}
+# Identify participants with three consecutive missing months
+
+# Get IDs of infants who withdrew
+activity_status_df <- activity_status_recruitment_log %>% 
+    # Get study ID
+  separate("Study ID", c(NA, "study_id")) %>% 
+  # Format study_id to be "S" followed by 3 digits (e.g., S001, S086, S123)
+  mutate(study_id = case_when(str_length(study_id) == 3 ~ gsub("^(.{1})(.*)$",
+                                                               "\\10\\2",
+                                                               study_id),
+                              TRUE ~ study_id)) %>% 
+  select(study_id, Enrolled)
+
+# English
+Eng_df_three_missing <- Eng_01_df %>%
+  # Add activity_status column
+  left_join(activity_status_df, by = "study_id") %>% 
+  relocate(Enrolled, .after = study_id) %>% 
+# Arrange in chronological order
+  arrange(last_modified) %>%
+# Group by baby; it will produce several THREE MISSING if not done
+  group_by(study_id) %>%
+# Create column where it says THREE MISSING on the third consecutive missing month
+  mutate(exclude_three_missing =
+           case_when(Enrolled  == "asked_withdraw" ~ 'exclude',
+                     Enrolled  == "inactivity_withdraw" ~ 'exclude',
+                     completed == FALSE & lag(completed) == FALSE & lag(completed, n=2) == FALSE  ~ 'exclude',
+                     TRUE ~ 'keep'
+                     )) %>%
+  ungroup() %>%
+  relocate(exclude_three_missing, .after = age)
+
+# Create df with the study_id of participants with three consecutive months missing
+Eng_df_exclude_three_missing <- Eng_df_three_missing %>%
+  filter(exclude_three_missing == 'exclude') %>%
+  distinct(study_id)
+
+
+# French
+Fr_df_three_missing <- Fr_01_df %>%
+  # Add activity_status column
+  left_join(activity_status_df, by = "study_id") %>% 
+  relocate(Enrolled, .after = study_id) %>% 
+# Arrange in chronological order
+  arrange(last_modified) %>%
+# Group by baby; it will produce several THREE MISSING if not done
+  group_by(study_id) %>%
+# Create column where it says THREE MISSING on the third consecutive missing month
+  mutate(exclude_three_missing =
+           case_when(Enrolled  == "asked_withdraw" ~ 'exclude',
+                     Enrolled  == "inactivity_withdraw" ~ 'exclude',
+                     completed == FALSE & lag(completed) == FALSE & lag(completed, n=2) == FALSE  ~ 'exclude',
+                     TRUE ~ 'keep'
+                     )) %>%
+  ungroup() %>%
+  relocate(exclude_three_missing, .after = age)
+
+# Create df with the study_id of participants with three consecutive months missing
+Fr_df_exclude_three_missing <- Fr_df_three_missing %>%
+  filter(exclude_three_missing == 'exclude') %>%
+  distinct(study_id)
+
+```
+
+```{r}
+# Create new df without the rows of the excluded participants
+# English
+Eng_df_keepers <- Eng_01_df %>%
+  filter(!(study_id %in% Eng_df_exclude_health$study_id | 
+             study_id %in% Fr_df_exclude_health$study_id | 
+             study_id %in% Eng_df_exclude_exposure_change$study_id |
+             # study_id %in% Fr_df_exclude_exposure_change$study_id | # Exclude participants listwise
+             study_id %in% L3_df_exclude_exposure$study_id |
+             study_id %in% L4_df_exclude_exposure$study_id |
+             # study_id %in% Fr_df_exclude_three_missing$study_id | # Exclude participants listwise
+             study_id %in% Eng_df_exclude_three_missing$study_id)) 
+
+Fr_df_keepers <- Fr_01_df %>%
+  filter(!(study_id %in% Fr_df_exclude_health$study_id | 
+             study_id %in% Eng_df_exclude_health$study_id | 
+             study_id %in% Fr_df_exclude_exposure_change$study_id |
+             # study_id %in% Eng_df_exclude_exposure_change$study_id | # Exclude participants listwise
+             study_id %in% L3_df_exclude_exposure$study_id |
+             study_id %in% L4_df_exclude_exposure$study_id |
+             # study_id %in% Eng_df_exclude_three_missing$study_id | # Exclude participants listwise
+             study_id %in% Fr_df_exclude_three_missing$study_id))
+
+```
+
+```{r}
+# Sample descriptives
+
+# Sample after exclusion criteria
+total_keepers <- full_join(Eng_df_keepers, Fr_df_keepers, by = "study_id")  %>%
+  # filter(!(study_id %in% total_excluded$study_id)) %>% 
+  distinct(study_id)
+
+
+# Babies who were completely excluded (total)
+completely_excluded <- full_join(Eng_01_df, Fr_01_df, by = "study_id") %>% 
+  distinct(study_id) %>% 
+  filter(!(study_id %in% total_keepers$study_id))
+# Babies who were completely excluded (due to health)
+completely_excluded_health <- completely_excluded %>% 
+  filter(study_id %in% Eng_df_exclude_health$study_id | 
+             study_id %in% Fr_df_exclude_health$study_id)
+# Babies who were completely excluded (due to exposure to L3 or L4)
+completely_excluded_exposure_L3L4 <- completely_excluded %>% 
+  filter(study_id %in% L3_df_exclude_exposure$study_id |
+             study_id %in% L4_df_exclude_exposure$study_id)
+# Babies who were completely excluded (due to exposure to missing data)
+completely_excluded_missing <- completely_excluded %>% 
+  filter(!(study_id %in% completely_excluded_health$study_id |
+             study_id %in% completely_excluded_exposure_L3L4$study_id))
+
+# Babies that were not completely excluded (because they didn't meet exclusion criteria in one language)
+
+
+# Excluded due to health
+total_excluded_health <- full_join(Eng_df_exclude_health, Fr_df_exclude_health, by = "study_id")  %>%
+  distinct(study_id)
+
+# Babies excluded due to health in both languages
+total_both_health <- total_excluded_health %>%
+  filter(study_id %in% Eng_df_exclude_health$study_id &
+           study_id %in% Fr_df_exclude_health$study_id)
+# Babies excluded due to health in only one languages
+total_onlyone_health <- total_excluded_health %>%
+  filter(study_id %in% Eng_df_exclude_health$study_id & !(study_id %in% Fr_df_exclude_health$study_id) |
+           !(study_id %in% Eng_df_exclude_health$study_id) & study_id %in% Fr_df_exclude_health$study_id)
+
+# Excluded due to exposure change
+expchange_dfs <- list(Eng_df_exclude_exposure_change, Fr_df_exclude_exposure_change, L3_df_exclude_exposure, L4_df_exclude_exposure)
+total_excluded_expchange <- expchange_dfs %>%
+  reduce(full_join, by = "study_id") %>%
+  distinct(study_id)
+
+# Excluded due to missing data
+total_excluded_missing <- full_join(Eng_df_exclude_three_missing, Fr_df_exclude_three_missing, by = "study_id")  %>%
+  distinct(study_id)
+
+total_both_missing <- total_excluded_missing %>%
+  filter(study_id %in% Eng_df_exclude_three_missing$study_id &
+           study_id %in% Fr_df_exclude_three_missing$study_id)
+
+# Total excluded. This df will be used to exclude babies from word and concept models
+excluded_dfs <- list(total_excluded_health, total_excluded_expchange, total_excluded_missing)
+total_excluded <- excluded_dfs %>%
+  reduce(full_join, by = "study_id") %>%
+  distinct(study_id) %>%
+  ungroup() %>%
+  select(study_id)
+
+
+excluded_in_only_one <- total_keepers %>% 
+  filter(study_id %in% total_excluded$study_id)
+
+```
+
+
+```{r}
+# Save dataframes as csv files
+write_csv(Eng_df_keepers, 'data/02_Eng_keepers.csv')
+write_csv(Fr_df_keepers, 'data/02_Fr_keepers.csv')
+write_csv(total_excluded, 'data/02_total_excluded.csv')
+```
+

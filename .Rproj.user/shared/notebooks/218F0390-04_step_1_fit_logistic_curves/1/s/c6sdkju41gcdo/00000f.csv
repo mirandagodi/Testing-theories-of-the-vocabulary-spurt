@@ -1,0 +1,30 @@
+"0","# Determine language status of keepers"
+"0","lang_status_df <- step1_df %>% "
+"0","  # Join coefficients and language exposure dataframes"
+"0","  # Use left_join because LEQ dataset has full sample (N=125), as babies were not excluded from it"
+"0","  left_join(LEQ_01_df, by = ""study_id"") %>% "
+"0","  group_by(study_id) %>% "
+"0","  summarize(lang_status = first(lang_status),"
+"0","            cumulative_exp_Eng = first(cumulative_exp_Eng),"
+"0","            cumulative_exp_Fre = first(cumulative_exp_Fre),"
+"0","            cumulative_exp_L3 = first(cumulative_exp_L3),"
+"0","            cumulative_exp_L4 = first(cumulative_exp_L4),"
+"0","            starting_age = first(starting_age)) %>% "
+"0","  # Set exposure balance as the exposure to the non-dominant language (lower cumulative exposure)"
+"0","  mutate(exposure_balance = case_when("
+"0","    cumulative_exp_Eng < cumulative_exp_Fre ~ cumulative_exp_Eng,"
+"0","    cumulative_exp_Fre < cumulative_exp_Eng ~ cumulative_exp_Fre))"
+"2","left_join: added 10 columns (subject_id, dob, phase, end_age, cumulative_exp_Eng, …)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y  (   77)
+"
+"2","           > matched rows     2,388
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,388
+"
+"2","summarize: now 48 rows and 7 columns, ungrouped
+"

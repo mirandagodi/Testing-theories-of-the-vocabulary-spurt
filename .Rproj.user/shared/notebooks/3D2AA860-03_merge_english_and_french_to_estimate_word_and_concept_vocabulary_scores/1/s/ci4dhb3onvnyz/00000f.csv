@@ -1,0 +1,2 @@
+"0","# Save dataframe as csv file"
+"0","write_csv(word_concept_scores, 'data/03_vocabulary_scores.csv')"
