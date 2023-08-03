@@ -1,0 +1,35 @@
+"0","# Create dfs for bilingual and monolingual spurters"
+"0",""
+"0","# Bilingual spurters"
+"0","bilingual_spurters_df <- spurt_patterns_by_dominance %>% "
+"0","  filter(lang_spurt_status == ""biling_dominant_spurter"" | lang_spurt_status == ""biling_nondominant_spurter"") %>%"
+"0","  select(study_id, midpoint, dominance, words_learned)"
+"2","filter (grouped): removed 41 rows (53%), 36 rows remaining
+"
+"2","select: dropped 3 variables (exposure_percent, lang_status, lang_spurt_status)
+"
+"0","  "
+"0","# Estimate difference in timing of and words learned during the spurt"
+"0","bilingual_spurters_by_dominance_df <- bilingual_spurters_df%>% "
+"0","  pivot_wider(names_from = dominance, values_from = c(midpoint, words_learned)) %>% "
+"0","  mutate(midpoint_diff = midpoint_dominant - midpoint_nondominant, "
+"0","         words_learned_diff = words_learned_dominant - words_learned_nondominant) %>% "
+"0","  ungroup() %>% "
+"0","  summarise(midpoint_diff.M = round(mean(midpoint_diff, na.rm = TRUE), digits = 2),"
+"0","            midpoint_diff.SD = round(sd(midpoint_diff, na.rm = TRUE), digits = 2),"
+"0","            words_learned_diff.M = round(mean(words_learned_diff, na.rm = TRUE), digits = 0),"
+"0","            words_learned_diff.SD = round(sd(words_learned_diff, na.rm = TRUE), digits = 0))"
+"2","pivot_wider: reorganized (midpoint, dominance, words_learned) into (midpoint_nondominant, midpoint_dominant, words_learned_nondominant, words_learned_dominant) [was 36x4, now 24x5]
+"
+"2","ungroup: no grouping variables
+"
+"2","summarise: now one row and 4 columns, ungrouped
+"
+"0","# Monolingual spurters"
+"0","monolingual_spurters_df <- spurt_patterns_by_dominance %>% "
+"0","  filter(lang_spurt_status == ""mono_spurter"") %>%"
+"0","  select(study_id, midpoint, words_learned) "
+"2","filter (grouped): removed 65 rows (84%), 12 rows remaining
+"
+"2","select: dropped 4 variables (exposure_percent, lang_status, dominance, lang_spurt_status)
+"

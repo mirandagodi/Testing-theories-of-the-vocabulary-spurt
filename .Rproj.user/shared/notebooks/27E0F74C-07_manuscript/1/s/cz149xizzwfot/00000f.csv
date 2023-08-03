@@ -1,0 +1,85 @@
+"0","# Create df with vocabulary size at 18 months"
+"0","vocab_at_18m <- "
+"0","  # curve_full %>% filter(age == 18.00) %>% # Use this line to use vocabulary size estimated by the logistic equation"
+"0","  midpoint_identification %>% filter(age >= 18 & age < 19) %>%  # Use this line to use actual vocabulary size (there might be babies with missing data)"
+"0","  group_by(study_id, vocabulary_type_step1) %>%"
+"0","  filter(row_number() == 1) "
+"2","filter: removed 2,166 rows (93%), 168 rows remaining
+"
+"2","filter (grouped): removed 8 rows (5%), 160 rows remaining
+"
+"0","table_n_18m <- vocab_at_18m %>% "
+"0","  group_by(vocabulary_type_step1, midp_identify) %>% "
+"0","  summarise(N = n()) %>% "
+"0","  pivot_wider(names_from = midp_identify, values_from = N) %>% "
+"0","  rename(Spurters.N = identified,"
+"0","         Non_Spurters.N = not_identified)"
+"2","summarise: now 8 rows and 3 columns, one group variable remaining (vocabulary_type_step1)
+"
+"2","pivot_wider: reorganized (midp_identify, N) into (identified, not_identified) [was 8x3, now 4x3]
+"
+"2","rename: renamed 2 variables (Spurters.N, Non_Spurters.N)
+"
+"0","# Vocabulary size at 18 months descriptives"
+"0","vocab_at_18m_summary <- vocab_at_18m %>%"
+"0","  group_by(study_id) %>%"
+"0","  # ungroup() %>% "
+"0","  select(vocabulary_type_step1, vocabulary_score, midp_identify) %>% "
+"0","  pivot_wider(names_from = midp_identify, values_from = vocabulary_score) %>%"
+"0","  group_by(vocabulary_type_step1) %>% "
+"0","  summarise(# Spurters.N = length(unique(identified, na.rm = TRUE)),"
+"0","            # Spurters.N = length(unique(is.numeric(identified))),"
+"0","            Spurters.M = round(mean(identified, na.rm = TRUE), digits = 0),"
+"0","            Spurters.SD = round(sd(identified, na.rm = TRUE), digits = 0),"
+"0","            Spurters.Min = round(min(identified, na.rm = TRUE), digits = 0),"
+"0","            Spurters.Max = round(max(identified, na.rm = TRUE), digits = 0),"
+"0","            # Non_Spurters.N = length(unique(not_identified, na.rm = TRUE)),"
+"0","            Non_Spurters.M = round(mean(not_identified, na.rm = TRUE), digits = 0),"
+"0","            Non_Spurters.SD = round(sd(not_identified, na.rm = TRUE), digits = 0),"
+"0","            Non_Spurters.Min = round(min(not_identified, na.rm = TRUE), digits = 0),"
+"0","            Non_Spurters.Max = round(max(not_identified, na.rm = TRUE), digits = 0)"
+"0","            ) %>% "
+"0","  full_join(table_n_18m, by = ""vocabulary_type_step1"") %>% "
+"0","    mutate(""18 Months.Spurters.M (SD)"" = paste0(Spurters.M, "" ("",Spurters.SD,"")""),"
+"0","         ""18 Months.Spurters.Range"" = paste0(Spurters.Min,"" - "",Spurters.Max),"
+"0","         ""18 Months.Non-Spurters.M (SD)"" = paste0(Non_Spurters.M, "" ("",Non_Spurters.SD,"")""),"
+"0","         ""18 Months.Non-Spurters.Range"" = paste0(Non_Spurters.Min,"" - "",Non_Spurters.Max)) %>% "
+"0","  select(vocabulary_type_step1, Spurters.N,""18 Months.Spurters.M (SD)"", ""18 Months.Spurters.Range"", Non_Spurters.N, ""18 Months.Non-Spurters.M (SD)"", ""18 Months.Non-Spurters.Range"") %>% "
+"0","  rename(""18 Months.Spurters.N"" = Spurters.N,"
+"0","         ""18 Months.Non-Spurters.N"" = Non_Spurters.N)"
+"2","Adding missing grouping variables: `study_id`"
+"2","select: dropped 20 variables (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","pivot_wider: reorganized (vocabulary_score, midp_identify) into (identified, not_identified) [was 160x4, now 160x4]
+"
+"2","summarise: now 4 rows and 9 columns, ungrouped
+"
+"2","full_join: added 2 columns (Spurters.N, Non_Spurters.N)
+"
+"2","           > rows only in x   0
+"
+"2","           > rows only in y   0
+"
+"2","           > matched rows     4
+"
+"2","           >                 ===
+"
+"2","           > rows total       4
+"
+"2","select: dropped 8 variables (Spurters.M, Spurters.SD, Spurters.Min, Spurters.Max, Non_Spurters.M, …)
+"
+"2","rename: renamed 2 variables (18 Months.Spurters.N, 18 Months.Non-Spurters.N)
+"
+"0","  "
+"0",""
+"0","table_18m_descriptives <- nice_table("
+"0","  vocab_at_18m_summary, "
+"0","  separate.header = TRUE, "
+"0","  # italics = seq(table_descriptives_df),"
+"0","  title = c(""Table 2"", ""Descriptive Statistics of Vocabulary Size at 18 Months""),"
+"0","  note = c("
+"0","    ""Descriptive statistics of spurters and non-spurters in each vocabulary type."""
+"0","  )"
+"0",")"
+"0",""
+"0","table_18m_descriptives"

@@ -1,0 +1,10 @@
+"0","# Prepare vocabulary scores data"
+"0","final_vocabulary_scores_df <-  vocabulary_scores_df %>% "
+"0","  # Keep final vocabulary score"
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  filter(vocabulary_score == max(vocabulary_score, na.rm=TRUE)) %>%"
+"0","  filter(n_months == max(n_months)) "
+"2","filter (grouped): removed 2,212 rows (93%), 176 rows remaining
+"
+"2","filter (grouped): removed 2 rows (1%), 174 rows remaining
+"

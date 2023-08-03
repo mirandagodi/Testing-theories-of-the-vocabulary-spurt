@@ -1,0 +1,10 @@
+"0","print(table_descriptives, preview =""docx"")"
+"0",""
+"0","table_n <- step2_df %>% "
+"0","  group_by(vocabulary_type_step1) %>% "
+"0","  summarise(N = n()) %>% "
+"0","  pivot_wider(names_from = vocabulary_type_step1, values_from = N)"
+"2","summarise: now 4 rows and 2 columns, ungrouped
+"
+"2","pivot_wider: reorganized (vocabulary_type_step1, N) into (English, French, concept, word) [was 4x2, now 1x4]
+"

@@ -1,0 +1,13 @@
+"0","# Determine if the midpoint is identified (within the age range of the study) or not"
+"0","midpoint_identification <- all_scores_df %>% "
+"0","  group_by(study_id) %>% "
+"0","  mutate(midp_identify = case_when(midpoint>=starting_age & midpoint<=max(age) ~ ""identified"","
+"0","                                   midpoint<starting_age | midpoint>max(age) ~ ""not_identified""))"
+"0",""
+"0","# Keep one row per baby per vocabulary type"
+"0","midpoint_identification_sum <- midpoint_identification %>% "
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  filter(vocabulary_score == max(vocabulary_score, na.rm = TRUE)) %>% "
+"0","  mutate(midp_identify =as.factor(midp_identify))"
+"2","filter (grouped): removed 2,162 rows (93%), 172 rows remaining
+"

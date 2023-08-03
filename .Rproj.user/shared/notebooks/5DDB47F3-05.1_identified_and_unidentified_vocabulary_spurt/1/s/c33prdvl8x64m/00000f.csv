@@ -1,0 +1,18 @@
+"0","# Compare language exposure bilingual spurters vs nonspurters in their nondominant language"
+"0","bilingual_nondominant_df <- spurt_patterns_by_dominance %>% "
+"0","  filter(lang_status == ""bilingual"","
+"0","         dominance == ""nondominant"") %>% "
+"0","  mutate(across(lang_spurt_status, factor,"
+"0","                levels=c(""biling_nondominant_spurter"", ""biling_nondominant_nonspurter"")))"
+"2","filter (grouped): removed 47 rows (61%), 30 rows remaining
+"
+"0","bilingual_nondominant_test <- t.test(exposure_percent ~ lang_spurt_status, data = bilingual_nondominant_df)"
+"0","report(bilingual_nondominant_test, digits = 3)"
+"2","Warning: Unable to retrieve data from htest object.
+  Returning an [1mapproximate[22m effect size using t_to_d()."
+"1","Effect sizes were labelled following Cohen's (1988) recommendations.
+
+The Welch Two Sample t-test testing the difference of exposure_percent by lang_spurt_status (mean in group biling_nondominant_spurter = 36.60, mean in group
+biling_nondominant_nonspurter = 38.53) suggests that the effect is negative, statistically not significant, and small (difference = -1.93, 95% CI [-9.44,
+5.58], t(25.01) = -0.53, p = 0.602; Cohen's d = -0.21, 95% CI [-1.00, 0.58])
+"

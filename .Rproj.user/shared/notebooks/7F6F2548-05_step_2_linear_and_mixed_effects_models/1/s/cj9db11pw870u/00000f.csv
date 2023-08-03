@@ -1,0 +1,80 @@
+"0","# Estimate words learned during the spurt"
+"0",""
+"0","# Create a column with the age at spurt (same as midpoint) that will be used when joining with vocabulary_scores_df to filter rows around the spurt"
+"0","age_at_spurt <- coefficients_04_df %>% "
+"0","  mutate(age = midpoint)"
+"0",""
+"0","# Join vocabulary scores dataframe with spurt coefficients dataframe"
+"0","words_at_spurt <- vocabulary_scores_df %>% # Some babies do not have data in one language (English or French), it is either because they are monolingual or because their data in that language was removed due to missing data or exposure change in that language"
+"0","  # Estimate number of data points for each baby"
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  mutate(completed_months = sum(!(is.na(vocabulary_score)))) %>%"
+"0","  # Remove rows with NA in vocabulary_score(it means the CDI was not completed)"
+"0","  filter(!(is.na(vocabulary_score))) %>% "
+"0","  # Join with coefficients dataframe"
+"0","  full_join(age_at_spurt, by = c(""study_id"", ""age"", ""vocabulary_type_step1"")) %>% "
+"0","  ungroup() %>% "
+"0","  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language"
+"0","  filter(!((vocabulary_type_step1 == ""word"" | vocabulary_type_step1 == ""concept"") & study_id %in% to_be_excluded$study_id)) %>% "
+"0","  # Fill coefficient values for the rest of ages"
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  fill(c(completed_months:upper_limit), .direction = ""downup"") %>% "
+"0","  # Remove babies with midpoint out of age range"
+"0","  ungroup() %>% "
+"0","  group_by(study_id) %>%"
+"0","  filter(midpoint>=16 & midpoint<=30.3) %>% # No babies submitted data before 16 months or after 30.3 months of age"
+"0","  # Remove slope outliers"
+"0","  filter(slope < 22) %>%"
+"0","  ungroup() %>% "
+"0","  # Keep only the rows around the spurt (the month before, the age when it occurred, and the moth after)"
+"0","  group_by(study_id, vocabulary_type_step1) %>%"
+"0","  arrange(age) %>% "
+"0","  mutate(around_spurt = case_when(lead(age) == midpoint ~ ""keep"", # Month before the spurt"
+"0","                                  age == midpoint ~ ""keep"", # Month when the spurt occurred"
+"0","                                  lag(age) == midpoint ~ ""keep"")) %>% # Month after the spurt"
+"0","  filter(around_spurt == ""keep"") %>% "
+"0","  # Remove babies who spurted in the last month and did not submit data in the last measure"
+"0","  mutate(spurt_rows = sum(!is.na(n_months))) %>% "
+"0","  filter(spurt_rows > 1) %>% # Babies should have 2 ""real"" months of measures"
+"0","  # Estimate words and time around spurt"
+"0","  mutate(vocab_score_difference = max(vocabulary_score, na.rm = TRUE) - min(vocabulary_score, na.rm = TRUE), # Estimate the number of words learned in the previous and the measure following the spurt"
+"0","         age_difference = max(age, na.rm = TRUE) - min(age, na.rm = TRUE), # Estimate number of months (with decimals) between the previous and the measure following the spurt"
+"0","         words_learned = vocab_score_difference / age_difference) #%>%  # Estimate the number of words learned in a one-month period spurt"
+"2","filter (grouped): removed 222 rows (9%), 2,166 rows remaining
+"
+"2","full_join: added 3 columns (midpoint, slope, upper_limit)
+"
+"2","           > rows only in x   2,166
+"
+"2","           > rows only in y     174
+"
+"2","           > matched rows         0
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,340
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed 48 rows (2%), 2,292 rows remaining
+"
+"2","fill (grouped): changed 170 values (7%) of 'completed_months' (170 fewer NA)
+"
+"2","                changed 2,122 values (93%) of 'midpoint' (2122 fewer NA)
+"
+"2","                changed 2,122 values (93%) of 'slope' (2122 fewer NA)
+"
+"2","                changed 2,122 values (93%) of 'upper_limit' (2122 fewer NA)
+"
+"2","ungroup: no grouping variables
+"
+"2","filter (grouped): removed 696 rows (30%), 1,596 rows remaining
+"
+"2","filter (grouped): removed 45 rows (3%), 1,551 rows remaining
+"
+"2","ungroup: no grouping variables
+"
+"2","filter (grouped): removed 1,205 rows (78%), 346 rows remaining
+"
+"2","filter (grouped): removed 4 rows (1%), 342 rows remaining
+"

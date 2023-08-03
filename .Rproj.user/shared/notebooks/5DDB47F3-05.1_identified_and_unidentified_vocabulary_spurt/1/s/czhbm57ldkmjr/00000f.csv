@@ -1,0 +1,52 @@
+"0","all_scores_df <- vocabulary_scores_df %>% # Some babies do not have data in one language (English or French), it is either because they are monolingual or because their data in that language was removed due to missing data or exposure change in that language"
+"0","  # Estimate number of data points for each baby"
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  mutate(completed_months = sum(!(is.na(vocabulary_score)))) %>%"
+"0","  # Join with coefficients dataframe"
+"0","  full_join(coefficients_04_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>% "
+"0","  ungroup() %>% "
+"0","  # Join coefficients and language exposure dataframes"
+"0","  # Use left_join because LEQ dataset has full sample (N=125), as babies were not excluded from it"
+"0","  group_by(study_id) %>% "
+"0","  left_join(LEQ_01_df, by = ""study_id"") %>% "
+"0","  ungroup() %>% "
+"0","  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language"
+"0","  filter(!((vocabulary_type_step1 == ""word"" | vocabulary_type_step1 == ""concept"") & study_id %in% to_be_excluded$study_id)) %>% "
+"0","  # Set L3 and L4 exposure as 0 if babies had no exposure (NA)"
+"0","  mutate(cumulative_exp_L3 = case_when(is.na(cumulative_exp_L3) ~ 0,"
+"0","                                       TRUE ~ cumulative_exp_L3),"
+"0","         cumulative_exp_L4 = case_when(is.na(cumulative_exp_L4) ~ 0,"
+"0","                                       TRUE ~ cumulative_exp_L4)) %>% "
+"0","   mutate(across(vocabulary_type_step1, factor,"
+"0","                levels=c(""English"", ""French"", ""concept"", ""word""))) "
+"2","full_join: added 3 columns (midpoint, slope, upper_limit)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y       0
+"
+"2","           > matched rows     2,388
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,388
+"
+"2","ungroup: no grouping variables
+"
+"2","left_join: added 10 columns (subject_id, dob, phase, end_age, cumulative_exp_Eng, …)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y  (   77)
+"
+"2","           > matched rows     2,388
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,388
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed 54 rows (2%), 2,334 rows remaining
+"
+"0","  "

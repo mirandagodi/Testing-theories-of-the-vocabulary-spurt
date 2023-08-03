@@ -1,0 +1,411 @@
+---
+title: "06 Robustness Checks"
+author: "Miranda Gómez Díaz"
+date: "2023-04-25"
+output: html_document
+---
+
+```{r}
+#Read needed packages
+library(tidyverse)
+library(drc)
+library(lme4)
+library(performance)
+library(report)
+library(jtools)
+library(kableExtra)
+```
+
+```{r}
+# Read files from previous step
+RC_vocabulary_scores_03_df <- read_csv("data/03_vocabulary_scores.csv")
+RC_LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
+RC_vocabulary_scores_df <- read_csv("data/04_analysis_step_1_dataset.csv") %>% 
+  # Keep final vocabulary score
+  group_by(study_id, vocabulary_type_step1) %>% 
+  filter(vocabulary_score == max(vocabulary_score, na.rm=TRUE)) %>%
+  filter(n_months == max(n_months)) 
+
+# These babies had been excluded in one but not the other language (they had missing data or exposure change in only one language)
+RC_to_be_excluded <- read_csv("data/02_total_excluded.csv")
+```
+
+```{r}
+# Clean and wrangle df for Step 1
+# Keep necessary columns
+RC_step1_df <- RC_vocabulary_scores_03_df %>%
+  # Remove duplicated rows (keep 1 row per baby per month) 
+  group_by(study_id, n_months) %>%
+  summarize(age = first(age), 
+            starting_age = first(starting_age), 
+            eng_completed = first(eng_completed),
+            fr_completed = first(fr_completed),
+            eng_est_total_produced = first(eng_est_total_produced), 
+            fr_est_total_produced = first(fr_est_total_produced), 
+            words_produced = first(words_produced),
+            concepts_produced = first(concepts_produced),
+            num_datapts = first(num_datapts)) %>%
+  # Create vocabulary_score column (includes scores for English, French, word, and concept vocabulary scores) and vocabulary_type_step1 column
+  rename('English' = 'eng_est_total_produced',
+         'French' = 'fr_est_total_produced',
+         'word' = 'words_produced',
+         'concept' = 'concepts_produced') %>%
+  pivot_longer(-c(study_id:fr_completed, num_datapts), names_to = "vocabulary_type_step1", values_to = "vocabulary_score") %>%
+  # Remove rows of monolinguals' non-heard language
+  ungroup() %>%
+  filter(!(vocabulary_type_step1 == 'English' & is.na(eng_completed))) %>%
+  filter(!(vocabulary_type_step1 == 'French' & is.na(fr_completed))) #%>% 
+
+  # # ROBUSTENSS CHECK: ACCOUNTING FOR BILINGUAL MISSING DATA (Excluding timepoints where data is missing for one of bilinguals’ languages; infants exposed to at least 10% of both French and English).
+  # filter(!(fr_completed == FALSE & !is.na(fr_completed))) %>%
+  # filter(!(eng_completed == FALSE & !is.na(eng_completed))) %>%
+
+  # # ROBUSTENSS CHECK: NO STARTING AGE RESTRICTION
+  # # Do not remove participants who were older than 18 months when they joined the study
+  # filter(!(starting_age >= 18)) %>%
+  
+  # # ROBUSTENSS CHECK: EXCLUDE STRICT MONOLINGUALS (For word and concept vocabulary, limit analysis to only infants with two CDIs)
+  # filter(!(vocabulary_type_step1 == 'word' & (is.na(eng_completed) | is.na(fr_completed)))) %>%
+  # filter(!(vocabulary_type_step1 == 'concept' & (is.na(eng_completed) | is.na(fr_completed))))
+
+```
+
+
+```{r}
+# STEP 1
+# Fit logistic curve to individual data (single-language, word, and concept vocabularies)
+RC_logistic_curve <- RC_step1_df %>%
+  filter(!(eng_completed == FALSE & vocabulary_type_step1 == "English")) %>%
+  filter(!(fr_completed == FALSE & vocabulary_type_step1 == "French")) %>%
+  unite(id_lang, c(study_id, vocabulary_type_step1)) %>%
+  # Remove scores for S044 in English, as baby was French monolingual and had scores of 0 in English
+  filter(!(id_lang == "S044_English")) %>% 
+  # Remove scores from babies with only 2 datapoints in a given language
+  filter(!(id_lang == "S055_English" | id_lang == "S055_word" | id_lang == "S055_concept")) %>%
+  split(.$id_lang) %>%
+  map(~drm(vocabulary_score~age, data = .,
+                 fct=LL.3(names = c("Slope", "Upper Limit", "Midpoint"))))
+
+#logistic_curve
+
+# Extract midpoint and slope coefficients from the list
+# Midpoint
+RC_midpoint_coefficients <- RC_logistic_curve %>%
+  map_dfr(~pluck(.,28,"Midpoint:(Intercept)")) %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column("id_vocabtype") %>%
+  rename(midpoint = V1)
+# Slope
+RC_slope_coefficients <- RC_logistic_curve %>%
+  map_dfr(~pluck(.,28,"Slope:(Intercept)")) %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column("id_vocabtype") %>%
+  rename(slope = V1)
+# Upper Limit
+RC_uplim_coefficients <- RC_logistic_curve %>%
+  map_dfr(~pluck(.,28,"Upper Limit:(Intercept)")) %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column("id_vocabtype") %>%
+  rename(upper_limit = V1)
+# Merge midpoint and slope dataframes
+RC_coefficients_df <- left_join(RC_midpoint_coefficients, RC_slope_coefficients, 
+                             by = "id_vocabtype") %>%
+  left_join(RC_uplim_coefficients, by = "id_vocabtype") %>%
+  separate(id_vocabtype, c("study_id", "vocabulary_type_step1")) %>%
+  # Convert slope values to positive
+  mutate(slope = abs(slope))
+
+# Visualize midpoint and slope
+RC_midpoint_box <- RC_coefficients_df %>% 
+  ggplot(aes(x = vocabulary_type_step1, y = midpoint)) +
+  geom_boxplot() +
+  geom_jitter()
+
+RC_midpoint_box
+
+RC_slope_box <- RC_coefficients_df %>% 
+  filter(midpoint>=16 & midpoint<=32) %>% 
+  filter(slope<50) %>% 
+  ggplot(aes(x = vocabulary_type_step1, y = slope)) +
+  geom_boxplot() +
+  geom_jitter()
+
+RC_slope_box
+```
+```{r}
+# STEP 2
+# Prepare language exposure data 
+RC_final_exposure_df <- RC_LEQ_01_df %>%
+  dplyr::select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, end_age) %>%
+  # Keep only the final language exposure (cumulative exposure at 30 or 31 months)
+  group_by(study_id) %>%
+  filter(end_age == max(end_age)) %>%
+  ungroup() %>%
+  # Convert exposure values from proportions to percentage
+  mutate(cumulative_exp_Eng = cumulative_exp_Eng*100,
+         cumulative_exp_Fre = cumulative_exp_Fre*100) %>%
+  # Set exposure balance as the exposure to the non-dominant language (lower cumulative exposure)
+  mutate(exposure_balance = case_when(
+    cumulative_exp_Eng < cumulative_exp_Fre ~ cumulative_exp_Eng,
+    cumulative_exp_Fre < cumulative_exp_Eng ~ cumulative_exp_Fre, 
+    cumulative_exp_Eng == cumulative_exp_Fre ~ cumulative_exp_Eng))
+
+# Join coefficients and language exposure dataframes
+RC_step2_df <- RC_coefficients_df %>%
+  left_join(RC_final_exposure_df, by = "study_id") %>%
+  mutate(vocabulary_type_step2 = case_when(
+    vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French" ~ "single",
+    vocabulary_type_step1 == "word" ~ "word",
+    vocabulary_type_step1 == "concept" ~ "concept")) %>%
+  relocate(vocabulary_type_step2, .after = vocabulary_type_step1) %>%
+  mutate(exposure_percent = case_when(
+    vocabulary_type_step1 == "English" ~ cumulative_exp_Eng,
+    vocabulary_type_step1 == "French" ~ cumulative_exp_Fre)) %>% 
+  # Join vocabulary scores dataframe
+  left_join(RC_step1_df, by = c("study_id", "vocabulary_type_step1")) %>% 
+  # Keep final vocabulary score
+  group_by(study_id, vocabulary_type_step1) %>% 
+  filter(vocabulary_score == max(vocabulary_score, na.rm=TRUE)) %>%
+  filter(n_months == max(n_months)) %>% 
+   # Remove babies with midpoint out of age range
+  filter(midpoint>=16 & midpoint<=age) %>% 
+  # Remove slope outliers
+  filter(slope < 21) %>%
+  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
+  filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% RC_to_be_excluded$study_id)) 
+
+# Babies with midpoint out of age range
+RC_unidentified_midpoint <- RC_coefficients_df %>% 
+  left_join(RC_vocabulary_scores_df, by = c("study_id", "vocabulary_type_step1")) %>%
+  filter(!(midpoint>=16 & midpoint<=age)) 
+
+# Babies with no identified midpoints
+RC_none_identified_midpoint <- RC_coefficients_df %>% 
+  # group_by(study_id) %>% 
+  filter(!(study_id %in% RC_step2_df$study_id)) %>% 
+  distinct(study_id)
+```
+
+
+```{r}
+# Linear mixed effects models for single-language vocabulary
+RC_single_lang_df <- RC_step2_df %>%
+  filter(vocabulary_type_step2 == "single")
+  
+# Midpoint
+RC_midpoint_single_model <- 
+  # Excluding babies with midpoint over 30 months
+  lmer(midpoint ~ exposure_percent + (1|study_id), data = RC_single_lang_df)
+
+check_model(RC_midpoint_single_model)
+model_performance(RC_midpoint_single_model)
+summary(RC_midpoint_single_model)
+summ(RC_midpoint_single_model, digits = 3)
+report(RC_midpoint_single_model, digits = 3)
+# Create table with results
+RC_midpoint_single_table <- report_table(RC_midpoint_single_model, digits = 3)
+RC_midpoint_single_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_single_model <- 
+  lmer(slope ~ exposure_percent + (1|study_id), data = RC_single_lang_df)
+
+check_model(RC_slope_single_model)
+model_performance(RC_slope_single_model)
+summary(RC_slope_single_model)
+summ(RC_slope_single_model, digits = 3)
+report(RC_slope_single_model, digits = 3)
+# Create table with results
+RC_slope_single_table <- report_table(RC_slope_single_model, digits = 3)
+RC_slope_single_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+```
+```{r}
+# ROBUSTNESS CHECK: RUN SEPARATE SINGLE-LANGAGE MODELS FOR ENGLISH AND FRENCH
+
+# Linear models for English-single-language vocabulary
+RC_English_df <- RC_step2_df %>%
+  filter(vocabulary_type_step1 == "English") 
+  
+# Midpoint
+RC_midpoint_English_model <- 
+  # Excluding babies with midpoint over 30 months
+  lm(midpoint ~ exposure_percent, data = RC_English_df)
+
+check_model(RC_midpoint_English_model)
+model_performance(RC_midpoint_English_model)
+summary(RC_midpoint_English_model)
+summ(RC_midpoint_English_model, digits = 3)
+report(RC_midpoint_English_model, digits = 3)
+# Create table with results
+RC_midpoint_English_table <- report_table(RC_midpoint_English_model, digits = 3)
+RC_midpoint_English_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_English_model <- 
+  lm(slope ~ exposure_percent, data = RC_English_df)
+
+check_model(RC_slope_English_model)
+model_performance(RC_slope_English_model)
+summary(RC_slope_English_model)
+summ(RC_slope_English_model, digits = 3)
+report(RC_slope_English_model, digits = 3)
+# Create table with results
+RC_slope_English_table <- report_table(RC_slope_English_model, digits = 3)
+RC_slope_English_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+
+# Linear models for French-single-language vocabulary
+RC_French_df <- RC_step2_df %>%
+  filter(vocabulary_type_step1 == "French") 
+  
+# Midpoint
+RC_midpoint_French_model <- 
+  # Excluding babies with midpoint over 30 months
+  lm(midpoint ~ exposure_percent, data = RC_French_df)
+
+check_model(RC_midpoint_French_model)
+model_performance(RC_midpoint_French_model)
+summary(RC_midpoint_French_model)
+summ(RC_midpoint_French_model, digits = 3)
+report(RC_midpoint_French_model, digits = 3)
+# Create table with results
+RC_midpoint_French_table <- report_table(RC_midpoint_French_model, digits = 3)
+RC_midpoint_French_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_French_model <- 
+  lm(slope ~ exposure_percent, data = RC_French_df)
+
+check_model(RC_slope_French_model)
+model_performance(RC_slope_French_model)
+summary(RC_slope_French_model)
+summ(RC_slope_French_model, digits = 3)
+report(RC_slope_French_model, digits = 3)
+# Create table with results
+RC_slope_French_table <- report_table(RC_slope_French_model, digits = 3)
+RC_slope_French_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+
+```
+
+```{r}
+# Linear mixed effects models for single-language vocabulary with language (Eng/Fr) as predictor
+
+# Midpoint
+RC_midpoint_single_model_2 <- 
+  # Excluding babies with midpoint over 30 months
+  lmer(midpoint ~ exposure_percent + vocabulary_type_step1 + (1|study_id), data = RC_single_lang_df)
+
+check_model(RC_midpoint_single_model_2)
+model_performance(RC_midpoint_single_model_2)
+summary(RC_midpoint_single_model_2)
+summ(RC_midpoint_single_model_2, digits = 3)
+report(RC_midpoint_single_model_2, digits = 3)
+# Create table with results
+RC_midpoint_single_table_2 <- report_table(RC_midpoint_single_model_2, digits = 3)
+RC_midpoint_single_table_2 %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_single_model_2 <- 
+  lmer(slope ~ exposure_percent + vocabulary_type_step1 + (1|study_id), data = RC_single_lang_df)
+
+check_model(RC_slope_single_model_2)
+model_performance(RC_slope_single_model_2)
+summary(RC_slope_single_model_2)
+summ(RC_slope_single_model_2, digits = 3)
+report(RC_slope_single_model_2, digits = 3)
+# Create table with results
+RC_slope_single_table_2 <- report_table(RC_slope_single_model_2, digits = 3)
+RC_slope_single_table_2 %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+```
+
+
+```{r}
+# Linear  models for word vocabulary
+RC_word_df <- RC_step2_df %>%
+  filter(vocabulary_type_step2 == "word")
+# Midpoint
+RC_midpoint_word_model <- 
+  lm(midpoint ~ exposure_balance, data = RC_word_df)
+
+check_model(RC_midpoint_word_model)
+model_performance(RC_midpoint_word_model)
+summary(RC_midpoint_word_model)
+summ(RC_midpoint_word_model, digits = 3)
+report(RC_midpoint_word_model, digits = 3)
+# Create table with results
+RC_midpoint_word_table <- report_table(RC_midpoint_word_model, digits = 3)
+RC_midpoint_word_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_word_model <- 
+  lm(slope ~ exposure_balance, data = RC_word_df)
+
+check_model(RC_slope_word_model)
+model_performance(RC_slope_word_model)
+summary(RC_slope_word_model)
+summ(RC_slope_word_model, digits = 3)
+report(RC_slope_word_model, digits = 3)
+# Create table with results
+RC_slope_word_table <- report_table(RC_slope_word_model, digits = 3)
+RC_slope_word_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+```
+
+
+```{r}
+# Linear  models for concept vocabulary
+RC_concept_df <- RC_step2_df %>%
+  filter(vocabulary_type_step2 == "concept")
+# Midpoint
+RC_midpoint_concept_model <- 
+  lm(midpoint ~ exposure_balance, data = RC_concept_df)
+
+check_model(RC_midpoint_concept_model)
+model_performance(RC_midpoint_concept_model)
+summary(RC_midpoint_concept_model)
+summ(RC_midpoint_concept_model, digits = 3)
+report(RC_midpoint_concept_model, digits = 3)
+# Create table with results
+RC_midpoint_concept_table <- report_table(RC_midpoint_concept_model, digits = 3)
+RC_midpoint_concept_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Slope
+RC_slope_concept_model <- 
+  lm(slope ~ exposure_balance, data = RC_concept_df)
+
+check_model(RC_slope_concept_model)
+model_performance(RC_slope_concept_model)
+summary(RC_slope_concept_model)
+summ(RC_slope_concept_model, digits = 3)
+report(RC_slope_concept_model, digits = 3)
+# Create table with results
+RC_slope_concept_table <- report_table(RC_slope_concept_model, digits = 3)
+RC_slope_concept_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+```

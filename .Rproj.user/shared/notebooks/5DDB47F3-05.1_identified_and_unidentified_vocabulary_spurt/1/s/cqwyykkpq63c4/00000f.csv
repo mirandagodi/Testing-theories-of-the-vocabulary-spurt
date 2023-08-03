@@ -1,0 +1,31 @@
+"0","# t-tests for English vocabulary"
+"0","# Vocabulary size at 18 m"
+"0","Eng_18m_df <- vocab_at_18m %>% "
+"0","  filter(vocabulary_type_step1 == ""English"")"
+"2","filter (grouped): removed 130 rows (77%), 38 rows remaining
+"
+"0","vocab_english_18m_test <- t.test(vocabulary_score ~ midp_identify, data = Eng_18m_df)"
+"0","report(vocab_english_18m_test, digits = 3)"
+"2","Warning: Unable to retrieve data from htest object.
+  Returning an [1mapproximate[22m effect size using t_to_d()."
+"1","Effect sizes were labelled following Cohen's (1988) recommendations.
+
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 78.91, mean in group not_identified =
+23.43) suggests that the effect is positive, statistically significant, and large (difference = 55.48, 95% CI [13.02, 97.95], t(26.44) = 2.68, p = 0.012;
+Cohen's d = 1.04, 95% CI [0.22, 1.85])
+"
+"0","# Vocabulary size at 30 m"
+"0","Eng_30m_df <- vocab_at_30m %>% "
+"0","  filter(vocabulary_type_step1 == ""English"")"
+"2","filter (grouped): removed 131 rows (77%), 39 rows remaining
+"
+"0","vocab_english_30m_test <- t.test(vocabulary_score ~ midp_identify, data = Eng_30m_df)"
+"0","report(vocab_english_30m_test, digits = 3)"
+"2","Warning: Unable to retrieve data from htest object.
+  Returning an [1mapproximate[22m effect size using t_to_d()."
+"1","Effect sizes were labelled following Cohen's (1988) recommendations.
+
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 460.12, mean in group not_identified =
+198.27) suggests that the effect is positive, statistically significant, and large (difference = 261.85, 95% CI [132.61, 391.09], t(27.90) = 4.15, p < .001;
+Cohen's d = 1.57, 95% CI [0.71, 2.41])
+"

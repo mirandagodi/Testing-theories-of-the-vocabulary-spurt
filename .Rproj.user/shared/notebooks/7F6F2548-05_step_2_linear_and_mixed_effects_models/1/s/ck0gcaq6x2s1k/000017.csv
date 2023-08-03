@@ -1,0 +1,8 @@
+"0",""
+"0","# Concept"
+"0","wordsatspurt_concept_model <- "
+"0","  lm(words_learned ~ exposure_balance, data = concept_df)"
+"0",""
+"0","check_model(wordsatspurt_concept_model)"
+"2","Not enough model terms in the conditional part of the model to check for multicollinearity.
+"

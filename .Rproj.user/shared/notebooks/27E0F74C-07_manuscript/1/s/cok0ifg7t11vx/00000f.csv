@@ -1,0 +1,11 @@
+"0","# Descriptives across measures"
+"0",""
+"0","general_descriptives <- step2_df %>% "
+"0","  summarise(midpoint.M = round(mean(midpoint), digits = 2),"
+"0","            midpoint.SD = round(sd(midpoint), digits = 2),"
+"0","            slope.M = round(mean(slope), digits = 2),"
+"0","            slope.SD = round(sd(slope), digits = 2),"
+"0","            words_learned.M = round(mean(words_learned), digits = 2),"
+"0","            words_learned.SD = round(sd(words_learned), digits = 2),)"
+"2","summarise: now one row and 6 columns, ungrouped
+"

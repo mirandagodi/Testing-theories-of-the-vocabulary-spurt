@@ -1,0 +1,75 @@
+"0","#  COMPARISON OF SPURTERS VS NON-SPURTERS"
+"0",""
+"0","# Estimate vocabulary size by age with logistic equation (spurters and non-spurters)"
+"0",""
+"0","#Join coefficients and full vocabulary data"
+"0","logistic_full_df <- coefficients_04_df %>%"
+"0","   # Join vocabulary scores dataframe"
+"0","  full_join(vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>%"
+"0","  group_by(study_id) %>%"
+"0","  # Remove slope outliers"
+"0","  filter(slope < 22) %>%"
+"0","  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language"
+"0","  filter(!((vocabulary_type_step1 == ""word"" | vocabulary_type_step1 == ""concept"") & study_id %in% to_be_excluded$study_id)) %>%"
+"0","  mutate(id_voc = paste0(study_id, vocabulary_type_step1)) %>% # This will be used to filter out data in another df that was removed here"
+"0","  # Round midpoint to one decimal place"
+"0","  mutate(midpoint = round(midpoint, digits = 2)) "
+"2","full_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","           > rows only in x       0
+"
+"2","           > rows only in y       0
+"
+"2","           > matched rows     2,388    (includes duplicates)
+"
+"2","           >                 =======
+"
+"2","           > rows total       2,388
+"
+"2","filter (grouped): removed 42 rows (2%), 2,346 rows remaining
+"
+"2","filter (grouped): removed 54 rows (2%), 2,292 rows remaining
+"
+"0","# Create dataframe with age for the logistic curve"
+"0","# ages <- tibble(age = seq(16, 30, by = 0.01))"
+"0","id_voc_full <- logistic_full_df %>% distinct(study_id, vocabulary_type_step1, id_voc)"
+"2","distinct (grouped): removed 2,125 rows (93%), 167 rows remaining
+"
+"0","id_voc_ages_full <- merge(id_voc_full, ages) "
+"0",""
+"0","# Create the logistic curve with the equation's parameters"
+"0","curve_full <- id_voc_ages_full %>% "
+"0","  left_join(coefficients_04_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>% "
+"0","  mutate(across(vocabulary_type_step1, factor,"
+"0","                levels=c(""English"", ""French"", ""concept"", ""word""))) %>%"
+"0","  mutate(vocabulary_score = upper_limit / (1 + exp(-slope*(log(age) - log(midpoint)))),"
+"0","         centered_age = age - midpoint, "
+"0","         midpoint = round(midpoint, digits = 2)) %>% "
+"0","  # Add midpoint identification column"
+"0","  left_join(midpoint_identification_sum %>% select(study_id, vocabulary_type_step1, midp_identify), by = c(""study_id"", ""vocabulary_type_step1""))"
+"2","left_join: added 3 columns (midpoint, slope, upper_limit)
+"
+"2","           > rows only in x         0
+"
+"2","           > rows only in y  (      7)
+"
+"2","           > matched rows     233,967
+"
+"2","           >                 =========
+"
+"2","           > rows total       233,967
+"
+"2","select: dropped 21 variables (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","left_join: added one column (midp_identify)
+"
+"2","           > rows only in x         0
+"
+"2","           > rows only in y  (      3)
+"
+"2","           > matched rows     236,769    (includes duplicates)
+"
+"2","           >                 =========
+"
+"2","           > rows total       236,769
+"

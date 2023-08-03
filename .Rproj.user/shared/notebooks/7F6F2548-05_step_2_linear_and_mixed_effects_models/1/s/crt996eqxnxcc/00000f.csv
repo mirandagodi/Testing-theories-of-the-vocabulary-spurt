@@ -1,0 +1,12 @@
+"0","# Midpoint and slope descriptives"
+"0","valid_decriptives <- step2_df %>%"
+"0","  group_by(vocabulary_type_step1) %>% "
+"0","  summarise(mean_midpoint = mean(midpoint),"
+"0","            min_midpoint = min(midpoint),"
+"0","            max_midpoint = max(midpoint),"
+"0","            mean_slope = mean(slope),"
+"0","            min_slope = min(slope),"
+"0","            max_slope = max(slope),"
+"0","            N = n()) "
+"2","summarise: now 4 rows and 8 columns, ungrouped
+"

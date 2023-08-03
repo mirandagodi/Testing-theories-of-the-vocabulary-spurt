@@ -1,0 +1,123 @@
+"0","# Join and clean dataframes with coefficients (midpoint and slope), language exposure data, and vocabulary scores"
+"0","step2_df <- coefficients_04_df %>%"
+"0","  # Join coefficients and language exposure dataframes"
+"0","  # Use left_join because LEQ dataset has full sample (N=125), as babies were not excluded from it"
+"0","  left_join(final_exposure_df, by = ""study_id"") %>%"
+"0","  mutate(vocabulary_type_step2 = case_when("
+"0","    vocabulary_type_step1 == ""English"" | vocabulary_type_step1 == ""French"" ~ ""single"","
+"0","    vocabulary_type_step1 == ""word"" ~ ""word"","
+"0","    vocabulary_type_step1 == ""concept"" ~ ""concept"")) %>%"
+"0","  relocate(vocabulary_type_step2, .after = vocabulary_type_step1) %>%"
+"0","  mutate(exposure_percent = case_when("
+"0","    vocabulary_type_step1 == ""English"" ~ cumulative_exp_Eng,"
+"0","    vocabulary_type_step1 == ""French"" ~ cumulative_exp_Fre)) %>% "
+"0","  # Join vocabulary scores dataframe"
+"0","  left_join(final_vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>% "
+"0","  # Remove babies with midpoint out of age range"
+"0","  filter(midpoint>=16 & midpoint<=age) %>%"
+"0","  # Remove slope outliers"
+"0","  filter(slope < 22) %>%"
+"0","  # Set language dominance"
+"0","  mutate(dominance = case_when(exposure_percent>50 ~ ""dominant"","
+"0","                               exposure_percent<50 ~ ""nondominant"")) %>% "
+"0","  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language"
+"0","  filter(!((vocabulary_type_step1 == ""word"" | vocabulary_type_step1 == ""concept"") & study_id %in% to_be_excluded$study_id)) %>% "
+"0","  # Join with words learned at spurt dataframe"
+"0","  left_join(words_at_spurt_distinct, by = c(""study_id"", ""vocabulary_type_step1""))  "
+"2","left_join: added 6 columns (cumulative_exp_Eng, cumulative_exp_Fre, end_age, lang_status, dominant_lang, …)
+"
+"2","           > rows only in x     0
+"
+"2","           > rows only in y  (  0)
+"
+"2","           > matched rows     174
+"
+"2","           >                 =====
+"
+"2","           > rows total       174
+"
+"2","relocate: columns reordered (study_id, vocabulary_type_step1, vocabulary_type_step2, midpoint, slope, …)
+"
+"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","           > rows only in x     0
+"
+"2","           > rows only in y  (  0)
+"
+"2","           > matched rows     174
+"
+"2","           >                 =====
+"
+"2","           > rows total       174
+"
+"2","filter: removed 53 rows (30%), 121 rows remaining
+"
+"2","filter: removed 3 rows (2%), 118 rows remaining
+"
+"2","filter: removed 4 rows (3%), 114 rows remaining
+"
+"2","left_join: added one column (words_learned)
+"
+"2","           > rows only in x     0
+"
+"2","           > rows only in y  (  0)
+"
+"2","           > matched rows     114
+"
+"2","           >                 =====
+"
+"2","           > rows total       114
+"
+"0","# Babies with midpoint out of age range"
+"0","unidentified_midpoint <- coefficients_04_df %>% "
+"0","  left_join(final_vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>%"
+"0","  filter(!(midpoint>=16 & midpoint<=age)) "
+"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","           > rows only in x     0
+"
+"2","           > rows only in y  (  0)
+"
+"2","           > matched rows     174
+"
+"2","           >                 =====
+"
+"2","           > rows total       174
+"
+"2","filter: removed 121 rows (70%), 53 rows remaining
+"
+"0","# Babies with an identified midpoint in some but not all vocabulary types"
+"0","some_identified_midpoint <- unidentified_midpoint %>% "
+"0","  filter(study_id %in% step2_df$study_id) %>% "
+"0","  distinct(study_id)"
+"2","filter: removed 37 rows (70%), 16 rows remaining
+"
+"2","distinct: removed 5 rows (31%), 11 rows remaining
+"
+"0","# Babies with no identified midpoints"
+"0","none_identified_midpoint <- coefficients_04_df %>%"
+"0","  # Join vocabulary scores dataframe"
+"0","  left_join(final_vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>%"
+"0","  # Remove babies with midpoint out of age range (might be spurters in another vocab type)"
+"0","  filter(!(midpoint>=16 & midpoint<=age)) %>%"
+"0","  # Remover babies who made it to step 2 (because they spurted in at least one vocab type)"
+"0","  filter(!(study_id %in% step2_df$study_id)) %>%"
+"0","  distinct(study_id)"
+"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"
+"2","           > rows only in x     0
+"
+"2","           > rows only in y  (  0)
+"
+"2","           > matched rows     174
+"
+"2","           >                 =====
+"
+"2","           > rows total       174
+"
+"2","filter: removed 121 rows (70%), 53 rows remaining
+"
+"2","filter: removed 16 rows (30%), 37 rows remaining
+"
+"2","distinct: removed 27 rows (73%), 10 rows remaining
+"

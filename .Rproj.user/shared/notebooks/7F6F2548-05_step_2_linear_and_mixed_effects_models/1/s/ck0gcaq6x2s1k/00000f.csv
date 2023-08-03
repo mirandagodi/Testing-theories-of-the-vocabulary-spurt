@@ -1,0 +1,8 @@
+"0","# Models of words learned at spurt by exposure percent/exposure balance"
+"0","# Single language"
+"0","wordsatspurt_single_model <- "
+"0","  lmer(words_learned ~ exposure_percent + (1|study_id), data = single_lang_df)"
+"0",""
+"0","check_model(wordsatspurt_single_model)"
+"2","Not enough model terms in the conditional part of the model to check for multicollinearity.
+"

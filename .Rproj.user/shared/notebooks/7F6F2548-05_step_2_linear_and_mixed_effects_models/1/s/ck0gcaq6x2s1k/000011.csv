@@ -1,0 +1,214 @@
+"0","model_performance(wordsatspurt_single_model)"
+"1","[34m# Indices of model performance[39m
+
+AIC     |    AICc |     BIC | R2 (cond.) | R2 (marg.) |   ICC |   RMSE |  Sigma
+-------------------------------------------------------------------------------
+440.020 | 440.950 | 447.504 |      0.317 |      0.119 | 0.225 | 17.633 | 20.171
+"
+"0","summary(wordsatspurt_single_model)"
+"1","Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+"
+"1","Formula:"
+"1"," "
+"1","words_learned ~ exposure_percent + (1 | study_id)"
+"1","
+"
+"1","   Data:"
+"1"," "
+"1","single_lang_df"
+"1","
+"
+"1","
+"
+"1","REML criterion at convergence:"
+"1"," "
+"1","432"
+"1","
+"
+"1","
+"
+"1","Scaled residuals:"
+"1"," "
+"1","
+"
+"1","    Min "
+"1","     1Q "
+"1"," Median "
+"1","     3Q "
+"1","    Max "
+"1","
+"
+"1","-1.6497 "
+"1","-0.6878 "
+"1","-0.1823 "
+"1"," 0.5488 "
+"1"," 1.9019 "
+"1","
+"
+"1","
+"
+"1","Random effects:
+"
+"1",""
+"1"," Groups  "
+"1"," Name       "
+"1"," Variance"
+"1"," Std.Dev."
+"1","
+"
+"1"," study_id"
+"1"," (Intercept)"
+"1"," 117.8   "
+"1"," 10.85   "
+"1","
+"
+"1"," Residual"
+"1","            "
+"1"," 406.9   "
+"1"," 20.17   "
+"1","
+"
+"1","Number of obs: 48, groups: "
+"1"," "
+"1","study_id, 36"
+"1","
+"
+"1","
+Fixed effects:
+"
+"1","                "
+"1"," Estimate"
+"1"," Std. Error"
+"1","      df"
+"1"," t value"
+"1"," Pr(>|t|)"
+"1","   "
+"1","
+(Intercept)     "
+"1","  26.9812"
+"1","     9.7047"
+"1"," 45.3269"
+"1","    2.78"
+"1","  0.00788"
+"1"," **"
+"1","
+exposure_percent"
+"1","   0.3528"
+"1","     0.1373"
+"1"," 44.7303"
+"1","    2.57"
+"1","  0.01358"
+"1"," * "
+"1","
+"
+"1","---
+Signif. codes:  "
+"1",""
+"1","0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1"
+"1","
+"
+"1","
+Correlation of Fixed Effects:
+"
+"1","           "
+"1"," (Intr)"
+"1","
+expsr_prcnt"
+"1"," -0.934"
+"1","
+"
+"0","summ(wordsatspurt_single_model, digits = 3)"
+"1","[4mMODEL INFO:[24m"
+"1",""
+"1","
+"
+"1",""
+"1","[3mObservations:[23m"
+"1",""
+"1"," "
+"1",""
+"1","48"
+"1",""
+"1","
+"
+"1",""
+"1","[3mDependent Variable:[23m"
+"1",""
+"1"," "
+"1",""
+"1","words_learned"
+"1",""
+"1","
+"
+"1","[3mType:[23m"
+"1"," "
+"1","Mixed effects linear regression"
+"1"," "
+"1","
+
+"
+"1","[4mMODEL FIT:[24m"
+"1",""
+"1","
+"
+"1","[3mAIC[23m = 440.020, [3mBIC[23m = 447.504
+[3mPseudo-R² (fixed effects)[23m = 0.119
+[3mPseudo-R² (total)[23m = 0.317"
+"1"," "
+"1","
+
+"
+"1","[4mFIXED EFFECTS:
+[24m"
+"1","-----------------------------------------------------------------
+                           Est.    S.E.   t val.     d.f.       p
+---------------------- -------- ------- -------- -------- -------
+(Intercept)              26.981   9.705    2.780   45.327   0.008
+exposure_percent          0.353   0.137    2.570   44.730   0.014
+-----------------------------------------------------------------"
+"1","
+"
+"1","
+"
+"1","[3m[36mp values calculated using Satterthwaite d.f.[39m[23m"
+"1",""
+"1","
+"
+"1","[4m
+RANDOM EFFECTS:
+[24m"
+"1","------------------------------------
+  Group      Parameter    Std. Dev. 
+---------- ------------- -----------
+ study_id   (Intercept)    10.854   
+ Residual                  20.171   
+------------------------------------"
+"1","
+"
+"1","[4m
+Grouping variables:
+[24m"
+"1","-----------------------------
+  Group     # groups    ICC  
+---------- ---------- -------
+ study_id      36      0.225 
+-----------------------------"
+"1","
+"
+"0","report(wordsatspurt_single_model, digits = 3)"
+"1","We fitted a linear mixed model (estimated using REML and nloptwrap optimizer) to predict words_learned with exposure_percent (formula: words_learned ~
+exposure_percent). The model included study_id as random effect (formula: ~1 | study_id). The model's total explanatory power is substantial (conditional R2 =
+0.32) and the part related to the fixed effects alone (marginal R2) is of 0.12. The model's intercept, corresponding to exposure_percent = 0, is at 26.98 (95%
+CI [7.42, 46.54], t(44) = 2.78, p = 0.008). Within this model:
+
+  - The effect of exposure percent is statistically significant and positive (beta = 0.35, 95% CI [0.08, 0.63], t(44) = 2.57, p = 0.014; Std. beta = 0.35, 95% CI
+[0.08, 0.62])
+
+Standardized parameters were obtained by fitting the model on a standardized version of the dataset. 95% Confidence Intervals (CIs) and p-values were computed
+using a Wald t-distribution approximation.
+"
+"0","# Create table with results"
+"0","wordsatspurt_single_table <- report_table(wordsatspurt_single_model, digits = 3)"
+"0","wordsatspurt_single_table %>% "
+"0","  kbl() %>% "
+"0","  kable_classic(full_width = F, html_font = ""Times"")"

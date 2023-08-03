@@ -1,0 +1,31 @@
+"0","# t-tests for French vocabulary"
+"0","# Vocabulary size at 18 m"
+"0","Fr_18m_df <- vocab_at_18m %>% "
+"0","  filter(vocabulary_type_step1 == ""French"")"
+"2","filter (grouped): removed 128 rows (76%), 40 rows remaining
+"
+"0","vocab_french_18m_test <- t.test(vocabulary_score ~ midp_identify, data = Fr_18m_df)"
+"0","report(vocab_french_18m_test, digits = 3)"
+"2","Warning: Unable to retrieve data from htest object.
+  Returning an [1mapproximate[22m effect size using t_to_d()."
+"1","Effect sizes were labelled following Cohen's (1988) recommendations.
+
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 59.07, mean in group not_identified =
+21.91) suggests that the effect is positive, statistically significant, and large (difference = 37.16, 95% CI [9.86, 64.46], t(32.53) = 2.77, p = 0.009;
+Cohen's d = 0.97, 95% CI [0.24, 1.69])
+"
+"0","# Vocabulary size at 30 m"
+"0","Fr_30m_df <- vocab_at_30m %>% "
+"0","  filter(vocabulary_type_step1 == ""French"")"
+"2","filter (grouped): removed 131 rows (77%), 39 rows remaining
+"
+"0","vocab_french_30m_test <- t.test(vocabulary_score ~ midp_identify, data = Fr_30m_df)"
+"0","report(vocab_french_30m_test, digits = 3)"
+"2","Warning: Unable to retrieve data from htest object.
+  Returning an [1mapproximate[22m effect size using t_to_d()."
+"1","Effect sizes were labelled following Cohen's (1988) recommendations.
+
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 430.55, mean in group not_identified =
+218.17) suggests that the effect is positive, statistically significant, and large (difference = 212.38, 95% CI [88.59, 336.18], t(22.19) = 3.56, p = 0.002;
+Cohen's d = 1.51, 95% CI [0.55, 2.44])
+"

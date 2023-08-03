@@ -1,0 +1,22 @@
+"0","# Descriptives of bilingual and monolingual spurters (midpoint and words learned during spurt)"
+"0",""
+"0","# Bilingual spurters"
+"0","bilingual_spurters_descriptives <- bilingual_spurters_df %>% "
+"0","  group_by(dominance) %>% "
+"0","  summarise(midpoint.M = round(mean(midpoint), digits = 2),"
+"0","            midpoint.SD = round(sd(midpoint), digits = 2),"
+"0","            words_learned.M = round(mean(words_learned), digits = 0),"
+"0","            words_learned.SD = round(sd(words_learned), digits = 0))"
+"2","summarise: now 2 rows and 5 columns, ungrouped
+"
+"0","# Monolingual spurters"
+"0","monolingual_spurters_descriptives <- monolingual_spurters_df %>% "
+"0","  ungroup() %>% "
+"0","  summarise(midpoint.M = round(mean(midpoint), digits = 2),"
+"0","            midpoint.SD = round(sd(midpoint), digits = 2),"
+"0","            words_learned.M = round(mean(words_learned), digits = 0),"
+"0","            words_learned.SD = round(sd(words_learned), digits = 0))"
+"2","ungroup: no grouping variables
+"
+"2","summarise: now one row and 4 columns, ungrouped
+"

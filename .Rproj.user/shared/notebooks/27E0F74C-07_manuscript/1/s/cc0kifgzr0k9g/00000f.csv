@@ -1,0 +1,133 @@
+"0","# Demographics"
+"0","# English"
+"0","Eng_demographics_df <- Eng_keepers_df %>% "
+"0","  # Remove rows of uncompleted CDIs"
+"0","  filter(completed == TRUE) %>% "
+"0","  # Keep babies from final sample"
+"0","  filter(study_id %in% step1_df$study_id) %>% "
+"0","  # Keep only demographics columns"
+"0","  select(study_id, last_modified, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% "
+"0","  # Check that each baby has always the same answer"
+"0","  group_by(study_id) %>% "
+"0","  mutate(check_sex = case_when(sex != lead(sex) ~ ""check""),"
+"0","         check_income = case_when(annual_income != lead(annual_income) ~ ""check""),"
+"0","         check_latino = case_when(child_hispanic_latino != lead(child_hispanic_latino) ~ ""check""),"
+"0","         check_ethnicity = case_when(child_ethnicity != lead(child_ethnicity) ~ ""check"")) %>% "
+"0","  ungroup() %>% "
+"0","  filter(!(study_id == ""S120"" & child_hispanic_latino == TRUE)) %>% # Remove row with typo (parents said their child is latino only once)"
+"0","  # Keep one (the first) row per baby"
+"0","  group_by(study_id) %>% "
+"0","  filter(last_modified == min(last_modified)) %>% "
+"0","  select(-c(check_sex:check_ethnicity))"
+"2","filter: removed 82 rows (10%), 781 rows remaining
+"
+"2","filter: removed 292 rows (37%), 489 rows remaining
+"
+"2","select: dropped 709 variables (subject_id, TRUE_months, n_months, completed, dob, …)
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed one row (<1%), 488 rows remaining
+"
+"2","filter (grouped): removed 449 rows (92%), 39 rows remaining
+"
+"2","select: dropped 4 variables (check_sex, check_income, check_latino, check_ethnicity)
+"
+"0","# French"
+"0","Fr_demographics_df <- Fr_keepers_df %>% "
+"0","  # Remove rows of uncompleted CDIs"
+"0","  filter(completed == TRUE) %>% "
+"0","  # Keep babies from final sample"
+"0","  filter(study_id %in% step1_df$study_id) %>% "
+"0","  # Keep only demographics columns"
+"0","  select(study_id, last_modified, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% "
+"0","  # Check that each baby has always the same answer"
+"0","  group_by(study_id) %>% "
+"0","  mutate(check_sex = case_when(sex != lead(sex) ~ ""check""),"
+"0","         check_income = case_when(annual_income != lead(annual_income) ~ ""check""),"
+"0","         check_latino = case_when(child_hispanic_latino != lead(child_hispanic_latino) ~ ""check""),"
+"0","         check_ethnicity = case_when(child_ethnicity != lead(child_ethnicity) ~ ""check"")) %>% "
+"0","  ungroup() %>% "
+"0","  filter(!(study_id == ""S072"" & child_hispanic_latino == TRUE)) %>% # Remove row with typo (parents said their child is latino only once)"
+"0","  # Keep one (the first) row per baby"
+"0","  group_by(study_id) %>% "
+"0","  filter(last_modified == min(last_modified)) %>% "
+"0","  select(-c(check_sex:check_ethnicity))"
+"2","filter: removed 85 rows (10%), 779 rows remaining
+"
+"2","filter: removed 288 rows (37%), 491 rows remaining
+"
+"2","select: dropped 693 variables (subject_id, TRUE_months, n_months, completed, dob, …)
+"
+"2","ungroup: no grouping variables
+"
+"2","filter: removed one row (<1%), 490 rows remaining
+"
+"2","filter (grouped): removed 451 rows (92%), 39 rows remaining
+"
+"2","select: dropped 4 variables (check_sex, check_income, check_latino, check_ethnicity)
+"
+"0","# There are no discrepancies in the entries for sex or ethnicity. "
+"0","# For child_hispanic_latino, if only one answer is different, then the majority answer will be kept. For those who have half-and-half answers: keep first answer."
+"0","# For discrepancies in annual_income, the income at recruitment will be kept."
+"0",""
+"0","EngFr_demographics_df <-"
+"0","  full_join(Eng_demographics_df, Fr_demographics_df, by = ""study_id"", suffix = c(""_eng"", ""_fr"")) %>% "
+"0","  # Keep correct answers if there were different in Eng and Fr. Replace missing info in one language with the info in the other language; if both are available and the same, keep answer in Eng"
+"0","  mutate(correct_sex = case_when(is.na(sex_eng) ~ sex_fr, "
+"0","                                 is.na(sex_fr) ~ sex_eng,"
+"0","                                 sex_eng == sex_fr ~ sex_eng),"
+"0","         correct_mother_education = case_when(is.na(mother_education_eng) ~ mother_education_fr,"
+"0","                                              is.na(mother_education_fr) ~ mother_education_eng,"
+"0","                                              mother_education_eng == mother_education_fr ~ mother_education_eng,"
+"0","                                              mother_education_eng > mother_education_fr ~ mother_education_eng, # Keep Eng answer if it is highest"
+"0","                                              mother_education_eng < mother_education_fr ~ mother_education_fr), # Keep Fr answer if it is highest"
+"0","         correct_father_education = case_when(is.na(father_education_eng) ~ father_education_fr,"
+"0","                                              is.na(father_education_fr) ~ father_education_eng,"
+"0","                                              father_education_eng == father_education_fr ~ father_education_eng,"
+"0","                                              father_education_eng > father_education_fr ~ father_education_eng, # Keep Eng answer if it is highest"
+"0","                                              father_education_eng < father_education_fr ~ father_education_fr), # Keep Fr answer if it is highest"
+"0","         correct_ethnicity = case_when(is.na(child_ethnicity_eng) ~ child_ethnicity_fr, "
+"0","                                 is.na(child_ethnicity_fr) ~ child_ethnicity_eng, # A French-monolingual baby never reported ethnicity (has NA in both languages)"
+"0","                                 child_ethnicity_eng == child_ethnicity_fr ~ child_ethnicity_eng)) "
+"2","full_join: added 16 columns (last_modified_eng, form_filler_eng, sex_eng, mother_education_eng, father_education_eng, …)
+"
+"2","           > rows only in x    9
+"
+"2","           > rows only in y    9
+"
+"2","           > matched rows     30
+"
+"2","           >                 ====
+"
+"2","           > rows total       48
+"
+"0","# Demographics: Sex "
+"0","demographics_sex_summary <- EngFr_demographics_df %>% "
+"0","  ungroup() %>% "
+"0","  count(correct_sex) %>% "
+"0","  mutate(percent_sex = round((n * 100 / sum(n)), digits = 2))"
+"2","ungroup: no grouping variables
+"
+"2","count: now 3 rows and 2 columns, ungrouped
+"
+"0","# Demographics: Socioeconomic status (SES) based on parental education"
+"0","demographics_ses_summary <- EngFr_demographics_df %>% "
+"0","  ungroup() %>% "
+"0","  summarise(mother_education_M = round(mean(correct_mother_education, na.rm = TRUE), digits = 2),"
+"0","            mother_education_SD = round(sd(correct_mother_education, na.rm = TRUE), digits = 2),"
+"0","            father_education_M = round(mean(correct_father_education, na.rm = TRUE), digits = 2),"
+"0","            father_education_SD = round(sd(correct_father_education, na.rm = TRUE), digits = 2))"
+"2","ungroup: no grouping variables
+"
+"2","summarise: now one row and 4 columns, ungrouped
+"
+"0","# Demographics: Ethnicity "
+"0","demographics_ethnicity_summary <- EngFr_demographics_df %>% "
+"0","  ungroup() %>% "
+"0","  count(correct_ethnicity) %>% "
+"0","  mutate(percent_ethnicity = round((n * 100 / sum(n)), digits = 2))"
+"2","ungroup: no grouping variables
+"
+"2","count: now 8 rows and 2 columns, ungrouped
+"
