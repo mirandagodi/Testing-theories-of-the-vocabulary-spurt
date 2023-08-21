@@ -21,6 +21,10 @@
 "0","            words_learned_diff.SD = round(sd(words_learned_diff, na.rm = TRUE), digits = 0))"
 "2","pivot_wider: reorganized (midpoint, dominance, words_learned) into (midpoint_nondominant, midpoint_dominant, words_learned_nondominant, words_learned_dominant) [was 36x4, now 24x5]
 "
+"2","mutate (grouped): new variable 'midpoint_diff' (double) with 13 unique values and 50% NA
+"
+"2","                  new variable 'words_learned_diff' (double) with 13 unique values and 50% NA
+"
 "2","ungroup: no grouping variables
 "
 "2","summarise: now one row and 4 columns, ungrouped

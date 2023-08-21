@@ -10,9 +10,10 @@
   Returning an [1mapproximate[22m effect size using t_to_d()."
 "1","Effect sizes were labelled following Cohen's (1988) recommendations.
 
-The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 88.17, mean in group not_identified =
-28.12) suggests that the effect is positive, statistically significant, and large (difference = 60.05, 95% CI [28.18, 91.91], t(37.43) = 3.82, p < .001;
-Cohen's d = 1.25, 95% CI [0.54, 1.94])
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify
+(mean in group identified = 90.29, mean in group not_identified = 26.78) suggests that the
+effect is positive, statistically significant, and large (difference = 63.52, 95% CI
+[31.08, 95.95], t(36.05) = 3.97, p < .001; Cohen's d = 1.32, 95% CI [0.60, 2.04])
 "
 "0","# Vocabulary size at 30 m"
 "0","concept_30m_df <- vocab_at_30m %>% "
@@ -25,7 +26,8 @@ Cohen's d = 1.25, 95% CI [0.54, 1.94])
   Returning an [1mapproximate[22m effect size using t_to_d()."
 "1","Effect sizes were labelled following Cohen's (1988) recommendations.
 
-The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify (mean in group identified = 500.81, mean in group not_identified =
-285.70) suggests that the effect is positive, statistically significant, and large (difference = 215.11, 95% CI [115.97, 314.26], t(22.36) = 4.50, p < .001;
-Cohen's d = 1.90, 95% CI [0.89, 2.88])
+The Welch Two Sample t-test testing the difference of vocabulary_score by midp_identify
+(mean in group identified = 515.54, mean in group not_identified = 270.45) suggests that
+the effect is positive, statistically significant, and large (difference = 245.08, 95% CI
+[149.66, 340.51], t(22.27) = 5.32, p < .001; Cohen's d = 2.26, 95% CI [1.18, 3.30])
 "

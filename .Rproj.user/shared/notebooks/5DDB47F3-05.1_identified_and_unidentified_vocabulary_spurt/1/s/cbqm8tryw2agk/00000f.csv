@@ -6,13 +6,17 @@
 "0","                levels=c(""biling_dominant_spurter"", ""biling_dominant_nonspurter"")))"
 "2","filter (grouped): removed 45 rows (58%), 32 rows remaining
 "
+"2","mutate (grouped): converted 'lang_spurt_status' from character to factor (0 new NA)
+"
 "0","bilingual_dominant_test <- t.test(exposure_percent ~ lang_spurt_status, data = bilingual_dominant_df)"
 "0","report(bilingual_dominant_test, digits = 3)"
 "2","Warning: Unable to retrieve data from htest object.
   Returning an [1mapproximate[22m effect size using t_to_d()."
 "1","Effect sizes were labelled following Cohen's (1988) recommendations.
 
-The Welch Two Sample t-test testing the difference of exposure_percent by lang_spurt_status (mean in group biling_dominant_spurter = 63.42, mean in group
-biling_dominant_nonspurter = 56.41) suggests that the effect is positive, statistically significant, and large (difference = 7.01, 95% CI [0.42, 13.60],
-t(25.05) = 2.19, p = 0.038; Cohen's d = 0.88, 95% CI [0.05, 1.69])
+The Welch Two Sample t-test testing the difference of exposure_percent by
+lang_spurt_status (mean in group biling_dominant_spurter = 63.42, mean in group
+biling_dominant_nonspurter = 56.41) suggests that the effect is positive, statistically
+significant, and large (difference = 7.01, 95% CI [0.42, 13.60], t(25.05) = 2.19, p =
+0.038; Cohen's d = 0.88, 95% CI [0.05, 1.69])
 "

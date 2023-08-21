@@ -54,7 +54,8 @@ all_scores_df <- vocabulary_scores_df %>% # Some babies do not have data in one 
 # Determine if the midpoint is identified (within the age range of the study) or not
 midpoint_identification <- all_scores_df %>% 
   group_by(study_id) %>% 
-  mutate(midp_identify = case_when(study_id == "S125" & vocabulary_type_step1 == "concept" ~ "not_identified", # Manually set the baby as non-spurter (very small spurt)midpoint>=starting_age & midpoint<=max(age) ~ "identified",
+  mutate(midp_identify = case_when(study_id == "S125" & vocabulary_type_step1 == "concept" ~ "not_identified", # Manually set the baby as non-spurter (very small spurt)
+                                   midpoint>=starting_age & midpoint<=max(age) ~ "identified",
                                    midpoint<starting_age | midpoint>max(age) ~ "not_identified"))
 
 # Keep one row per baby per vocabulary type

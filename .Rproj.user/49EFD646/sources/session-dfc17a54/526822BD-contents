@@ -1,0 +1,312 @@
+---
+title: "05.2 Estimation of words learned during the spurt, with Frank et al (2021)"
+  method
+author: "Miranda Gómez Díaz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#Read needed packages
+library(tidyverse)
+library(tidylog)
+library(rempsyc)
+library(lmerTest)
+library(lme4)
+library(performance)
+library(report)
+library(jtools)
+library(kableExtra)
+library(gridExtra)
+library(cowplot)
+library(ggpubr)
+library(janitor)
+```
+
+```{r}
+# Read files from previous steps
+coefficients_04_df <- read_csv("data/04_analysis_step_1_coefficients.csv")
+
+LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
+
+vocabulary_scores_df <- read_csv("data/04_analysis_step_1_dataset.csv") 
+
+# These babies had been excluded in one but not the other language (they had missing data or exposure change in only one language)
+to_be_excluded <- read_csv("data/02_total_excluded.csv")
+```
+
+```{r}
+#### CODE ADAPTED FROM DIFFERENT SCRIPTS TO ESTIMATE WORDS LEARNED DURING THE SPURT FOLLOWING FRANK ET AL (2021) METHOD
+
+# Create a column with the age at spurt (same as midpoint) that will be used when joining with vocabulary_scores_df to filter rows around the spurt
+age_at_spurt <- coefficients_04_df %>% 
+  mutate(age = midpoint)
+
+# Join vocabulary scores dataframe with spurt coefficients dataframe
+words_at_spurt <- vocabulary_scores_df %>% # Some babies do not have data in one language (English or French), it is either because they are monolingual or because their data in that language was removed due to missing data or exposure change in that language
+  # Estimate number of data points for each baby
+  group_by(study_id, vocabulary_type_step1) %>% 
+  mutate(completed_months = sum(!(is.na(vocabulary_score)))) %>%
+  # Remove rows with NA in vocabulary_score(it means the CDI was not completed)
+  filter(!(is.na(vocabulary_score))) %>% 
+  # Join with coefficients dataframe
+  full_join(age_at_spurt, by = c("study_id", "age", "vocabulary_type_step1")) %>% 
+  ungroup() %>% 
+  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
+  filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>% 
+  # Fill coefficient values for the rest of ages
+  group_by(study_id, vocabulary_type_step1) %>% 
+  fill(c(completed_months:upper_limit), .direction = "downup") %>% 
+  # Remove babies with midpoint out of age range
+  ungroup() %>% 
+  group_by(study_id) %>%
+  filter(midpoint>=16 & midpoint<=30.3) %>% # No babies submitted data before 16 months or after 30.3 months of age
+  # Remove slope outliers
+  filter(slope < 22) %>%
+  ungroup() %>% 
+  # Keep only the rows around the spurt (the month before, the age when it occurred, and the moth after)
+  group_by(study_id, vocabulary_type_step1) %>%
+  arrange(age) %>% 
+  mutate(around_spurt = case_when(lead(age) == midpoint ~ "keep", # Month before the spurt
+                                  age == midpoint ~ "keep", # Month when the spurt occurred
+                                  lag(age) == midpoint ~ "keep")) %>% # Month after the spurt
+  filter(around_spurt == "keep") %>% 
+  # Remove babies who spurted in the last month and did not submit data in the last measure
+  mutate(spurt_rows = sum(!is.na(n_months))) %>% 
+  filter(spurt_rows > 1) %>% # Babies should have 2 "real" months of measures
+  # Estimate words and time around spurt
+  mutate(vocab_score_difference = max(vocabulary_score, na.rm = TRUE) - min(vocabulary_score, na.rm = TRUE), # Estimate the number of words learned in the previous and the measure following the spurt
+         age_difference = max(age, na.rm = TRUE) - min(age, na.rm = TRUE), # Estimate number of months (with decimals) between the previous and the measure following the spurt
+         words_learned = vocab_score_difference / age_difference) #%>%  # Estimate the number of words learned in a one-month period spurt
+
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Create dataframe with distinct words learned at spurt to merge with step2_df
+words_at_spurt_distinct <- words_at_spurt %>% 
+  select(study_id, vocabulary_type_step1, words_learned) %>% 
+  group_by(study_id, vocabulary_type_step1) %>% 
+  filter(row_number() == 1)
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Prepare language exposure data 
+final_exposure_df <- LEQ_01_df %>%
+  select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, end_age, lang_status, dominant_lang) %>%
+# Keep only the final language exposure (cumulative exposure at 30 or 31 months)
+  group_by(study_id) %>%
+  filter(end_age == max(end_age)) %>%
+  ungroup() %>%
+# Convert exposure values from proportions to percentage
+  mutate(cumulative_exp_Eng = cumulative_exp_Eng*100,
+         cumulative_exp_Fre = cumulative_exp_Fre*100) %>%
+# Set exposure balance as the exposure to the non-dominant language (lower cumulative exposure)
+  mutate(exposure_balance = case_when(
+    cumulative_exp_Eng < cumulative_exp_Fre ~ cumulative_exp_Eng,
+    cumulative_exp_Fre < cumulative_exp_Eng ~ cumulative_exp_Fre)) %>% 
+  # Keep only the infants in the final sample
+  filter(study_id %in% coefficients_04_df$study_id) 
+
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Prepare vocabulary scores data
+final_vocabulary_scores_df <-  vocabulary_scores_df %>% 
+  # Keep final vocabulary score
+  group_by(study_id, vocabulary_type_step1) %>% 
+  filter(vocabulary_score == max(vocabulary_score, na.rm=TRUE)) %>%
+  filter(n_months == max(n_months)) 
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Join and clean dataframes with coefficients (midpoint and slope), language exposure data, and vocabulary scores
+step2_df <- coefficients_04_df %>%
+  # Join coefficients and language exposure dataframes
+  # Use left_join because LEQ dataset has full sample (N=125), as babies were not excluded from it
+  left_join(final_exposure_df, by = "study_id") %>%
+  mutate(vocabulary_type_step2 = case_when(
+    vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French" ~ "single",
+    vocabulary_type_step1 == "word" ~ "word",
+    vocabulary_type_step1 == "concept" ~ "concept")) %>%
+  relocate(vocabulary_type_step2, .after = vocabulary_type_step1) %>%
+  mutate(exposure_percent = case_when(
+    vocabulary_type_step1 == "English" ~ cumulative_exp_Eng,
+    vocabulary_type_step1 == "French" ~ cumulative_exp_Fre)) %>% 
+  # Join vocabulary scores dataframe
+  left_join(final_vocabulary_scores_df, by = c("study_id", "vocabulary_type_step1")) %>% 
+  # Remove babies with midpoint out of age range
+  filter(midpoint>=16 & midpoint<=age) %>%
+  # Remove slope outliers
+  filter(slope < 22) %>%
+  # Set language dominance
+  mutate(dominance = case_when(exposure_percent>50 ~ "dominant",
+                               exposure_percent<50 ~ "nondominant")) %>% 
+  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
+  filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>% 
+  # Join with words learned at spurt dataframe
+  left_join(words_at_spurt_distinct, by = c("study_id", "vocabulary_type_step1")) #%>% 
+  # Join with slope at spurt dataframe
+  # left_join(slope_at_midpoint, by = c("study_id", "vocabulary_type_step1"))
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# TABLE 1. DESCRIPTIVES TABLE
+
+# Midpoint, slope, and words learned at midpoint descriptives
+
+infants_by_vocabtype <- coefficients_04_df %>% 
+  # # Remove slope outliers
+  # filter(slope < 22) %>%
+  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
+  filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>%
+  group_by(vocabulary_type_step1) %>% 
+  summarise(all_infants = n(),
+            )
+
+table_n <- step2_df %>% 
+  group_by(vocabulary_type_step1) %>% 
+  summarise(N = n(),
+            ) %>% 
+  full_join(infants_by_vocabtype, by = "vocabulary_type_step1") %>% 
+  mutate(percent_infants = round((N*100/all_infants), digits = 0)) #%>% 
+  # pivot_wider(names_from = vocabulary_type_step1, values_from = c(N:percent_infants))
+
+table_descriptives_df <- step2_df %>%
+  group_by(study_id) %>%
+  select(vocabulary_type_step1, slope, midpoint, words_learned) %>% 
+  rename(Midpoint = midpoint,
+         Slope = slope,
+         "Words learned/month" = words_learned) %>% 
+  pivot_longer(cols = Slope:"Words learned/month", names_to = "measure", values_to = "value") %>% 
+  pivot_wider(names_from = vocabulary_type_step1, values_from = value) %>% 
+  group_by(measure) %>% 
+    summarise(English.M = round(mean(English, na.rm = TRUE), digits = 2),
+            English.SD = round(sd(English, na.rm = TRUE), digits = 2),
+            English.Min = round(min(English, na.rm = TRUE), digits = 2),
+            English.Max = round(max(English, na.rm = TRUE), digits = 2),
+            French.M = round(mean(French, na.rm = TRUE), digits = 2),
+            French.SD = round(sd(French, na.rm = TRUE), digits = 2),
+            French.Min = round(min(French, na.rm = TRUE), digits = 2),
+            French.Max = round(max(French, na.rm = TRUE), digits = 2),
+            word.M = round(mean(word, na.rm = TRUE), digits = 2),
+            word.SD = round(sd(word, na.rm = TRUE), digits = 2),
+            word.Min = round(min(word, na.rm = TRUE), digits = 2),
+            word.Max = round(max(word, na.rm = TRUE), digits = 2),
+            concept.M = round(mean(concept, na.rm = TRUE), digits = 2),
+            concept.SD = round(sd(concept, na.rm = TRUE), digits = 2),
+            concept.Min = round(min(concept, na.rm = TRUE), digits = 2),
+            concept.Max = round(max(concept, na.rm = TRUE), digits = 2)) %>% 
+  mutate("English (n = 22, 54%).M (SD)" = paste0(English.M, " (",English.SD,")"),
+         "English (n = 22, 54%).Range" = paste0(English.Min," - ",English.Max),
+         "French (n = 28, 69%).M (SD)" = paste0(French.M, " (",French.SD,")"),
+         "French (n = 28, 69%).Range" = paste0(French.Min," - ",French.Max),
+         "concept (n = 35, 74%).M (SD)" = paste0(concept.M, " (",concept.SD,")"),
+         "concept (n = 35, 74%).Range" = paste0(concept.Min," - ",concept.Max),
+         "word (n = 33, 70%).M (SD)" = paste0(word.M, " (",word.SD,")"),
+         "word (n = 33, 70%).Range" = paste0(word.Min," - ",word.Max)) %>% 
+  select(measure,"English (n = 22, 54%).M (SD)":"word (n = 33, 70%).Range") 
+
+table_descriptives <- nice_table(
+  table_descriptives_df, 
+  separate.header = TRUE, 
+  # italics = seq(table_descriptives_df),
+  title = c("Table 1", "Descriptive Statistics of the Timing and Magnitude of the Vocabulary Spurt"),
+  note = c(
+    "Midpoint refers to the age in months at which infants had the steepest vocabulary growth, indicative of a vocabulary spurt; Slope refers to the steepness of the curve; Words Learned refers to the number of words that infants learned during the month-long period around their estimated vocabulary spurt. Due to sample characteristics and exclusion criteria, each vocabulary type had different group sizes; the percentage next to group size refers to the percentage of infants that spurted in that vocabulary type."
+  )
+)
+
+table_descriptives
+print(table_descriptives, preview ="docx")
+
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Create dataframes to be used for models
+
+single_lang_df <- step2_df %>%
+  filter(vocabulary_type_step2 == "single")
+
+word_df <- step2_df %>%
+  filter(vocabulary_type_step2 == "word")
+
+concept_df <- step2_df %>%
+  filter(vocabulary_type_step2 == "concept")
+```
+
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 07
+
+# Descriptives across measures
+
+general_descriptives <- step2_df %>% 
+  summarise(midpoint.M = round(mean(midpoint), digits = 2),
+            midpoint.SD = round(sd(midpoint), digits = 2),
+            slope.M = round(mean(slope), digits = 2),
+            slope.SD = round(sd(slope), digits = 2),
+            words_learned.M = round(mean(words_learned), digits = 2),
+            words_learned.SD = round(sd(words_learned), digits = 2),)
+```
+
+```{r}
+#### CODE TAKEN FROM SCRIPT 05
+
+# Models of words learned at spurt by exposure percent/exposure balance
+# Single language
+wordsatspurt_single_model <- 
+  lmer(words_learned ~ exposure_percent + (1|study_id), data = single_lang_df)
+
+check_model(wordsatspurt_single_model)
+model_performance(wordsatspurt_single_model)
+summary(wordsatspurt_single_model)
+summ(wordsatspurt_single_model, digits = 3)
+report(wordsatspurt_single_model, digits = 3)
+# Create table with results
+wordsatspurt_single_table <- report_table(wordsatspurt_single_model, digits = 3)
+wordsatspurt_single_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Word
+wordsatspurt_word_model <- 
+  lm(words_learned ~ exposure_balance, data = word_df)
+
+check_model(wordsatspurt_word_model)
+model_performance(wordsatspurt_word_model)
+summary(wordsatspurt_word_model)
+summ(wordsatspurt_word_model, digits = 3)
+report(wordsatspurt_word_model, digits = 3)
+# Create table with results
+wordsatspurt_word_table <- report_table(wordsatspurt_word_model, digits = 3)
+wordsatspurt_word_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+
+# Concept
+wordsatspurt_concept_model <- 
+  lm(words_learned ~ exposure_balance, data = concept_df)
+
+check_model(wordsatspurt_concept_model)
+model_performance(wordsatspurt_concept_model)
+summary(wordsatspurt_concept_model)
+summ(wordsatspurt_concept_model, digits = 3)
+report(wordsatspurt_concept_model, digits = 3)
+# Create table with results
+wordsatspurt_concept_table <- report_table(wordsatspurt_concept_model, digits = 3)
+wordsatspurt_concept_table %>% 
+  kbl() %>% 
+  kable_classic(full_width = F, html_font = "Times")
+```

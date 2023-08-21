@@ -7,6 +7,8 @@
 "0","            midpoint.SD = round(sd(midpoint), digits = 2),"
 "0","            words_learned.M = round(mean(words_learned), digits = 0),"
 "0","            words_learned.SD = round(sd(words_learned), digits = 0))"
+"2","group_by: one grouping variable (dominance)
+"
 "2","summarise: now 2 rows and 5 columns, ungrouped
 "
 "0","# Monolingual spurters"

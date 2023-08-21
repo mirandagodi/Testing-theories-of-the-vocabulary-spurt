@@ -49,9 +49,13 @@
 "
 "2","           > rows total       174
 "
+"2","mutate: new variable 'vocabulary_type_step2' (character) with 3 unique values and 0% NA
+"
 "2","relocate: columns reordered (study_id, vocabulary_type_step1, vocabulary_type_step2, midpoint, slope, …)
 "
-"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","mutate: new variable 'exposure_percent' (double) with 75 unique values and 55% NA
+"
+"2","left_join: added 9 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","           > rows only in x     0
 "
@@ -65,23 +69,31 @@
 "
 "2","filter: removed 3 rows (2%), 171 rows remaining
 "
+"2","mutate: new variable 'dominance' (character) with 3 unique values and 55% NA
+"
 "2","filter: removed 4 rows (2%), 167 rows remaining
 "
 "2","left_join: added one column (words_learned)
 "
-"2","           > rows only in x    53
+"2","           > rows only in x    54
 "
-"2","           > rows only in y  (  0)
+"2","           > rows only in y  (  3)
 "
-"2","           > matched rows     114
+"2","           > matched rows     113
 "
 "2","           >                 =====
 "
 "2","           > rows total       167
 "
+"2","group_by: one grouping variable (study_id)
+"
+"2","mutate (grouped): new variable 'midp_identify' (character) with 2 unique values and 0% NA
+"
 "2","filter (grouped): removed 90 rows (54%), 77 rows remaining
 "
-"2","select: dropped 17 variables (vocabulary_type_step1, vocabulary_type_step2, slope, upper_limit, cumulative_exp_Eng, …)
+"2","mutate (grouped): new variable 'lang_spurt_status' (character) with 6 unique values and 0% NA
+"
+"2","select: dropped 23 variables (vocabulary_type_step1, vocabulary_type_step2, slope, upper_limit, AIC_LL.3, …)
 "
 "0","# Descriptives of timing and words learned at spurt by language status/dominance group"
 "0","spurt_patterns_descriptives <- spurt_patterns_by_dominance %>% "
@@ -106,9 +118,19 @@
 "0","         lang_spurt.percent = round((lang_spurt.N * 100 / lang_dom.N), digits = 0)) %>%  # Estimate percentage of spurters and non-spurters in each anguage status by dominance group"
 "0","  relocate(lang_dom.N, .after = dominance) %>% "
 "0","  relocate(lang_spurt.percent, .after = lang_spurt.N)"
+"2","mutate (grouped): changed 15 values (19%) of 'lang_status' (0 new NA)
+"
+"2","group_by: 3 grouping variables (lang_status, lang_spurt_status, dominance)
+"
 "2","summarise: now 6 rows and 10 columns, 2 group variables remaining (lang_status, lang_spurt_status)
 "
 "2","ungroup: no grouping variables
+"
+"2","group_by: 2 grouping variables (lang_status, dominance)
+"
+"2","mutate (grouped): new variable 'lang_dom.N' (integer) with 3 unique values and 0% NA
+"
+"2","                  new variable 'lang_spurt.percent' (double) with 6 unique values and 0% NA
 "
 "2","relocate: columns reordered (lang_status, lang_spurt_status, dominance, lang_dom.N, lang_spurt.N, …)
 "
