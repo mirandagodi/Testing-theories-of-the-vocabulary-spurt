@@ -22,17 +22,19 @@ library(ggpubr)
 Eng_keepers_df <- read_csv("data/02_Eng_keepers.csv")
 Fr_keepers_df <- read_csv("data/02_Fr_keepers.csv")
 LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
+final_exposure_df <- read_csv("data/05_final_exposure_dataset.csv")
+final_vocabulary_scores_df <- read_csv("data/05_final_vocabulary_scores_dataset.csv")
 step1_df <- read_csv('data/04_analysis_step_1_dataset.csv')
 step2_df <- read_csv('data/05_analysis_step_2_dataset.csv')
 coefficients_04_df <- read_csv("data/04_analysis_step_1_coefficients.csv")
 vocabulary_scores_df <- read_csv("data/04_analysis_step_1_dataset.csv") 
-midpoint_identification <- read_csv('data/05.1_midpoint_identification.csv')
-midpoint_identification_sum <- read_csv('data/05.1_midpoint_identification_summary.csv')
 # These babies had been excluded in one but not the other language (they had missing data or exposure change in only one language)
 to_be_excluded <- read_csv("data/02_total_excluded.csv")
 
+midpoint_identification <- read_csv('data/05.1_midpoint_identification.csv')
+midpoint_identification_sum <- read_csv('data/05.1_midpoint_identification_summary.csv')
+# words_at_spurt_distinct <- read_csv('data/05_words_at_apurt_distinct_dataset.csv')
 ```
-
 ```{r}
 # Demographics
 # English
@@ -121,6 +123,7 @@ demographics_ethnicity_summary <- EngFr_demographics_df %>%
   count(correct_ethnicity) %>% 
   mutate(percent_ethnicity = round((n * 100 / sum(n)), digits = 2))
 ```
+
 ```{r}
 # Language status descriptives
 
@@ -145,6 +148,56 @@ lang_status_df <- step1_df %>%
 ```
 
 ```{r}
+# Sample descriptives
+sample_descriptives <- step1_df %>% 
+# Keep only one row per infant
+  group_by(study_id) %>%
+  filter(age == last(age),
+         vocabulary_type_step1 == last(vocabulary_type_step1)) %>%
+  ungroup() %>%
+  # Join with LEQ data
+  full_join(lang_status_df, by = c("study_id", "starting_age")) %>% 
+  summarise(mean_startage = mean(starting_age),
+            min_startage = min(starting_age),
+            max_startage = max(starting_age),
+            sd_startage = sd(starting_age),
+            mean_datapts = mean(num_datapts),
+            min_datapts = min(num_datapts),
+            max_datapts = max(num_datapts),
+            sd_datapts = sd(num_datapts),
+            mean_missing_datapts = round(mean(num_missing_datapts), digits = 2),
+            min_missing_datapts = min(num_missing_datapts),
+            max_missing_datapts = max(num_missing_datapts),
+            sd_missing_datapts = round(sd(num_missing_datapts), digits =2),
+            mean_expbal = mean(exposure_balance),
+            min_expbal = min(exposure_balance),
+            max_expbal = max(exposure_balance),
+            sd_expbal = sd(exposure_balance))
+
+missing_datapts_descriptives <- step1_df %>% 
+  # Keep only one row per infant
+  group_by(study_id, vocabulary_type_step1) %>%
+  filter(age == last(age),
+         # vocabulary_type_step1 == last(vocabulary_type_step1)
+         ) %>%
+  ungroup() %>%
+  # # Join with LEQ data
+  # full_join(lang_status_df, by = c("study_id", "starting_age")) %>% 
+  summarise(mean_missing_datapts = round(mean(num_missing_datapts), digits = 2),
+            min_missing_datapts = min(num_missing_datapts),
+            max_missing_datapts = max(num_missing_datapts),
+            sd_missing_datapts = round(sd(num_missing_datapts), digits =2))
+  
+total_num_datapts <- step1_df %>% 
+  # Keep only one row per infant
+  group_by(study_id) %>%
+  filter(age == last(age),
+         vocabulary_type_step1 == last(vocabulary_type_step1)) %>%
+  ungroup() %>% 
+  summarise(total_datapts = sum(num_datapts))
+```
+
+```{r}
 # Descriptives across measures
 
 general_descriptives <- step2_df %>% 
@@ -162,8 +215,8 @@ general_descriptives <- step2_df %>%
 # Midpoint, slope, and words learned at midpoint descriptives
 
 infants_by_vocabtype <- coefficients_04_df %>% 
-  # # Remove slope outliers
-  # filter(slope < 22) %>%
+  # Remove slope outliers
+  filter(slope < 22) %>%
   # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
   filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>%
   group_by(vocabulary_type_step1) %>% 
@@ -179,6 +232,8 @@ table_n <- step2_df %>%
   # pivot_wider(names_from = vocabulary_type_step1, values_from = c(N:percent_infants))
 
 table_descriptives_df <- step2_df %>%
+  # Remove outlier
+  filter(!(study_id == "S125")) %>%
   group_by(study_id) %>%
   select(vocabulary_type_step1, slope, midpoint, words_learned) %>% 
   rename(Midpoint = midpoint,
@@ -230,6 +285,30 @@ print(table_descriptives, preview ="docx")
 ```
 
 ```{r}
+# Model fit table
+model_fit_table <- coefficients_04_df %>% 
+  select(!c(slope, upper_limit)) %>% 
+  pivot_longer(!c(study_id, vocabulary_type_step1, midpoint), names_to = "model", values_to = "AIC") %>% 
+  group_by(study_id, vocabulary_type_step1) %>% 
+  mutate(best_fit_model = case_when(AIC == min(AIC) ~ model)) %>% 
+  filter(!is.na(best_fit_model)) %>% 
+  ungroup() %>% 
+  group_by(vocabulary_type_step1, best_fit_model) %>% 
+  summarise(N = n()) %>% 
+  pivot_wider(names_from = best_fit_model, values_from = N)
+```
+
+```{r}
+exposure_by_vocabtype <- final_exposure_df %>% 
+  select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, exposure_balance) %>% 
+  rename(English = cumulative_exp_Eng,
+         French = cumulative_exp_Fre,
+         concept = exposure_balance) %>% 
+  mutate(word = concept) %>% 
+  pivot_longer(!study_id, names_to = "vocabulary_type_step1", values_to = "exposure")
+```
+
+```{r}
 # Estimate vocabulary size by age with logistic equation (only spurters)
 
 #Join coefficients and full vocabulary data
@@ -239,8 +318,10 @@ logistic_spurters_df <- coefficients_04_df %>%
   group_by(study_id) %>%
   # Remove babies with midpoint out of age range
   filter(midpoint>=16 & midpoint<=max(age)) %>%
-  # Remove slope outliers
-  filter(slope < 22) %>%
+  # Remove baby determined as non-spurter
+  filter(!(study_id == "S125")) %>%
+  # # Remove slope outliers
+  # filter(slope < 22) %>%
   # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
   filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>%
   mutate(id_voc = paste0(study_id, vocabulary_type_step1)) %>% # This will be used to filter out data in another df that was removed here
@@ -259,7 +340,9 @@ curve_spurters <- id_voc_ages_spurters %>%
                 levels=c("English", "French", "concept", "word"))) %>%
   mutate(vocabulary_score = upper_limit / (1 + exp(-slope*(log(age) - log(midpoint)))),
          centered_age = age - midpoint, 
-         midpoint = round(midpoint, digits = 2))
+         midpoint = round(midpoint, digits = 2)) %>% 
+  # Join with exposure data
+  left_join(exposure_by_vocabtype, by = c("study_id", "vocabulary_type_step1"))
 ```
 
 ```{r}
@@ -270,24 +353,70 @@ vocab_at_midpoint <- curve_spurters %>%
 # Color palette
 num_colors <- length(unique(curve_spurters$study_id))
 my_palette <- colorRampPalette(brewer.pal(8, "Paired"))(num_colors)
+single_palette <- c("steelblue3", "blue4")
 
 # Plot individual logistic curves 
 individual_logistic_plot <- curve_spurters %>% 
   ggplot() +
   aes(x = age, y = vocabulary_score, 
       color = study_id,
-      group = study_id) +
+      group = study_id
+      ) +
   geom_line(show.legend = FALSE) +
   geom_point(data = vocab_at_midpoint, aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
   labs(x = "Age (Months)", y = "Vocabulary Size (Words)") +
-  scale_color_manual(values = my_palette) +
+  # scale_color_manual(values = my_palette) +
   theme_bw() +
-  facet_wrap(vars(vocabulary_type_step1), ncol = 2) 
+  facet_wrap(vars(vocabulary_type_step1), ncol = 2, scales = "free") 
 
 individual_logistic_plot
 
-```
+# Single language
+singlelang_individual_logistic_plot <- curve_spurters %>% 
+  filter(vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French") %>% 
+  ggplot() +
+  aes(x = age, y = vocabulary_score, 
+      color = exposure,
+      group = study_id
+      ) +
+  geom_line(show.legend = TRUE) +
+  geom_point(data = vocab_at_midpoint %>% filter(vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French"), aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
+  labs(x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure percent") +
+  scale_color_gradient(low = "olivedrab2", high = "deeppink3") +
+  theme_bw() +
+  theme(legend.position="bottom") +
+  facet_wrap(vars(vocabulary_type_step1), nrow = 2, scales = "free") 
 
+singlelang_individual_logistic_plot
+
+# Combined languages
+combinedlang_individual_logistic_plot <- curve_spurters %>% 
+  filter(vocabulary_type_step1 == "concept" | vocabulary_type_step1 == "word") %>% 
+  ggplot() +
+  aes(x = age, y = vocabulary_score, 
+      color = exposure,
+      group = study_id
+      ) +
+  geom_line(show.legend = TRUE) +
+  geom_point(data = vocab_at_midpoint %>% filter(vocabulary_type_step1 == "concept" | vocabulary_type_step1 == "word"), aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
+  labs(x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure balance") +
+  scale_color_gradient(low = "dodgerblue", high = "orangered3") +
+  theme_bw() +
+  theme(legend.position="bottom") +
+  facet_wrap(vars(vocabulary_type_step1), nrow = 2, scales = "free") 
+
+combinedlang_individual_logistic_plot
+
+# Combine plots
+all_logistic_plots <- ggarrange(singlelang_individual_logistic_plot, combinedlang_individual_logistic_plot + rremove("ylab"), ncol = 2, 
+                                # nrow = 2, 
+                                legend = "bottom" 
+                                # common.legend = TRUE
+                                )
+all_logistic_plots
+ggsave(file="logistic_curve_plots.png", all_logistic_plots, width = 20, height = 16, units = "cm")
+
+```
 ```{r}
 # Plot midpoint and slope models for single-language vocabularies
 Sing_midpoint_plot <- step2_df %>%
@@ -340,6 +469,7 @@ WoCo_midpoint_plot <- step2_df %>%
   stat_smooth(method = lm, alpha = 0.15, show.legend = FALSE) +
   scale_color_manual(values = WoCo_palette) +
   labs(x = "Exposure balance", y = "Timing of spurt (midpoint)") +
+  facet_grid(~vocab_type) +
   ylim(16,30) +
   theme_bw() +
   theme(legend.position = "none")
@@ -357,6 +487,7 @@ WoCo_slope_plot <- step2_df %>%
   stat_smooth(method = lm, alpha = 0.15,) +
   scale_color_manual(values = WoCo_palette) +
   labs(x = "Exposure balance", y = "Steepness (slope)", color = "Vocabulary type") +
+  facet_grid(~vocab_type) +
   ylim(0,20) +
   theme_bw() +
   theme(legend.position="bottom")
@@ -369,15 +500,66 @@ WoCo_plots <-  arrangeGrob(WoCo_midpoint_plot, WoCo_slope_plot, nrow=1)
 WoCo_plots
 # ggsave(file="WoCo_plots.png", WoCo_plots, width = 17, height = 8, units = "cm")
 
-# Put four graphs together
-step2_plots <-  arrangeGrob(Sing_midpoint_plot, Sing_slope_plot, WoCo_midpoint_plot, WoCo_slope_plot, nrow=2)
-step2_plots
 
-
-step2_plots <- ggarrange(Sing_midpoint_plot, Sing_slope_plot, WoCo_midpoint_plot, WoCo_slope_plot, ncol = 2, nrow = 2, legend = "bottom", common.legend = TRUE)
+step2_plots <- ggarrange(Sing_midpoint_plot, 
+                         WoCo_midpoint_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
+                         Sing_slope_plot, 
+                         WoCo_slope_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
+                         ncol = 2, nrow = 2, widths = c(1.2, 2), legend = "none", common.legend = FALSE)
 step2_plots
 ggsave(file="step2_plots.png", step2_plots, width = 17, height = 12, units = "cm")
 
+```
+```{r}
+# Plot words learned for single-language vocabularies
+Sing_wordslearned_plot <- step2_df %>%
+  filter(vocabulary_type_step2 == "single") %>%
+  # filter(!(study_id == "S101" & vocabulary_type_step1 == "French")) %>%
+  mutate(vocab_type = case_when(vocabulary_type_step2 == "single" ~ "Single-Language")) %>%
+  ggplot(aes(x = exposure_percent, y = words_learned)) +
+  geom_point(color = "#e31a1c") +
+  stat_smooth(method = lm, alpha = 0.15, color = "#e31a1c") +
+  labs(x = "Exposure percent", y = "Word learned during the spurt") +
+  facet_grid(~vocab_type) +
+  # scale_color_manual(values = WoCo_palette) +
+  xlim(10,100) +
+  ylim(0,180) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+Sing_wordslearned_plot
+
+# Plot words learned for single-language vocabularies
+
+WoCo_wordslearned_plot <- step2_df %>%
+  filter(vocabulary_type_step2 == "word" | vocabulary_type_step2 == "concept") %>%
+  mutate(vocab_type = case_when(vocabulary_type_step2 == "word" ~ "Word",
+                                vocabulary_type_step2 == "concept" ~ "Concept")) %>% 
+  mutate(across(vocab_type, factor,
+                levels=c("Concept", "Word"))) %>%
+  ggplot(aes(x = exposure_balance, y = words_learned, color = vocab_type)) +
+  geom_point(show.legend = FALSE) +
+  stat_smooth(method = lm, alpha = 0.15, show.legend = FALSE) +
+  scale_color_manual(values = WoCo_palette) +
+  labs(x = "Exposure balance", y = "Timing of spurt (midpoint)") +
+  facet_grid(~vocab_type) +
+  # xlim(10,100) +
+  ylim(0,180) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+WoCo_wordslearned_plot
+
+# Put both graphs together
+wordslearned_plots <- ggarrange(Sing_wordslearned_plot, 
+                         WoCo_wordslearned_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
+                         # Sing_slope_plot, 
+                         # WoCo_slope_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
+                         ncol = 2, 
+                         # nrow = 2, 
+                         widths = c(1.2, 2), legend = "none", common.legend = FALSE)
+wordslearned_plots
+ggsave(file="wordslearned_plots.png", wordslearned_plots, width = 17, height = 8, units = "cm")
 ```
 
 ```{r}
@@ -390,8 +572,10 @@ logistic_full_df <- coefficients_04_df %>%
    # Join vocabulary scores dataframe
   full_join(vocabulary_scores_df, by = c("study_id", "vocabulary_type_step1")) %>%
   group_by(study_id) %>%
-  # Remove slope outliers
-  filter(slope < 22) %>%
+  # # Remove babies with midpoint out of age range
+  # filter(midpoint>=16 & midpoint<=max(age)) %>%
+  # # Remove slope outliers
+  # filter(slope < 22) %>%
   # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language
   filter(!((vocabulary_type_step1 == "word" | vocabulary_type_step1 == "concept") & study_id %in% to_be_excluded$study_id)) %>%
   mutate(id_voc = paste0(study_id, vocabulary_type_step1)) %>% # This will be used to filter out data in another df that was removed here
@@ -454,7 +638,7 @@ vocab_at_18m_summary <- vocab_at_18m %>%
          "18 Months.Spurters.Range" = paste0(Spurters.Min," - ",Spurters.Max),
          "18 Months.Non-Spurters.M (SD)" = paste0(Non_Spurters.M, " (",Non_Spurters.SD,")"),
          "18 Months.Non-Spurters.Range" = paste0(Non_Spurters.Min," - ",Non_Spurters.Max)) %>% 
-  select(vocabulary_type_step1, Spurters.N,"18 Months.Spurters.M (SD)", "18 Months.Spurters.Range", Non_Spurters.N, "18 Months.Non-Spurters.M (SD)", "18 Months.Non-Spurters.Range") %>% 
+  select(vocabulary_type_step1, Non_Spurters.N, "18 Months.Non-Spurters.M (SD)", "18 Months.Non-Spurters.Range", Spurters.N,"18 Months.Spurters.M (SD)", "18 Months.Spurters.Range") %>% 
   rename("18 Months.Spurters.N" = Spurters.N,
          "18 Months.Non-Spurters.N" = Non_Spurters.N)
   
@@ -524,7 +708,7 @@ vocab_at_30m_summary <- vocab_at_30m %>%
          "30 Months.Spurters.Range" = paste0(Spurters.Min," - ",Spurters.Max),
          "30 Months.Non-Spurters.M (SD)" = paste0(Non_Spurters.M, " (",Non_Spurters.SD,")"),
          "30 Months.Non-Spurters.Range" = paste0(Non_Spurters.Min," - ",Non_Spurters.Max)) %>% 
-  select(vocabulary_type_step1, Spurters.N,"30 Months.Spurters.M (SD)", "30 Months.Spurters.Range", Non_Spurters.N, "30 Months.Non-Spurters.M (SD)", "30 Months.Non-Spurters.Range") %>% 
+  select(vocabulary_type_step1, Non_Spurters.N, "30 Months.Non-Spurters.M (SD)", "30 Months.Non-Spurters.Range", Spurters.N,"30 Months.Spurters.M (SD)", "30 Months.Spurters.Range") %>% 
   rename("30 Months.Spurters.N" = Spurters.N,
          "30 Months.Non-Spurters.N" = Non_Spurters.N)
   
@@ -543,16 +727,19 @@ table_30m_descriptives
 # print(table_30m_descriptives, preview ="docx")
 
 ```
-
 ```{r}
 # Create a single table with comoparion of spurters vs non-spurters at 18 and 30 months (previously tables 2 and 3)
 
-spurters_vs_nonspurters <- full_join(vocab_at_18m_summary, vocab_at_30m_summary, by = "vocabulary_type_step1") 
+spurters_vs_nonspurters <- full_join(vocab_at_18m_summary, vocab_at_30m_summary, by = "vocabulary_type_step1"
+                                     # , suffix = c(".18m", ".30m")
+                                     ) #%>% 
+  # rename_with(~ paste0("18m.", .x, recycle0 = TRUE, any_of(c(ends_with(".18m"))))
   
 
 spurters_vs_nonspurters_descriptives <- nice_table(
   spurters_vs_nonspurters, 
   separate.header = TRUE, 
+  # italics = seq(table_descriptives_df),
   title = c("Table 2", "Descriptive Statistics of Vocabulary Size at 18 and 30 Months"),
   note = c(
     "Descriptive statistics of spurters and non-spurters in each vocabulary type."
@@ -562,3 +749,4 @@ spurters_vs_nonspurters_descriptives <- nice_table(
 spurters_vs_nonspurters_descriptives
 print(spurters_vs_nonspurters_descriptives, preview ="docx")
 ```
+

@@ -3,7 +3,7 @@
     "path": "~/GitHub/Testing-theories-of-the-vocabulary-spurt/07_manuscript.Rmd",
     "project_path": "07_manuscript.Rmd",
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "978770091",
     "contents": "",
     "dirty": false,
     "created": 1692624463574.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "401,46",
-        "scrollLine": "385"
+        "cursorPosition": "752,0",
+        "scrollLine": "707"
     },
     "folds": "",
-    "lastKnownWriteTime": 1691023039,
+    "lastKnownWriteTime": 1692624914,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1691023039,
+    "last_content_update": 1692624914243,
     "read_only": false,
     "read_only_alternatives": []
 }
