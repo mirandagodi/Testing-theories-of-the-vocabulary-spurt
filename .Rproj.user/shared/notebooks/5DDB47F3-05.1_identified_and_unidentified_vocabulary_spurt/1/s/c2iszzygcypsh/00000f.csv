@@ -21,11 +21,19 @@
 "0","         SD_score = round(SD_score, digits = 2),"
 "0","         min_score = round(min_score, digits = 2),"
 "0","         max_score = round(max_score, digits = 2))"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
 "2","filter (grouped): removed 8 rows (5%), 160 rows remaining
 "
 "2","ungroup: no grouping variables
 "
+"2","group_by: 2 grouping variables (vocabulary_type_step1, midp_identify)
+"
 "2","summarise: now 8 rows and 6 columns, one group variable remaining (vocabulary_type_step1)
+"
+"2","mutate (grouped): changed 3 values (38%) of 'mean_score' (0 new NA)
+"
+"2","                  changed 4 values (50%) of 'SD_score' (0 new NA)
 "
 "0","# Create df with vocabulary size at 30 months"
 "0","vocab_at_30m <- "
@@ -35,6 +43,8 @@
 "0","  group_by(study_id, vocabulary_type_step1) %>%"
 "0","  arrange(desc(age)) %>%"
 "0","  filter(row_number() == 1)"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
 "2","filter (grouped): removed 2,164 rows (93%), 170 rows remaining
 "
 "0","# Vocabulary size at 30 months descriptives"
@@ -54,9 +64,17 @@
 "0","         SD_score = round(SD_score, digits = 2),"
 "0","         min_score = round(min_score, digits = 2),"
 "0","         max_score = round(max_score, digits = 2))"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
 "2","filter (grouped): no rows removed
 "
 "2","ungroup: no grouping variables
 "
+"2","group_by: 2 grouping variables (vocabulary_type_step1, midp_identify)
+"
 "2","summarise: now 8 rows and 6 columns, one group variable remaining (vocabulary_type_step1)
+"
+"2","mutate (grouped): changed one value (12%) of 'mean_score' (0 new NA)
+"
+"2","                  changed one value (12%) of 'SD_score' (0 new NA)
 "

@@ -19,7 +19,11 @@
 "0","                                       TRUE ~ cumulative_exp_L4)) %>% "
 "0","   mutate(across(vocabulary_type_step1, factor,"
 "0","                levels=c(""English"", ""French"", ""concept"", ""word""))) "
-"2","full_join: added 3 columns (midpoint, slope, upper_limit)
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
+"2","mutate (grouped): new variable 'completed_months' (integer) with 7 unique values and 0% NA
+"
+"2","full_join: added 7 columns (midpoint, slope, upper_limit, AIC_LL.3, AIC_Cubic, …)
 "
 "2","           > rows only in x       0
 "
@@ -32,6 +36,8 @@
 "2","           > rows total       2,388
 "
 "2","ungroup: no grouping variables
+"
+"2","group_by: one grouping variable (study_id)
 "
 "2","left_join: added 10 columns (subject_id, dob, phase, end_age, cumulative_exp_Eng, …)
 "
@@ -48,5 +54,11 @@
 "2","ungroup: no grouping variables
 "
 "2","filter: removed 54 rows (2%), 2,334 rows remaining
+"
+"2","mutate: changed 1,278 values (55%) of 'cumulative_exp_L3' (1278 fewer NA)
+"
+"2","        changed 2,180 values (93%) of 'cumulative_exp_L4' (2180 fewer NA)
+"
+"2","mutate: converted 'vocabulary_type_step1' from character to factor (0 new NA)
 "
 "0","  "

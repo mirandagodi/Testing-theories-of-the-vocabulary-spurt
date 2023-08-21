@@ -5,14 +5,12 @@
 "0","   # Join vocabulary scores dataframe"
 "0","  full_join(vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>%"
 "0","  group_by(study_id) %>%"
-"0","  # Remove slope outliers"
-"0","  filter(slope < 22) %>%"
 "0","  # Remove word and concept data from babies who were excluded in one language due to missing data or exposure change in that language"
 "0","  filter(!((vocabulary_type_step1 == ""word"" | vocabulary_type_step1 == ""concept"") & study_id %in% to_be_excluded$study_id)) %>%"
 "0","  mutate(id_voc = paste0(study_id, vocabulary_type_step1)) %>% # This will be used to filter out data in another df that was removed here"
 "0","  # Round midpoint to one decimal place"
 "0","  mutate(midpoint = round(midpoint, digits = 2))"
-"2","full_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","full_join: added 9 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","           > rows only in x       0
 "
@@ -24,14 +22,18 @@
 "
 "2","           > rows total       2,388
 "
-"2","filter (grouped): removed 42 rows (2%), 2,346 rows remaining
+"2","group_by: one grouping variable (study_id)
 "
-"2","filter (grouped): removed 54 rows (2%), 2,292 rows remaining
+"2","filter (grouped): removed 54 rows (2%), 2,334 rows remaining
+"
+"2","mutate (grouped): new variable 'id_voc' (character) with 170 unique values and 0% NA
+"
+"2","mutate (grouped): changed 2,334 values (100%) of 'midpoint' (0 new NA)
 "
 "0","# Create dataframe with age for the logistic curve"
 "0","ages <- tibble(age = seq(16, 30, by = 0.01))"
 "0","id_voc <- logistic_df %>% distinct(study_id, vocabulary_type_step1, id_voc)"
-"2","distinct (grouped): removed 2,125 rows (93%), 167 rows remaining
+"2","distinct (grouped): removed 2,164 rows (93%), 170 rows remaining
 "
 "0","id_voc_ages <- merge(id_voc, ages)"
 "0",""
@@ -45,29 +47,37 @@
 "0","         midpoint = round(midpoint, digits = 2)) %>%"
 "0","  # Add midpoint identification column"
 "0","  left_join(midpoint_identification_sum %>% select(study_id, vocabulary_type_step1, midp_identify), by = c(""study_id"", ""vocabulary_type_step1""))"
-"2","left_join: added 3 columns (midpoint, slope, upper_limit)
+"2","left_join: added 7 columns (midpoint, slope, upper_limit, AIC_LL.3, AIC_Cubic, …)
 "
 "2","           > rows only in x         0
 "
-"2","           > rows only in y  (      7)
+"2","           > rows only in y  (      4)
 "
-"2","           > matched rows     233,967
+"2","           > matched rows     238,170
 "
 "2","           >                 =========
 "
-"2","           > rows total       233,967
+"2","           > rows total       238,170
 "
-"2","select: dropped 21 variables (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","mutate: converted 'vocabulary_type_step1' from character to factor (0 new NA)
+"
+"2","mutate: changed 238,170 values (100%) of 'midpoint' (0 new NA)
+"
+"2","        new variable 'vocabulary_score' (double) with 193,338 unique values and 0% NA
+"
+"2","        new variable 'centered_age' (double) with 193,338 unique values and 0% NA
+"
+"2","select: dropped 27 variables (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","left_join: added one column (midp_identify)
 "
 "2","           > rows only in x         0
 "
-"2","           > rows only in y  (      3)
+"2","           > rows only in y  (      0)
 "
-"2","           > matched rows     236,769    (includes duplicates)
+"2","           > matched rows     240,972    (includes duplicates)
 "
 "2","           >                 =========
 "
-"2","           > rows total       236,769
+"2","           > rows total       240,972
 "
