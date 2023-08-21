@@ -1,0 +1,5 @@
+"0","# Clean coefficients dataframe"
+"0","coefficients_df <-  full_join(logistic_curve_coefficients_LL3_conti, model_AICs_LL3_conti, by = ""id_lang"") %>%"
+"0","  separate(id_lang, c(""study_id"", ""vocabulary_type_step1"")) %>%"
+"0","  # Convert slope values to positive"
+"0","  mutate(slope = abs(slope))"

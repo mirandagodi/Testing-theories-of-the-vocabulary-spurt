@@ -25,26 +25,24 @@
 "0","  # Remove rows of monolinguals' non-heard language"
 "0","  ungroup() %>%"
 "0","  filter(!(vocabulary_type_step1 == 'English' & is.na(eng_completed))) %>%"
-"0","  filter(!(vocabulary_type_step1 == 'French' & is.na(fr_completed)))"
-"2","filter: removed 279,048 rows (37%), 483,969 rows remaining
-"
-"2","summarize: now 659 rows and 11 columns, one group variable remaining (study_id)
-"
-"2","rename: renamed 4 variables (English, French, word, concept)
-"
-"2","pivot_longer: reorganized (English, French, word, concept) into (vocabulary_type_step1, vocabulary_score) [was 659x11, now 2636x9]
-"
-"2","ungroup: no grouping variables
-"
-"2","filter: removed 124 rows (5%), 2,512 rows remaining
-"
-"2","filter: removed 124 rows (5%), 2,388 rows remaining
-"
+"0","  filter(!(vocabulary_type_step1 == 'French' & is.na(fr_completed))) %>% "
+"0","  # Estimate number of data points missing by baby in each vocabulary type"
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  mutate(num_missing_datapts = sum(is.na(vocabulary_score)),"
+"0","         # Set the maximum vocabulary size for single languages(i.e., the max CDI score in English and/or French)"
+"0","         total = case_when(vocabulary_type_step1 == 'English' ~ 680,"
+"0","                           vocabulary_type_step1 == 'French' ~ 664)) %>% "
+"0","  ungroup() %>% "
+"0","  group_by(study_id, n_months) %>% "
+"0","  # Set the maximum vocabulary size for combined languages"
+"0","  mutate(total = case_when(vocabulary_type_step1 == 'word' ~ sum(total, na.rm = TRUE),"
+"0","                           vocabulary_type_step1 == 'concept' ~ sum(total, na.rm = TRUE),"
+"0","                           TRUE ~ total)) %>% "
+"0","  mutate(total = case_when(vocabulary_type_step1 == 'concept' & total == 1344 ~ 1344 - 611,"
+"0","                           TRUE ~ total))"
+"2","`summarise()` has grouped output by 'study_id'. You can override using the `.groups` argument."
 "0","# Create df with babies who were older then 18 months when they started study "
 "0","startage_over18 <- vocabulary_scores_03_df %>%"
 "0","  filter(starting_age > 18) %>%"
 "0","  distinct(study_id)"
-"2","filter: removed 483,969 rows (63%), 279,048 rows remaining
-"
-"2","distinct: removed 279,015 rows (>99%), 33 rows remaining
-"
+"0",""

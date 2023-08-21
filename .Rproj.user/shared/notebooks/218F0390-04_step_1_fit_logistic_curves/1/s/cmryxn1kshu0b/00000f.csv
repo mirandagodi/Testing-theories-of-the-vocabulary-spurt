@@ -19,21 +19,3 @@
 "0","            min_expbal = min(exposure_balance),"
 "0","            max_expbal = max(exposure_balance),"
 "0","            sd_expbal = sd(exposure_balance))"
-"2","filter (grouped): removed 2,340 rows (98%), 48 rows remaining
-"
-"2","ungroup: no grouping variables
-"
-"2","full_join: added 6 columns (lang_status, cumulative_exp_Eng, cumulative_exp_Fre, cumulative_exp_L3, cumulative_exp_L4, …)
-"
-"2","           > rows only in x    0
-"
-"2","           > rows only in y    0
-"
-"2","           > matched rows     48
-"
-"2","           >                 ====
-"
-"2","           > rows total       48
-"
-"2","summarise: now one row and 12 columns, ungrouped
-"
