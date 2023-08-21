@@ -1,0 +1,31 @@
+"0","# COMMENT THIS CHUNK, RERUN SCRIPT, SAVE STEP2_DF WITH CORRECT WORDS_LEARNED"
+"0","# Estimate words learned during the vocabulary spurt (model)"
+"0","words_at_spurt_model <- curve %>%"
+"0","  # Keep only the month before and the month after the vocabulary spurt"
+"0","  group_by(study_id, vocabulary_type_step1) %>%"
+"0","  filter(age >= (midpoint - 0.5) & # Month before the spurt"
+"0","         # age <= (midpoint + 0.501)) %>% # Month after the spurt"
+"0","         age <= (midpoint + 0.5)) %>% # Month after the spurt"
+"0","  # filter(age == midpoint) %>%"
+"0","  # Estimate the difference in vocabulary score before and after the spurt"
+"0","  mutate(words_learned_model = max(vocabulary_score) - min(vocabulary_score)) %>%"
+"0","  select(study_id, vocabulary_type_step1, id_voc, words_learned_model, age, vocabulary_score)"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
+"2","filter (grouped): removed 152,116 rows (93%), 11,801 rows remaining
+"
+"2","mutate (grouped): new variable 'words_learned_model' (double) with 91 unique values and 0% NA
+"
+"2","select: dropped 8 variables (midpoint, slope, upper_limit, AIC_LL.3, AIC_Cubic, …)
+"
+"0","# Create dataframe with distinct words learned at spurt to merge with step2_df"
+"0","words_at_spurt_model_distinct <- words_at_spurt_model %>% "
+"0","  select(study_id, vocabulary_type_step1, words_learned_model) %>% "
+"0","  group_by(study_id, vocabulary_type_step1) %>% "
+"0","  filter(row_number() == 1)"
+"2","select: dropped 3 variables (id_voc, age, vocabulary_score)
+"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
+"2","filter (grouped): removed 11,684 rows (99%), 117 rows remaining
+"

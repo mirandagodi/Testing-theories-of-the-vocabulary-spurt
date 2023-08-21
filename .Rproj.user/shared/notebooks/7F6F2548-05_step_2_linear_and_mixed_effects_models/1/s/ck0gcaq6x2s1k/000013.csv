@@ -1,8 +1,0 @@
-"0",""
-"0","# Word"
-"0","wordsatspurt_word_model <- "
-"0","  lm(words_learned ~ exposure_balance, data = word_df)"
-"0",""
-"0","check_model(wordsatspurt_word_model)"
-"2","Not enough model terms in the conditional part of the model to check for multicollinearity.
-"

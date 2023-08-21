@@ -8,5 +8,7 @@
 "0","            min_slope = min(slope),"
 "0","            max_slope = max(slope),"
 "0","            N = n()) "
+"2","group_by: one grouping variable (vocabulary_type_step1)
+"
 "2","summarise: now 4 rows and 8 columns, ungrouped
 "

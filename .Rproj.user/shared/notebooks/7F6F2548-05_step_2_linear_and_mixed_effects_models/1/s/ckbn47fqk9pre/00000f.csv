@@ -16,9 +16,17 @@
 "0","  filter(study_id %in% coefficients_04_df$study_id) "
 "2","select: dropped 5 variables (subject_id, dob, phase, cumulative_exp_L3, cumulative_exp_L4)
 "
+"2","group_by: one grouping variable (study_id)
+"
 "2","filter (grouped): no rows removed
 "
 "2","ungroup: no grouping variables
+"
+"2","mutate: changed 117 values (94%) of 'cumulative_exp_Eng' (0 new NA)
+"
+"2","        changed 124 values (99%) of 'cumulative_exp_Fre' (0 new NA)
+"
+"2","mutate: new variable 'exposure_balance' (double) with 112 unique values and 2% NA
 "
 "2","filter: removed 77 rows (62%), 48 rows remaining
 "

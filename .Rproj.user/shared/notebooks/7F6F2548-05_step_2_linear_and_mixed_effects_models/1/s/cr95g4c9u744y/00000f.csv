@@ -4,6 +4,8 @@
 "0","  group_by(study_id, vocabulary_type_step1) %>% "
 "0","  filter(vocabulary_score == max(vocabulary_score, na.rm=TRUE)) %>%"
 "0","  filter(n_months == max(n_months)) "
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
 "2","filter (grouped): removed 2,212 rows (93%), 176 rows remaining
 "
 "2","filter (grouped): removed 2 rows (1%), 174 rows remaining

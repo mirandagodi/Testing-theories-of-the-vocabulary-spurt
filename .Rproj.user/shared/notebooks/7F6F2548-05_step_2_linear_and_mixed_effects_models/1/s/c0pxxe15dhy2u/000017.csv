@@ -1,0 +1,13 @@
+"0","# Linear models for word vocabulary"
+"0","word_df <- step2_df %>%"
+"0","  filter(vocabulary_type_step2 == ""word"")"
+"2","filter: removed 83 rows (72%), 33 rows remaining
+"
+"0","# Midpoint"
+"0","midpoint_word_model <- "
+"0","  lm(midpoint ~ exposure_balance, data = word_df)"
+"0",""
+"0","check_model(midpoint_word_model)"
+"2","Not enough model terms in the conditional part of the model to check for
+  multicollinearity.
+"

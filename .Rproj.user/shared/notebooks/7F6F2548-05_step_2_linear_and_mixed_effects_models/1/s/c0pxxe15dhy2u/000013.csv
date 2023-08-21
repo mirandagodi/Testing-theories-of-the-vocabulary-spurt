@@ -1,8 +1,0 @@
-"0",""
-"0","# Slope"
-"0","slope_word_model <- "
-"0","  lm(slope ~ exposure_balance, data = word_df)"
-"0",""
-"0","check_model(slope_word_model)"
-"2","Not enough model terms in the conditional part of the model to check for multicollinearity.
-"

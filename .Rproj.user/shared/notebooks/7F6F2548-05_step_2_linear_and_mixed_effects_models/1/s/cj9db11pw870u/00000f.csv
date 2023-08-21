@@ -3,7 +3,8 @@
 "0","# Create a column with the age at spurt (same as midpoint) that will be used when joining with vocabulary_scores_df to filter rows around the spurt"
 "0","age_at_spurt <- coefficients_04_df %>% "
 "0","  mutate(age = midpoint)"
-"0",""
+"2","mutate: new variable 'age' (double) with 138 unique values and 0% NA
+"
 "0","# Join vocabulary scores dataframe with spurt coefficients dataframe"
 "0","words_at_spurt <- vocabulary_scores_df %>% # Some babies do not have data in one language (English or French), it is either because they are monolingual or because their data in that language was removed due to missing data or exposure change in that language"
 "0","  # Estimate number of data points for each baby"
@@ -23,8 +24,8 @@
 "0","  ungroup() %>% "
 "0","  group_by(study_id) %>%"
 "0","  filter(midpoint>=16 & midpoint<=30.3) %>% # No babies submitted data before 16 months or after 30.3 months of age"
-"0","  # Remove slope outliers"
-"0","  filter(slope < 22) %>%"
+"0","  # Remove baby determined as non-spurter"
+"0","  filter(!(study_id == ""S125"")) %>% "
 "0","  ungroup() %>% "
 "0","  # Keep only the rows around the spurt (the month before, the age when it occurred, and the moth after)"
 "0","  group_by(study_id, vocabulary_type_step1) %>%"
@@ -40,9 +41,13 @@
 "0","  mutate(vocab_score_difference = max(vocabulary_score, na.rm = TRUE) - min(vocabulary_score, na.rm = TRUE), # Estimate the number of words learned in the previous and the measure following the spurt"
 "0","         age_difference = max(age, na.rm = TRUE) - min(age, na.rm = TRUE), # Estimate number of months (with decimals) between the previous and the measure following the spurt"
 "0","         words_learned = vocab_score_difference / age_difference) #%>%  # Estimate the number of words learned in a one-month period spurt"
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
+"2","mutate (grouped): new variable 'completed_months' (integer) with 7 unique values and 0% NA
+"
 "2","filter (grouped): removed 222 rows (9%), 2,166 rows remaining
 "
-"2","full_join: added 3 columns (midpoint, slope, upper_limit)
+"2","full_join: added 7 columns (midpoint, slope, upper_limit, AIC_LL.3, AIC_Cubic, …)
 "
 "2","           > rows only in x   2,166
 "
@@ -58,6 +63,8 @@
 "
 "2","filter: removed 48 rows (2%), 2,292 rows remaining
 "
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
+"
 "2","fill (grouped): changed 170 values (7%) of 'completed_months' (170 fewer NA)
 "
 "2","                changed 2,122 values (93%) of 'midpoint' (2122 fewer NA)
@@ -68,13 +75,27 @@
 "
 "2","ungroup: no grouping variables
 "
+"2","group_by: one grouping variable (study_id)
+"
 "2","filter (grouped): removed 696 rows (30%), 1,596 rows remaining
 "
-"2","filter (grouped): removed 45 rows (3%), 1,551 rows remaining
+"2","filter (grouped): removed 15 rows (1%), 1,581 rows remaining
 "
 "2","ungroup: no grouping variables
 "
-"2","filter (grouped): removed 1,205 rows (78%), 346 rows remaining
+"2","group_by: 2 grouping variables (study_id, vocabulary_type_step1)
 "
-"2","filter (grouped): removed 4 rows (1%), 342 rows remaining
+"2","mutate (grouped): new variable 'around_spurt' (character) with 2 unique values and 78% NA
+"
+"2","filter (grouped): removed 1,229 rows (78%), 352 rows remaining
+"
+"2","mutate (grouped): new variable 'spurt_rows' (integer) with 2 unique values and 0% NA
+"
+"2","filter (grouped): removed 4 rows (1%), 348 rows remaining
+"
+"2","mutate (grouped): new variable 'vocab_score_difference' (double) with 68 unique values and 0% NA
+"
+"2","                  new variable 'age_difference' (double) with 64 unique values and 0% NA
+"
+"2","                  new variable 'words_learned' (double) with 89 unique values and 0% NA
 "

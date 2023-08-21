@@ -15,8 +15,8 @@
 "0","  left_join(final_vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>% "
 "0","  # Remove babies with midpoint out of age range"
 "0","  filter(midpoint>=16 & midpoint<=age) %>%"
-"0","  # Remove slope outliers"
-"0","  filter(slope < 22) %>%"
+"0","  # Remove baby determined as non-spurter"
+"0","  filter(!(study_id == ""S125"")) %>%"
 "0","  # Set language dominance"
 "0","  mutate(dominance = case_when(exposure_percent>50 ~ ""dominant"","
 "0","                               exposure_percent<50 ~ ""nondominant"")) %>% "
@@ -36,9 +36,13 @@
 "
 "2","           > rows total       174
 "
+"2","mutate: new variable 'vocabulary_type_step2' (character) with 3 unique values and 0% NA
+"
 "2","relocate: columns reordered (study_id, vocabulary_type_step1, vocabulary_type_step2, midpoint, slope, …)
 "
-"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","mutate: new variable 'exposure_percent' (double) with 75 unique values and 55% NA
+"
+"2","left_join: added 9 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","           > rows only in x     0
 "
@@ -52,9 +56,11 @@
 "
 "2","filter: removed 53 rows (30%), 121 rows remaining
 "
-"2","filter: removed 3 rows (2%), 118 rows remaining
+"2","filter: removed one row (1%), 120 rows remaining
 "
-"2","filter: removed 4 rows (3%), 114 rows remaining
+"2","mutate: new variable 'dominance' (character) with 3 unique values and 59% NA
+"
+"2","filter: removed 4 rows (3%), 116 rows remaining
 "
 "2","left_join: added one column (words_learned)
 "
@@ -62,17 +68,17 @@
 "
 "2","           > rows only in y  (  0)
 "
-"2","           > matched rows     114
+"2","           > matched rows     116
 "
 "2","           >                 =====
 "
-"2","           > rows total       114
+"2","           > rows total       116
 "
 "0","# Babies with midpoint out of age range"
 "0","unidentified_midpoint <- coefficients_04_df %>% "
 "0","  left_join(final_vocabulary_scores_df, by = c(""study_id"", ""vocabulary_type_step1"")) %>%"
 "0","  filter(!(midpoint>=16 & midpoint<=age)) "
-"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","left_join: added 9 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","           > rows only in x     0
 "
@@ -90,9 +96,9 @@
 "0","some_identified_midpoint <- unidentified_midpoint %>% "
 "0","  filter(study_id %in% step2_df$study_id) %>% "
 "0","  distinct(study_id)"
-"2","filter: removed 37 rows (70%), 16 rows remaining
+"2","filter: removed 40 rows (75%), 13 rows remaining
 "
-"2","distinct: removed 5 rows (31%), 11 rows remaining
+"2","distinct: removed 3 rows (23%), 10 rows remaining
 "
 "0","# Babies with no identified midpoints"
 "0","none_identified_midpoint <- coefficients_04_df %>%"
@@ -103,7 +109,7 @@
 "0","  # Remover babies who made it to step 2 (because they spurted in at least one vocab type)"
 "0","  filter(!(study_id %in% step2_df$study_id)) %>%"
 "0","  distinct(study_id)"
-"2","left_join: added 7 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
+"2","left_join: added 9 columns (n_months, age, starting_age, eng_completed, fr_completed, …)
 "
 "2","           > rows only in x     0
 "
@@ -117,7 +123,7 @@
 "
 "2","filter: removed 121 rows (70%), 53 rows remaining
 "
-"2","filter: removed 16 rows (30%), 37 rows remaining
+"2","filter: removed 13 rows (25%), 40 rows remaining
 "
-"2","distinct: removed 27 rows (73%), 10 rows remaining
+"2","distinct: removed 29 rows (72%), 11 rows remaining
 "
