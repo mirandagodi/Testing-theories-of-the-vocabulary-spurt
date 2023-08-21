@@ -284,6 +284,21 @@ spurt_patterns_descriptives <- spurt_patterns_by_dominance %>%
   relocate(lang_spurt.percent, .after = lang_spurt.N)
 
 ```
+```{r}
+# Bilinguals' spurt patterns
+bilingual_spurt_pattern <- spurt_patterns_by_dominance %>% 
+  filter(lang_status == "bilingual") %>% 
+  select(study_id, dominance, lang_spurt_status) %>% 
+  # separate(lang_spurt_status, c(NA, "dominance", "spurt_status"), sep = "_") %>% 
+  pivot_wider(id_cols = study_id, names_from = dominance, values_from = lang_spurt_status) %>% 
+  # Remove babies with data in only one language
+  filter(!is.na(nondominant)) %>% 
+  # Determine in how many languages a baby spurted
+  mutate(num_spurts = case_when(dominant == "biling_dominant_spurter" & nondominant == "biling_nondominant_spurter" ~ "both",
+                                dominant == "biling_dominant_spurter" & nondominant == "biling_nondominant_nonspurter" ~ "one",
+                                dominant == "biling_dominant_nonspurter" & nondominant == "biling_nondominant_spurter" ~ "one",
+                                dominant == "biling_dominant_nonspurter" & nondominant == "biling_nondominant_nonspurter" ~ "none"))
+```
 
 ```{r}
 # Create dfs for bilingual and monolingual spurters
