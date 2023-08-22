@@ -382,7 +382,7 @@ singlelang_individual_logistic_plot <- curve_spurters %>%
   geom_line(show.legend = TRUE) +
   geom_point(data = vocab_at_midpoint %>% filter(vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French"), aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
   labs(x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure percent") +
-  scale_color_gradient(low = "olivedrab2", high = "deeppink3") +
+  scale_color_gradient(low = "#ffc0c0", high = "#312271") +
   theme_bw() +
   theme(legend.position="bottom") +
   facet_wrap(vars(vocabulary_type_step1), nrow = 2, scales = "free") 
@@ -400,7 +400,7 @@ combinedlang_individual_logistic_plot <- curve_spurters %>%
   geom_line(show.legend = TRUE) +
   geom_point(data = vocab_at_midpoint %>% filter(vocabulary_type_step1 == "concept" | vocabulary_type_step1 == "word"), aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
   labs(x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure balance") +
-  scale_color_gradient(low = "dodgerblue", high = "orangered3") +
+  scale_color_gradient(low = "#9bb306", high = "#00366c") +
   theme_bw() +
   theme(legend.position="bottom") +
   facet_wrap(vars(vocabulary_type_step1), nrow = 2, scales = "free") 
@@ -412,9 +412,14 @@ all_logistic_plots <- ggarrange(singlelang_individual_logistic_plot, combinedlan
                                 # nrow = 2, 
                                 legend = "bottom" 
                                 # common.legend = TRUE
-                                )
+                                ) %>% 
+annotate_figure(fig.lab = "Figure 1", 
+                # fig.lab.pos = "top.left",
+                fig.lab.size = 12, fig.lab.face = "bold")
+
 all_logistic_plots
-ggsave(file="logistic_curve_plots.jpg", all_logistic_plots, width = 20, height = 16, units = "cm")
+
+ggsave(file="logistic_curve_plots.jpg", all_logistic_plots, width = 16, height = 12, units = "cm")
 
 ```
 ```{r}
@@ -507,7 +512,7 @@ step2_plots <- ggarrange(Sing_midpoint_plot,
                          WoCo_slope_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
                          ncol = 2, nrow = 2, widths = c(1.2, 2), legend = "none", common.legend = FALSE)
 step2_plots
-ggsave(file="step2_plots.jpg", step2_plots, width = 17, height = 12, units = "cm")
+ggsave(file="step2_plots.jpg", step2_plots, width = 16, height = 12, units = "cm")
 
 ```
 ```{r}
@@ -559,7 +564,7 @@ wordslearned_plots <- ggarrange(Sing_wordslearned_plot,
                          # nrow = 2, 
                          widths = c(1.2, 2), legend = "none", common.legend = FALSE)
 wordslearned_plots
-ggsave(file="wordslearned_plots.jpg", wordslearned_plots, width = 17, height = 8, units = "cm")
+ggsave(file="wordslearned_plots.jpg", wordslearned_plots, width = 16, height = 8, units = "cm")
 ```
 
 ```{r}
