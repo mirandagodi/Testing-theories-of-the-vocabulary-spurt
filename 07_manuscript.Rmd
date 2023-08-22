@@ -414,7 +414,7 @@ all_logistic_plots <- ggarrange(singlelang_individual_logistic_plot, combinedlan
                                 # common.legend = TRUE
                                 )
 all_logistic_plots
-ggsave(file="logistic_curve_plots.png", all_logistic_plots, width = 20, height = 16, units = "cm")
+ggsave(file="logistic_curve_plots.jpg", all_logistic_plots, width = 20, height = 16, units = "cm")
 
 ```
 ```{r}
@@ -507,7 +507,7 @@ step2_plots <- ggarrange(Sing_midpoint_plot,
                          WoCo_slope_plot + rremove("ylab") + rremove("y.text") + rremove("y.ticks"), 
                          ncol = 2, nrow = 2, widths = c(1.2, 2), legend = "none", common.legend = FALSE)
 step2_plots
-ggsave(file="step2_plots.png", step2_plots, width = 17, height = 12, units = "cm")
+ggsave(file="step2_plots.jpg", step2_plots, width = 17, height = 12, units = "cm")
 
 ```
 ```{r}
@@ -559,7 +559,7 @@ wordslearned_plots <- ggarrange(Sing_wordslearned_plot,
                          # nrow = 2, 
                          widths = c(1.2, 2), legend = "none", common.legend = FALSE)
 wordslearned_plots
-ggsave(file="wordslearned_plots.png", wordslearned_plots, width = 17, height = 8, units = "cm")
+ggsave(file="wordslearned_plots.jpg", wordslearned_plots, width = 17, height = 8, units = "cm")
 ```
 
 ```{r}
