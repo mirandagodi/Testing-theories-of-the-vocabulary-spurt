@@ -381,10 +381,13 @@ singlelang_individual_logistic_plot <- curve_spurters %>%
       ) +
   geom_line(show.legend = TRUE) +
   geom_point(data = vocab_at_midpoint %>% filter(vocabulary_type_step1 == "English" | vocabulary_type_step1 == "French"), aes(x = midpoint, y = vocabulary_score), show.legend = FALSE) +
-  labs(x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure percent") +
+  labs(title = "Figure 1", subtitle = "Individual Logistic Curves of Vocabulary Size by Age",
+       x = "Age (Months)", y = "Vocabulary Size (Words)", color = "Exposure percent") +
   scale_color_gradient(low = "#ffc0c0", high = "#312271") +
   theme_bw() +
-  theme(legend.position="bottom") +
+  theme(plot.title = element_text(color="black", size=12, face="bold"),
+        plot.subtitle = element_text(color="black", size=12, face="italic"),
+        legend.position="bottom") +
   facet_wrap(vars(vocabulary_type_step1), nrow = 2, scales = "free") 
 
 singlelang_individual_logistic_plot
@@ -412,10 +415,7 @@ all_logistic_plots <- ggarrange(singlelang_individual_logistic_plot, combinedlan
                                 # nrow = 2, 
                                 legend = "bottom" 
                                 # common.legend = TRUE
-                                ) %>% 
-annotate_figure(fig.lab = "Figure 1", 
-                # fig.lab.pos = "top.left",
-                fig.lab.size = 12, fig.lab.face = "bold")
+                                ) 
 
 all_logistic_plots
 
