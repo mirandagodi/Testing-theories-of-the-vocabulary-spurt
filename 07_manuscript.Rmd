@@ -56,7 +56,8 @@ Eng_demographics_df <- Eng_keepers_df %>%
   # Keep one (the first) row per baby
   group_by(study_id) %>% 
   filter(last_modified == min(last_modified)) %>% 
-  select(-c(check_sex:check_ethnicity))
+  select(-c(check_sex:check_ethnicity)) %>%
+  ungroup() #HK note: adding ungroup()
 
 # French
 Fr_demographics_df <- Fr_keepers_df %>% 
@@ -77,7 +78,8 @@ Fr_demographics_df <- Fr_keepers_df %>%
   # Keep one (the first) row per baby
   group_by(study_id) %>% 
   filter(last_modified == min(last_modified)) %>% 
-  select(-c(check_sex:check_ethnicity))
+  select(-c(check_sex:check_ethnicity)) %>%
+  ungroup() #HK note: adding ungroup()
 
 # There are no discrepancies in the entries for sex or ethnicity. 
 # For child_hispanic_latino, if only one answer is different, then the majority answer will be kept. For those who have half-and-half answers: keep first answer.
@@ -266,7 +268,7 @@ table_descriptives_df <- step2_df %>%
          "concept (n = 35, 74%).Range" = paste0(concept.Min," - ",concept.Max),
          "word (n = 33, 70%).M (SD)" = paste0(word.M, " (",word.SD,")"),
          "word (n = 33, 70%).Range" = paste0(word.Min," - ",word.Max)) %>% 
-  select(measure,"English (n = 22, 54%).M (SD)":"word (n = 33, 70%).Range") 
+  select(measure,"English (n = 22, 54%).M (SD)":"word (n = 33, 70%).Range") #HK note: Just a note that after rerunning all scripts/resaving all the data after this code review, the column names in these lines might have to be updated, since they are created manually based off of another table.
 
 table_descriptives <- nice_table(
   table_descriptives_df, 
@@ -336,7 +338,7 @@ id_voc_ages_spurters <- merge(id_voc_spurters, ages)
 # Create the logistic curve with the equation's parameters
 curve_spurters <- id_voc_ages_spurters %>% 
   left_join(coefficients_04_df, by = c("study_id", "vocabulary_type_step1")) %>% 
-  mutate(across(vocabulary_type_step1, factor,
+  mutate(vocabulary_type_step1 = factor(vocabulary_type_step1,
                 levels=c("English", "French", "concept", "word"))) %>%
   mutate(vocabulary_score = upper_limit / (1 + exp(-slope*(log(age) - log(midpoint)))),
          centered_age = age - midpoint, 
@@ -414,7 +416,7 @@ all_logistic_plots <- ggarrange(singlelang_individual_logistic_plot, combinedlan
                                 # common.legend = TRUE
                                 ) 
 
-all_logistic_plots
+all_logistic_plots #HK note: the plots look good, but it could be confusing for readers that the Word plot has a different y-axis scale than the others... if they all went up to 1000 or 1500, then it would be clearer with them side by side that Word vocab is the biggest, and the individual language ones are the smallest. Just an idea, though.
 
 ggsave(file="logistic_curve_plots.jpg", all_logistic_plots, width = 16, height = 12, units = "cm")
 
@@ -464,7 +466,7 @@ WoCo_midpoint_plot <- step2_df %>%
   filter(vocabulary_type_step2 == "word" | vocabulary_type_step2 == "concept") %>%
   mutate(vocab_type = case_when(vocabulary_type_step2 == "word" ~ "Word",
                                 vocabulary_type_step2 == "concept" ~ "Concept")) %>% 
-  mutate(across(vocab_type, factor,
+  mutate(vocab_type = factor(vocab_type,
                 levels=c("Concept", "Word"))) %>%
   ggplot(aes(x = exposure_balance, y = midpoint, color = vocab_type)) +
   geom_point(show.legend = FALSE) +
@@ -482,7 +484,7 @@ WoCo_slope_plot <- step2_df %>%
   filter(vocabulary_type_step2 == "word" | vocabulary_type_step2 == "concept") %>%
   mutate(vocab_type = case_when(vocabulary_type_step2 == "word" ~ "Word",
                                 vocabulary_type_step2 == "concept" ~ "Concept")) %>% 
-  mutate(across(vocab_type, factor,
+  mutate(vocab_type = factor(vocab_type,
                 levels=c("Concept", "Word"))) %>%
   ggplot(aes(x = exposure_balance, y = slope, color = vocab_type)) +
   geom_point() +
@@ -499,7 +501,7 @@ WoCo_slope_plot
 
 # Put both graphs together
 WoCo_plots <-  arrangeGrob(WoCo_midpoint_plot, WoCo_slope_plot, nrow=1)
-WoCo_plots
+WoCo_plots #HK note: this line doesn't produce a plot for me... just a list object. If it also causes problems for you, you could try using the patchwork r package to combine plots easily
 # ggsave(file="WoCo_plots.png", WoCo_plots, width = 17, height = 8, units = "cm")
 
 
@@ -531,7 +533,7 @@ Sing_wordslearned_plot <- step2_df %>%
 
 Sing_wordslearned_plot
 
-# Plot words learned for single-language vocabularies
+# Plot words learned for multi-language vocabularies
 
 WoCo_wordslearned_plot <- step2_df %>%
   filter(vocabulary_type_step2 == "word" | vocabulary_type_step2 == "concept") %>%
@@ -573,7 +575,7 @@ ggsave(file="wordslearned_plots.jpg", wordslearned_plots, width = 16, height = 8
 logistic_full_df <- coefficients_04_df %>%
    # Join vocabulary scores dataframe
   full_join(vocabulary_scores_df, by = c("study_id", "vocabulary_type_step1")) %>%
-  group_by(study_id) %>%
+  #group_by(study_id) %>% #HK note: commenting this out because the rest of this doesn't depend on a grouped dataset
   # # Remove babies with midpoint out of age range
   # filter(midpoint>=16 & midpoint<=max(age)) %>%
   # # Remove slope outliers
@@ -592,7 +594,7 @@ id_voc_ages_full <- merge(id_voc_full, ages)
 # Create the logistic curve with the equation's parameters
 curve_full <- id_voc_ages_full %>% 
   left_join(coefficients_04_df, by = c("study_id", "vocabulary_type_step1")) %>% 
-  mutate(across(vocabulary_type_step1, factor,
+  mutate(vocabulary_type_step1 = factor(vocabulary_type_step1,
                 levels=c("English", "French", "concept", "word"))) %>%
   mutate(vocabulary_score = upper_limit / (1 + exp(-slope*(log(age) - log(midpoint)))),
          centered_age = age - midpoint, 
@@ -607,7 +609,8 @@ vocab_at_18m <-
   # curve_full %>% filter(age == 18.00) %>% # Use this line to use vocabulary size estimated by the logistic equation
   midpoint_identification %>% filter(age >= 18 & age < 19) %>%  # Use this line to use actual vocabulary size (there might be babies with missing data)
   group_by(study_id, vocabulary_type_step1) %>%
-  filter(row_number() == 1) 
+  filter(row_number() == 1) %>%
+  ungroup()
 
 table_n_18m <- vocab_at_18m %>% 
   group_by(vocabulary_type_step1, midp_identify) %>% 
@@ -642,7 +645,7 @@ vocab_at_18m_summary <- vocab_at_18m %>%
          "18 Months.Non-Spurters.Range" = paste0(Non_Spurters.Min," - ",Non_Spurters.Max)) %>% 
   select(vocabulary_type_step1, Non_Spurters.N, "18 Months.Non-Spurters.M (SD)", "18 Months.Non-Spurters.Range", Spurters.N,"18 Months.Spurters.M (SD)", "18 Months.Spurters.Range") %>% 
   rename("18 Months.Spurters.N" = Spurters.N,
-         "18 Months.Non-Spurters.N" = Non_Spurters.N)
+         "18 Months.Non-Spurters.N" = Non_Spurters.N) #HK note: just flagging these manual column names to adjust later with finalized numbers
   
 
 table_18m_descriptives <- nice_table(
@@ -674,7 +677,8 @@ vocab_at_30m <-
          # age >= 29.5
          ) %>% 
   group_by(study_id, vocabulary_type_step1) %>%
-  filter(row_number() == 1) 
+  filter(row_number() == 1) %>%
+  ungroup()
 
 table_n_30m <- vocab_at_30m %>% 
   group_by(vocabulary_type_step1, midp_identify) %>% 
@@ -712,7 +716,7 @@ vocab_at_30m_summary <- vocab_at_30m %>%
          "30 Months.Non-Spurters.Range" = paste0(Non_Spurters.Min," - ",Non_Spurters.Max)) %>% 
   select(vocabulary_type_step1, Non_Spurters.N, "30 Months.Non-Spurters.M (SD)", "30 Months.Non-Spurters.Range", Spurters.N,"30 Months.Spurters.M (SD)", "30 Months.Spurters.Range") %>% 
   rename("30 Months.Spurters.N" = Spurters.N,
-         "30 Months.Non-Spurters.N" = Non_Spurters.N)
+         "30 Months.Non-Spurters.N" = Non_Spurters.N) #HK note: just flagging these manual column names to adjust later with finalized numbers
   
 
 table_30m_descriptives <- nice_table(

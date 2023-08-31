@@ -28,7 +28,7 @@ LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
 step1_df <- vocabulary_scores_03_df %>%
   arrange(item_id_eng) %>%
   # Remove participants who were older than 18 months when they joined the study
-  filter(!(starting_age > 18)) %>%
+  filter(!(starting_age > 18)) %>% #HK note: just wanted to flag this because it's keeping anyone who is exactly 18 months old, but not someone who is 18.1 months old. Is that what you want?
   # Remove duplicated rows (keep 1 row per baby per month) 
   group_by(study_id, n_months) %>%
   summarize(age = first(age), 
@@ -63,7 +63,8 @@ step1_df <- vocabulary_scores_03_df %>%
                            vocabulary_type_step1 == 'concept' ~ sum(total, na.rm = TRUE),
                            TRUE ~ total)) %>% 
   mutate(total = case_when(vocabulary_type_step1 == 'concept' & total == 1344 ~ 1344 - 611,
-                           TRUE ~ total))
+                           TRUE ~ total)) %>% #HK note: Adding an ungroup() here just so the dataframe doesn't behave weirdly in the future
+  ungroup()
 
 # Create df with babies who were older then 18 months when they started study 
 startage_over18 <- vocabulary_scores_03_df %>%

@@ -60,7 +60,7 @@ id_voc_ages <- merge(id_voc, ages)
 # Create the logistic curve with the equation's parameters
 curve <- id_voc_ages %>%
   left_join(coefficients_04_df, by = c("study_id", "vocabulary_type_step1")) %>%
-  mutate(across(vocabulary_type_step1, factor,
+  mutate(vocabulary_type_step1 =factor(vocabulary_type_step1,#HK note: this was giving a warning, and since you are only mutating one column, I removed the across() call which fixes the warning, and produces the exact same data frame
                 levels=c("English", "French", "word", "concept"))) %>%
   mutate(vocabulary_score = upper_limit / (1 + exp(-slope*(log(age) - log(midpoint)))),
          centered_age = age - midpoint,
@@ -102,7 +102,7 @@ words_at_spurt <- vocabulary_scores_df %>% # Some babies do not have data in one
   arrange(age) %>% 
   mutate(around_spurt = case_when(lead(age) == midpoint ~ "keep", # Month before the spurt
                                   age == midpoint ~ "keep", # Month when the spurt occurred
-                                  lag(age) == midpoint ~ "keep")) %>% # Month after the spurt
+                                  lag(age) == midpoint ~ "keep")) %>% # Month after the spurt #HK note: this case_when() is correctly picking the previous and next rows from the midpoint, but they do not always correspond to actual "months" in time... just wanted to flag this because the comments here say "month before" and "month" after, but that's not always the case. Mostly, the midpoint is between two adjacent months.
   filter(around_spurt == "keep") %>% 
   # Remove babies who spurted in the last month and did not submit data in the last measure
   mutate(spurt_rows = sum(!is.na(n_months))) %>% 
@@ -120,7 +120,7 @@ words_at_spurt_summary <- words_at_spurt %>%
   filter(row_number() == 1) %>% 
   # Remove columns
   ungroup() %>% 
-  select(study_id, vocabulary_type_step1, words_learned) %>% 
+  dplyr::select(study_id, vocabulary_type_step1, words_learned) %>% #HK note: this row was giving an error because the select() being used seems to be from a different package... I changed it to dplyr::select() so that it runs.
   # Summary
   group_by(vocabulary_type_step1) %>% 
   summarise(mean_words = mean(words_learned),
@@ -134,8 +134,8 @@ words_at_spurt_summary <- words_at_spurt %>%
          max_words = round(max_words, digits = 2))
 
 # Create dataframe with distinct words learned at spurt to merge with step2_df
-words_at_spurt_distinct <- words_at_spurt %>% 
-  select(study_id, vocabulary_type_step1, words_learned) %>% 
+words_at_spurt_distinct <- words_at_spurt %>% #HK note: same thing with select() as above in line 123
+  dplyr::select(study_id, vocabulary_type_step1, words_learned) %>% 
   group_by(study_id, vocabulary_type_step1) %>% 
   filter(row_number() == 1)
 
@@ -166,11 +166,11 @@ words_at_spurt_model <- curve %>%
   # filter(age == midpoint) %>%
   # Estimate the difference in vocabulary score before and after the spurt
   mutate(words_learned_model = max(vocabulary_score) - min(vocabulary_score)) %>%
-  select(study_id, vocabulary_type_step1, id_voc, words_learned_model, age, vocabulary_score)
+  dplyr::select(study_id, vocabulary_type_step1, id_voc, words_learned_model, age, vocabulary_score) #HK note: added dplyr:: in front of select()
 
 # Create dataframe with distinct words learned at spurt to merge with step2_df
 words_at_spurt_model_distinct <- words_at_spurt_model %>% 
-  select(study_id, vocabulary_type_step1, words_learned_model) %>% 
+  dplyr::select(study_id, vocabulary_type_step1, words_learned_model) %>% #HK note: added dplyr:: in front of select()
   group_by(study_id, vocabulary_type_step1) %>% 
   filter(row_number() == 1)
 
@@ -179,7 +179,7 @@ words_at_spurt_model_distinct <- words_at_spurt_model %>%
 ```{r}
 # Prepare language exposure data 
 final_exposure_df <- LEQ_01_df %>%
-  select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, end_age, lang_status, dominant_lang) %>%
+  dplyr::select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, end_age, lang_status, dominant_lang) %>% #HK note: added dplyr:: in front of select()
 # Keep only the final language exposure (cumulative exposure at 30 or 31 months)
   group_by(study_id) %>%
   filter(end_age == max(end_age)) %>%
@@ -286,7 +286,7 @@ report(midpoint_single_model, digits = 3)
 midpoint_single_table <- report_table(midpoint_single_model, digits = 3)
 midpoint_single_table %>% 
   kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
+  kable_classic(full_width = F, html_font = "Times") #HK note: for me, this creates a table with a lot of NAs and a warning about an over-long path. You could also try tab_model() from the sjPlot package, which I find makes really nice model tables. 
 
 
 # Slope

@@ -47,7 +47,8 @@ Eng_df_health <- Eng_01_df %>%
                                     # Check S101, S132
                                     ~ 'exclude', 
                                     TRUE ~ 'keep')) %>%
-  relocate(exclude_health, .after = age)
+  relocate(exclude_health, .after = age) %>%
+  ungroup() #HK note: just adding an ungroup() here so that the dataframe doesn't remain grouped by ID, which can sometimes cause issues later on if you don't realize it's grouped. You could also simply remove the group_by() in like 37 since I don't think it's actually doing anything.
 
 # Create df with the study_id of participants that will be excluded based on health criteria
 Eng_df_exclude_health <- Eng_df_health %>% 
@@ -103,7 +104,7 @@ L4_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L4_exclude_exposure 
 ```
 
 ```{r}
-# Identify participants with three consecutive missing months
+# Identify participants with three consecutive missing months #HK note: after the changes made in script 01, this section is now excluding 4 additional participants for inactivity: S045, S046, S086 and S133.
 
 # Get IDs of infants who withdrew
 activity_status_df <- activity_status_recruitment_log %>% 

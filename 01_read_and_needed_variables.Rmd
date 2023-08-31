@@ -14,16 +14,20 @@ library(eeptools)
 ```{r}
 # Read CDI data
 # English
-Eng_cdi_data <- read_csv("data/BabysNewWords_data_webCDI_EN_2023_04April.csv")
+Eng_cdi_data <- read_csv("data/BabysNewWords_data_webCDI_EN_2023_04April.csv",
+                         guess_max = 1500) #HK note: some columns are being read in as logical when they should be character, added a line to fix this
 
 # French
-Fr_cdi_data <- read_csv("data/BabysNewWords_data_webCDI_FR_2023_04April.csv")
+Fr_cdi_data <- read_csv("data/BabysNewWords_data_webCDI_FR_2023_04April.csv",
+                         guess_max = 1500) #HK note: same as above
 
 # Read LEQ data
 # LimeSurvey
-LS_LEQ_data <- read_csv("data/LimeSurvey_LEQ_data.csv")
+LS_LEQ_data <- read_csv("data/LimeSurvey_LEQ_data.csv",
+                         guess_max = 1500) #HK note: same as above
 # Qualtrics
-Q_LEQ_data <- read_csv("data/00_Qualtrics_LEQ_checked_long.csv") #%>%
+Q_LEQ_data <- read_csv("data/00_Qualtrics_LEQ_checked_long.csv",
+                         guess_max = 1500) #%>% #HK note: same as above
   # # Remove testing "babies"
   # filter(!c(study_id == "S000" | study_id == "S001"))
 
@@ -116,7 +120,8 @@ LEQ_df_columns <-
                                  TRUE ~ "bilingual"),
          dominant_lang = case_when(cumulative_exp_Fre>cumulative_exp_Eng ~ "fr_dom",
                                    cumulative_exp_Fre<cumulative_exp_Eng ~ "eng_dom",
-                                   cumulative_exp_Fre==cumulative_exp_Eng ~ "balanced"))
+                                   cumulative_exp_Fre==cumulative_exp_Eng ~ "balanced")) %>% #HK note: this is producing one NA value for "dominant_lang' for a kid who is dominant in French but non-dominant in L3... If you want this kid to also be marked as fr_dom, then you can add this line to the cases: cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom". I'm also adding a call to ungroup() here so the dataframe is no longer grouped.
+  ungroup()
 
 # Create dataframe with monolinguals (exposure < 10% to English or French) to later remove their CDI data in their second language if they completed it
 # English monolinguals
@@ -169,17 +174,19 @@ Eng_df_columns <- Eng_cdi_data %>%
   # Remove participants with strange subject_id (testing)
   filter(!(subject_id == 9998 | subject_id == 9999 | subject_id == 99999 | subject_id == 999996 | subject_id == 999998)) %>%
   # Remove the first of double entries in a single month (completed or incomplete)
-  group_by(study_id) %>%
+  group_by(study_id, n_months) %>%
   arrange(last_modified) %>%
-  filter(!(n_months == lead(n_months))) %>%
+  #filter(!(n_months == lead(n_months))) %>% #HK note: this line seems to be removing some rows I think you want to keep (i.e., subject S015 has two entries for month 14, and this code is removing both of those rows, when I think you want to keep the completed one. It was also removing others that didn't have duplicate entries, like S127 month 15. I've updated the code in line 177 and the next line to fix this issue.)
+  slice_tail() %>% #HK note: this keeps the bottom-most row for each group and removes the rest. slice_head() does the same, but takes the top-most row.
   #Remove participants with 0 or 1 valid observation
+  group_by(study_id) %>%
   mutate(TRUE_months = sum(completed == TRUE)) %>%
   relocate(TRUE_months, .after = study_id) %>%
   ungroup() %>%
   filter(TRUE_months>1) %>%
 # Estimate precise age
   mutate(last_modified = as.Date(as.POSIXct(last_modified, 'GMT'))) %>%
-  mutate(age = age_calc(dob, last_modified, units = "months")) %>%
+  mutate(age = age_calc(dob, last_modified, units = "months")) %>% 
   relocate(age, .after = last_modified) %>% 
   # Remove data from French monolinguals
   filter(!(study_id %in% fr_monolingual_df$study_id))
@@ -211,10 +218,12 @@ Fr_df_columns <- Fr_cdi_data %>%
   # Remove participants with strange subject_id (testing)
   filter(!(subject_id == 99998 | subject_id == 999996 | subject_id == 999998 | subject_id == 1000006)) %>%
   # Remove the first of double entries in a single month (completed or incomplete)
-  group_by(study_id) %>%
+  group_by(study_id, n_months) %>%
   arrange(last_modified) %>%
-  filter(!(n_months == lead(n_months))) %>%
+  #filter(!(n_months == lead(n_months))) %>% #HK note: this line seems to be removing some rows I think you want to keep (i.e., subject S015 has two entries for month 14, and this code is removing both of those rows, when I think you want to keep the completed one. It was also removing others that didn't have duplicate entries, like S127 month 15. I've updated the code in the next line to fix this issue.)
+  slice_tail() %>% #HK note: this keeps the bottom-most row for each group and removes the rest. slice_head() does the same, but takes the top-most row.
   #Remove participants with 0 or 1 valid observation
+  group_by(study_id) %>%
   mutate(TRUE_months = sum(completed == TRUE)) %>%
   relocate(TRUE_months, .after = study_id) %>%
   ungroup() %>%

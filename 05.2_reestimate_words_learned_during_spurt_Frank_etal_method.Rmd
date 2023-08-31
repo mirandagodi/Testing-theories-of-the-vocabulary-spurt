@@ -214,7 +214,7 @@ table_descriptives_df <- step2_df %>%
          "concept (n = 35, 74%).Range" = paste0(concept.Min," - ",concept.Max),
          "word (n = 33, 70%).M (SD)" = paste0(word.M, " (",word.SD,")"),
          "word (n = 33, 70%).Range" = paste0(word.Min," - ",word.Max)) %>% 
-  select(measure,"English (n = 22, 54%).M (SD)":"word (n = 33, 70%).Range") 
+  select(measure,"English (n = 22, 54%).M (SD)":"word (n = 33, 70%).Range") #HK note: these column names might have to be adjusted after rerunning all the scripts and saving the data, since there might be differences introduced by the code review and these are done manually (lines 209-217)
 
 table_descriptives <- nice_table(
   table_descriptives_df, 
