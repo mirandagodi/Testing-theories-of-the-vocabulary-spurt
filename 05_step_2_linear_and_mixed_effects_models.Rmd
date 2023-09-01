@@ -431,6 +431,7 @@ word_table <-
 word_table
 ```
 
+
 ```{r}
 # Save dataframe as csv file
 write_csv(final_exposure_df, 'data/05_final_exposure_dataset.csv')
