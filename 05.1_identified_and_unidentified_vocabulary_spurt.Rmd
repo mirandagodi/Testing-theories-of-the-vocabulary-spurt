@@ -168,6 +168,7 @@ report(vocab_english_30m_test, digits = 3)
 
 ```
 
+
 ```{r}
 # t-tests for French vocabulary
 # Vocabulary size at 18 m
