@@ -1,0 +1,7 @@
+"0","exposure_by_vocabtype <- final_exposure_df %>% "
+"0","  select(study_id, cumulative_exp_Eng, cumulative_exp_Fre, exposure_balance) %>% "
+"0","  rename(English = cumulative_exp_Eng,"
+"0","         French = cumulative_exp_Fre,"
+"0","         concept = exposure_balance) %>% "
+"0","  mutate(word = concept) %>% "
+"0","  pivot_longer(!study_id, names_to = ""vocabulary_type_step1"", values_to = ""exposure"")"
