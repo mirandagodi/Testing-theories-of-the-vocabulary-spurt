@@ -15,7 +15,6 @@ library(lme4)
 library(performance)
 library(report)
 library(jtools)
-library(kableExtra)
 library(sjPlot)
 library(gridExtra)
 library(cowplot)
@@ -283,25 +282,6 @@ model_performance(midpoint_single_model)
 summary(midpoint_single_model)
 summ(midpoint_single_model, digits = 3)
 report(midpoint_single_model, digits = 3)
-# Create table with results
-# midpoint_single_table <- report_table(midpoint_single_model, digits = 3)
-# midpoint_single_table %>% 
-#   kbl() %>% 
-#   kable_classic(full_width = F, html_font = "Times") #HK note: for me, this creates a table with a lot of NAs and a warning about an over-long path. You could also try tab_model() from the sjPlot package, which I find makes really nice model tables. 
-
-midpoint_single_table <- 
-  tab_model(midpoint_single_model,
-            show.intercept = TRUE,
-  show.est = TRUE,
-  show.ci = 0.95,
-  show.se = TRUE,
-  show.p = TRUE,
-  show.r2 = TRUE,
-  show.aic = TRUE,
-  title = "Midpoint: single-language",
-  digits = 2)
-
-midpoint_single_table
 
 # Slope
 slope_single_model <- 
@@ -312,12 +292,6 @@ model_performance(slope_single_model)
 summary(slope_single_model)
 summ(slope_single_model, digits = 3)
 report(slope_single_model, digits = 3)
-# Create table with results
-slope_single_table <- report_table(slope_single_model, digits = 3)
-slope_single_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
-
 
 ```
 
@@ -335,11 +309,6 @@ model_performance(midpoint_word_model)
 summary(midpoint_word_model)
 summ(midpoint_word_model, digits = 3)
 report(midpoint_word_model, digits = 3)
-# Create table with results
-midpoint_word_table <- report_table(midpoint_word_model, digits = 3)
-midpoint_word_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 
 # Slope
 slope_word_model <- 
@@ -350,11 +319,6 @@ model_performance(slope_word_model)
 summary(slope_word_model)
 summ(slope_word_model, digits = 3)
 report(slope_word_model, digits = 3)
-# Create table with results
-slope_word_table <- report_table(slope_word_model, digits = 3)
-slope_word_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 ```
 
 ```{r}
@@ -371,11 +335,6 @@ model_performance(midpoint_concept_model)
 summary(midpoint_concept_model)
 summ(midpoint_concept_model, digits = 3)
 report(midpoint_concept_model, digits = 3)
-# Create table with results
-midpoint_concept_table <- report_table(midpoint_concept_model, digits = 3)
-midpoint_concept_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 
 # Slope
 slope_concept_model <- 
@@ -386,11 +345,6 @@ model_performance(slope_concept_model)
 summary(slope_concept_model)
 summ(slope_concept_model, digits = 3)
 report(slope_concept_model, digits = 3)
-# Create table with results
-slope_concept_table <- report_table(slope_concept_model, digits = 3)
-slope_concept_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 ```
 
 ```{r}
@@ -404,11 +358,6 @@ model_performance(wordsatspurt_single_model)
 summary(wordsatspurt_single_model)
 summ(wordsatspurt_single_model, digits = 3)
 report(wordsatspurt_single_model, digits = 3)
-# Create table with results
-wordsatspurt_single_table <- report_table(wordsatspurt_single_model, digits = 3)
-wordsatspurt_single_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 
 # Word
 wordsatspurt_word_model <- 
@@ -419,11 +368,6 @@ model_performance(wordsatspurt_word_model)
 summary(wordsatspurt_word_model)
 summ(wordsatspurt_word_model, digits = 3)
 report(wordsatspurt_word_model, digits = 3)
-# Create table with results
-wordsatspurt_word_table <- report_table(wordsatspurt_word_model, digits = 3)
-wordsatspurt_word_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
 
 # Concept
 wordsatspurt_concept_model <- 
@@ -434,11 +378,7 @@ model_performance(wordsatspurt_concept_model)
 summary(wordsatspurt_concept_model)
 summ(wordsatspurt_concept_model, digits = 3)
 report(wordsatspurt_concept_model, digits = 3)
-# Create table with results
-wordsatspurt_concept_table <- report_table(wordsatspurt_concept_model, digits = 3)
-wordsatspurt_concept_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times")
+
 ```
 ```{r}
 # Regression tables
