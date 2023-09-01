@@ -239,8 +239,6 @@ spurt_patterns_by_dominance <- coefficients_04_df %>%
   left_join(final_vocabulary_scores_df, by = c("study_id", "vocabulary_type_step1")) %>% 
   # # Remove babies with midpoint out of age range
   # filter(midpoint>=16 & midpoint<=age) %>%
-  # Remove slope outliers
-  filter(slope < 22) %>%
   # Set language dominance
   mutate(dominance = case_when(exposure_percent>50 ~ "dominant",
                                exposure_percent<50 ~ "nondominant")) %>% 
