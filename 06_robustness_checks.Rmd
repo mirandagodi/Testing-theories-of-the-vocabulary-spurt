@@ -85,7 +85,8 @@ RC_logistic_curve <- RC_step1_df %>%
   filter(!(id_lang == "S055_English" | id_lang == "S055_word" | id_lang == "S055_concept")) %>%
   split(.$id_lang) %>%
   map(~drm(vocabulary_score~age, data = .,
-                 fct=LL.3(names = c("Slope", "Upper Limit", "Midpoint"))))
+                 fct=LL.3(names = c("Slope", "Upper Limit", "Midpoint")),
+           control = drmc(errorm = FALSE))) # S003 in English gives "Failed convergence" message; its coefficients could not be estimated
 
 #logistic_curve
 
@@ -229,6 +230,8 @@ RC_slope_single_table %>%
   kbl() %>% 
   kable_classic(full_width = F, html_font = "Times")
 ```
+
+
 ```{r}
 # ROBUSTNESS CHECK: RUN SEPARATE SINGLE-LANGAGE MODELS FOR ENGLISH AND FRENCH
 
