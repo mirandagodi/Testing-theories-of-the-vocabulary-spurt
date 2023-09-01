@@ -85,7 +85,7 @@ subject_id,study_id,dob,phase,end_age,cumulative_exp_Eng,cumulative_exp_Fre,cumu
 56383,S027,2019-04-28,6,24,0.603,0.381,0.016,NA,bilingual,eng_dom
 56771,S050,2019-11-14,5,24,0.309,0.691,0,NA,bilingual,fr_dom
 56850,S068,2020-01-16,6,24,0.455,0.545,0,NA,bilingual,fr_dom
-56872,S083,2019-12-30,4,24,NA,0.83,0.17,NA,bilingual,NA
+56872,S083,2019-12-30,4,24,NA,0.83,0.17,NA,bilingual,fr_dom
 54200,S022,2019-05-26,3,25,0.978,0.022,NA,NA,eng_mono,eng_dom
 56398,S036,2019-09-09,4,25,0.464,0.536,0,NA,bilingual,fr_dom
 56870,S082,2019-12-01,1,25,0.071,0.929,0,NA,fr_mono,fr_dom
