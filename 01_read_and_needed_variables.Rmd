@@ -120,7 +120,8 @@ LEQ_df_columns <-
                                  TRUE ~ "bilingual"),
          dominant_lang = case_when(cumulative_exp_Fre>cumulative_exp_Eng ~ "fr_dom",
                                    cumulative_exp_Fre<cumulative_exp_Eng ~ "eng_dom",
-                                   cumulative_exp_Fre==cumulative_exp_Eng ~ "balanced")) %>% #HK note: this is producing one NA value for "dominant_lang' for a kid who is dominant in French but non-dominant in L3... If you want this kid to also be marked as fr_dom, then you can add this line to the cases: cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom". I'm also adding a call to ungroup() here so the dataframe is no longer grouped.
+                                   cumulative_exp_Fre==cumulative_exp_Eng ~ "balanced",
+                                   cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom")) %>% #HK note: this is producing one NA value for "dominant_lang' for a kid who is dominant in French but non-dominant in L3... If you want this kid to also be marked as fr_dom, then you can add this line to the cases: cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom". I'm also adding a call to ungroup() here so the dataframe is no longer grouped.
   ungroup()
 
 # Create dataframe with monolinguals (exposure < 10% to English or French) to later remove their CDI data in their second language if they completed it
