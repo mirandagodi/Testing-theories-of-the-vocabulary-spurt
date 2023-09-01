@@ -16,6 +16,7 @@ library(performance)
 library(report)
 library(jtools)
 library(kableExtra)
+library(sjPlot)
 library(gridExtra)
 library(cowplot)
 library(ggpubr)
@@ -97,7 +98,7 @@ words_at_spurt <- vocabulary_scores_df %>% # Some babies do not have data in one
   # Remove baby determined as non-spurter
   filter(!(study_id == "S125")) %>% 
   ungroup() %>% 
-  # Keep only the rows around the spurt (the month before, the age when it occurred, and the moth after)
+  # Keep only the rows around the spurt (the measurement before, the age when it occurred, and the measurement after)
   group_by(study_id, vocabulary_type_step1) %>%
   arrange(age) %>% 
   mutate(around_spurt = case_when(lead(age) == midpoint ~ "keep", # Month before the spurt
@@ -283,11 +284,24 @@ summary(midpoint_single_model)
 summ(midpoint_single_model, digits = 3)
 report(midpoint_single_model, digits = 3)
 # Create table with results
-midpoint_single_table <- report_table(midpoint_single_model, digits = 3)
-midpoint_single_table %>% 
-  kbl() %>% 
-  kable_classic(full_width = F, html_font = "Times") #HK note: for me, this creates a table with a lot of NAs and a warning about an over-long path. You could also try tab_model() from the sjPlot package, which I find makes really nice model tables. 
+# midpoint_single_table <- report_table(midpoint_single_model, digits = 3)
+# midpoint_single_table %>% 
+#   kbl() %>% 
+#   kable_classic(full_width = F, html_font = "Times") #HK note: for me, this creates a table with a lot of NAs and a warning about an over-long path. You could also try tab_model() from the sjPlot package, which I find makes really nice model tables. 
 
+midpoint_single_table <- 
+  tab_model(midpoint_single_model,
+            show.intercept = TRUE,
+  show.est = TRUE,
+  show.ci = 0.95,
+  show.se = TRUE,
+  show.p = TRUE,
+  show.r2 = TRUE,
+  show.aic = TRUE,
+  title = "Midpoint: single-language",
+  digits = 2)
+
+midpoint_single_table
 
 # Slope
 slope_single_model <- 
@@ -425,6 +439,56 @@ wordsatspurt_concept_table <- report_table(wordsatspurt_concept_model, digits = 
 wordsatspurt_concept_table %>% 
   kbl() %>% 
   kable_classic(full_width = F, html_font = "Times")
+```
+```{r}
+# Regression tables
+# Single language
+singlelang_table <- 
+  tab_model(midpoint_single_model, slope_single_model, wordsatspurt_single_model,
+            show.intercept = TRUE,
+  show.est = TRUE,
+  show.ci = 0.95,
+  show.se = TRUE,
+  show.std = TRUE,
+  show.p = TRUE,
+  show.r2 = TRUE,
+  show.aic = TRUE,
+  title = "Single-language regressions",
+  digits = 2)
+
+singlelang_table
+
+# Concept
+concept_table <- 
+  tab_model(midpoint_concept_model, slope_concept_model, wordsatspurt_concept_model,
+            show.intercept = TRUE,
+  show.est = TRUE,
+  show.ci = 0.95,
+  show.se = TRUE,
+  show.std = TRUE,
+  show.p = TRUE,
+  show.r2 = TRUE,
+  show.aic = TRUE,
+  title = "Concept regressions",
+  digits = 2)
+
+concept_table
+
+# Word
+word_table <- 
+  tab_model(midpoint_word_model, slope_word_model, wordsatspurt_word_model,
+            show.intercept = TRUE,
+  show.est = TRUE,
+  show.ci = 0.95,
+  show.se = TRUE,
+  show.std = TRUE,
+  show.p = TRUE,
+  show.r2 = TRUE,
+  show.aic = TRUE,
+  title = "Word regressions",
+  digits = 2)
+
+word_table
 ```
 
 ```{r}
