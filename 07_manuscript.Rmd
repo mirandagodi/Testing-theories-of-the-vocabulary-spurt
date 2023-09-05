@@ -236,12 +236,12 @@ table_descriptives_df <- step2_df %>%
   filter(!(study_id == "S125")) %>%
   group_by(study_id) %>%
   select(vocabulary_type_step1, slope, midpoint, words_learned) %>% 
-  rename(Midpoint = midpoint,
-         Slope = slope,
-         "Words learned/month" = words_learned) %>% 
-  pivot_longer(cols = Slope:"Words learned/month", names_to = "measure", values_to = "value") %>% 
+  rename("Age of steepest vocabulary growth (Midpoint)" = midpoint,
+         "Steepness of curve (Slope)" = slope,
+         "Words learned during month of spurt" = words_learned) %>% 
+  pivot_longer(cols = "Steepness of curve (Slope)":"Words learned during month of spurt", names_to = "Measure", values_to = "value") %>% 
   pivot_wider(names_from = vocabulary_type_step1, values_from = value) %>% 
-  group_by(measure) %>% 
+  group_by(Measure) %>% 
     summarise(English.M = round(mean(English, na.rm = TRUE), digits = 2),
             English.SD = round(sd(English, na.rm = TRUE), digits = 2),
             English.Min = round(min(English, na.rm = TRUE), digits = 2),
@@ -266,7 +266,7 @@ table_descriptives_df <- step2_df %>%
          "concept (n = 32, 73%).Range" = paste0(concept.Min," - ",concept.Max),
          "word (n = 32, 73%).M (SD)" = paste0(word.M, " (",word.SD,")"),
          "word (n = 32, 73%).Range" = paste0(word.Min," - ",word.Max)) %>% 
-  select(measure,"English (n = 19, 51%).M (SD)":"word (n = 32, 73%).Range") #HK note: Just a note that after rerunning all scripts/resaving all the data after this code review, the column names in these lines might have to be updated, since they are created manually based off of another table.
+  select(Measure,"English (n = 19, 51%).M (SD)":"word (n = 32, 73%).Range") #HK note: Just a note that after rerunning all scripts/resaving all the data after this code review, the column names in these lines might have to be updated, since they are created manually based off of another table.
 
 table_descriptives <- nice_table(
   table_descriptives_df, 
@@ -274,7 +274,7 @@ table_descriptives <- nice_table(
   # italics = seq(table_descriptives_df),
   title = c("Table 1", "Descriptive Statistics of the Timing and Magnitude of the Vocabulary Spurt"),
   note = c(
-    "Midpoint refers to the age in months at which infants had the steepest vocabulary growth, indicative of a vocabulary spurt; Slope refers to the steepness of the curve; Words Learned refers to the number of words that infants learned during the month-long period around their estimated vocabulary spurt. Due to sample characteristics and exclusion criteria, each vocabulary type had different group sizes; the percentage next to group size refers to the percentage of infants that spurted in that vocabulary type."
+    "Due to sample characteristics and exclusion criteria, each vocabulary type had different group sizes; the percentage next to group size refers to the percentage of infants that spurted in that vocabulary type."
   )
 )
 
