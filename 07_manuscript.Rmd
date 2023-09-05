@@ -35,6 +35,7 @@ midpoint_identification <- read_csv('data/05.1_midpoint_identification.csv')
 midpoint_identification_sum <- read_csv('data/05.1_midpoint_identification_summary.csv')
 # words_at_spurt_distinct <- read_csv('data/05_words_at_apurt_distinct_dataset.csv')
 ```
+
 ```{r}
 # Demographics
 # English
@@ -124,6 +125,38 @@ demographics_ethnicity_summary <- EngFr_demographics_df %>%
   ungroup() %>% 
   count(correct_ethnicity) %>% 
   mutate(percent_ethnicity = round((n * 100 / sum(n)), digits = 2))
+```
+
+```{r}
+# Form filler demographics
+# English
+Eng_formfiller_df <- Eng_keepers_df %>% 
+  # Remove rows of uncompleted CDIs
+  filter(completed == TRUE) %>% 
+  # Keep babies from final sample
+  filter(study_id %in% step1_df$study_id) %>% 
+  # Keep only needed columns
+  select(study_id, n_months, form_filler)
+
+# French
+Fr_formfiller_df <- Fr_keepers_df %>% 
+  # Remove rows of uncompleted CDIs
+  filter(completed == TRUE) %>% 
+  # Keep babies from final sample
+  filter(study_id %in% step1_df$study_id) %>% 
+  # Keep only needed columns
+  select(study_id, n_months, form_filler)
+
+EngFr_formfiller_df <-
+  full_join(Eng_formfiller_df, Fr_formfiller_df, by = c("study_id", "n_months"), suffix = c("_eng", "_fr")) %>% 
+  mutate(month_filler = case_when(form_filler_eng == form_filler_fr ~ form_filler_eng, # Same parent filled both CDIs
+                                  is.na(form_filler_eng) ~ form_filler_fr, # Only French CDI was filled (monolinguals or missing data)
+                                  is.na(form_filler_fr) ~ form_filler_eng, # Only English CDI was filled (monolinguals or missing data)
+                                  form_filler_eng != form_filler_fr ~ "different caregiver")) %>% 
+  group_by(month_filler) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(percent = round(N * 100 / sum(N), digits = 0))
 ```
 
 ```{r}
