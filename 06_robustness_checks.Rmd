@@ -79,10 +79,10 @@ RC_logistic_curve <- RC_step1_df %>%
   filter(!(eng_completed == FALSE & vocabulary_type_step1 == "English")) %>%
   filter(!(fr_completed == FALSE & vocabulary_type_step1 == "French")) %>%
   unite(id_lang, c(study_id, vocabulary_type_step1)) %>%
-  # Remove scores for S044 in English, as baby was French monolingual and had scores of 0 in English
-  filter(!(id_lang == "S044_English")) %>% 
-  # Remove scores from babies with only 2 datapoints in a given language
-  filter(!(id_lang == "S055_English" | id_lang == "S055_word" | id_lang == "S055_concept")) %>%
+  # # Remove scores for S044 in English, as baby was French monolingual and had scores of 0 in English
+  # filter(!(id_lang == "S044_English")) %>% 
+  # # Remove scores from babies with only 2 datapoints in a given language
+  # filter(!(id_lang == "S055_English" | id_lang == "S055_word" | id_lang == "S055_concept")) %>%
   split(.$id_lang) %>%
   map(~drm(vocabulary_score~age, data = .,
                  fct=LL.3(names = c("Slope", "Upper Limit", "Midpoint")),
