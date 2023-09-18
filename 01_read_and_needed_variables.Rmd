@@ -28,8 +28,6 @@ LS_LEQ_data <- read_csv("data/LimeSurvey_LEQ_data.csv",
 # Qualtrics
 Q_LEQ_data <- read_csv("data/00_Qualtrics_LEQ_checked_long.csv",
                          guess_max = 1500) #%>% #HK note: same as above
-  # # Remove testing "babies"
-  # filter(!c(study_id == "S000" | study_id == "S001"))
 
 # Read date of birth data
 DOB_data <- read_csv("data/BNW_date_of_birth.csv") %>%
@@ -122,7 +120,8 @@ LEQ_df_columns <-
                                    cumulative_exp_Fre<cumulative_exp_Eng ~ "eng_dom",
                                    cumulative_exp_Fre==cumulative_exp_Eng ~ "balanced",
                                    cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom")) %>% #HK note: this is producing one NA value for "dominant_lang' for a kid who is dominant in French but non-dominant in L3... If you want this kid to also be marked as fr_dom, then you can add this line to the cases: cumulative_exp_Fre>cumulative_exp_L3 ~ "fr_dom". I'm also adding a call to ungroup() here so the dataframe is no longer grouped.
-  ungroup()
+  ungroup() %>% 
+  select(-c(subject_id, dob))
 
 # Create dataframe with monolinguals (exposure < 10% to English or French) to later remove their CDI data in their second language if they completed it
 # English monolinguals
@@ -190,8 +189,10 @@ Eng_df_columns <- Eng_cdi_data %>%
   mutate(age = age_calc(dob, last_modified, units = "months")) %>% 
   relocate(age, .after = last_modified) %>% 
   # Remove data from French monolinguals
-  filter(!(study_id %in% fr_monolingual_df$study_id))
+  filter(!(study_id %in% fr_monolingual_df$study_id)) %>% 
+  select(-c(subject_id, dob, last_modified))
   
+
 # French 
 Fr_df_columns <- Fr_cdi_data %>%
   # keep only relevant variables
@@ -234,7 +235,8 @@ Fr_df_columns <- Fr_cdi_data %>%
   mutate(age = age_calc(dob, last_modified, units = "months")) %>%
   relocate(age, .after = last_modified) %>% 
   # Remove data from English monolinguals
-  filter(!(study_id %in% eng_monolingual_df$study_id))
+  filter(!(study_id %in% eng_monolingual_df$study_id)) %>% 
+  select(-c(subject_id, dob, last_modified))
 
 ```
 
