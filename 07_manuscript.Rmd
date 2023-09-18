@@ -45,7 +45,7 @@ Eng_demographics_df <- Eng_keepers_df %>%
   # Keep babies from final sample
   filter(study_id %in% step1_df$study_id) %>% 
   # Keep only demographics columns
-  select(study_id, last_modified, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
+  select(study_id, n_months, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
   # Check that each baby has always the same answer
   group_by(study_id) %>% 
   mutate(check_sex = case_when(sex != lead(sex) ~ "check"),
@@ -56,7 +56,7 @@ Eng_demographics_df <- Eng_keepers_df %>%
   filter(!(study_id == "S120" & child_hispanic_latino == TRUE)) %>% # Remove row with typo (parents said their child is latino only once)
   # Keep one (the first) row per baby
   group_by(study_id) %>% 
-  filter(last_modified == min(last_modified)) %>% 
+  filter(n_months == min(n_months)) %>% 
   select(-c(check_sex:check_ethnicity)) %>%
   ungroup() #HK note: adding ungroup()
 
@@ -67,7 +67,7 @@ Fr_demographics_df <- Fr_keepers_df %>%
   # Keep babies from final sample
   filter(study_id %in% step1_df$study_id) %>% 
   # Keep only demographics columns
-  select(study_id, last_modified, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
+  select(study_id, n_months, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
   # Check that each baby has always the same answer
   group_by(study_id) %>% 
   mutate(check_sex = case_when(sex != lead(sex) ~ "check"),
@@ -78,7 +78,7 @@ Fr_demographics_df <- Fr_keepers_df %>%
   filter(!(study_id == "S072" & child_hispanic_latino == TRUE)) %>% # Remove row with typo (parents said their child is latino only once)
   # Keep one (the first) row per baby
   group_by(study_id) %>% 
-  filter(last_modified == min(last_modified)) %>% 
+  filter(n_months == min(n_months)) %>% 
   select(-c(check_sex:check_ethnicity)) %>%
   ungroup() #HK note: adding ungroup()
 
