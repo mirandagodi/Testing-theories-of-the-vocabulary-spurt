@@ -34,7 +34,7 @@ activity_status <- read_csv("data/BabysNewWords_activity_status.csv") %>%
 # English
 # Identify participants with one or more health exclusion criteria, label them as 'exclude'
 Eng_df_health <- Eng_01_df %>%
-  group_by(subject_id) %>%
+  group_by(study_id) %>%
   mutate(exclude_health = case_when((birth_weight_lb > 0 & birth_weight_lb < 5.5)
                                     | (early_or_late == 'Early' & due_date_diff >= 4) 
                                     #| ear_infections_boolean == 1 
