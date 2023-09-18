@@ -49,10 +49,10 @@ Eng_df_itemID <- Eng_df_total_produced %>%
   # Remove first 2 columns
   select(-c(sex: worried_boolean, eng_total_produced)) %>%
   # Convert to long data
-  pivot_longer(-c(subject_id:eng_est_total_produced), names_to = "english_item", values_to = "eng_acquired") %>%
+  pivot_longer(-c(study_id:eng_est_total_produced), names_to = "english_item", values_to = "eng_acquired") %>%
   # Add item_id for each vocab
-  group_by(subject_id, n_months) %>%
-  mutate(english_item_id = row_number(subject_id)) %>%
+  group_by(study_id, n_months) %>%
+  mutate(english_item_id = row_number(study_id)) %>%
   # Fix typo in english_item_id (*checked with eng_cdi from wordbank)
   mutate(english_item_id = case_when(english_item == "peas" ~ "131",
                                      english_item == "peanut_butter" ~ "132",
@@ -77,10 +77,10 @@ Fr_df_itemID <- Fr_df_total_produced %>%
   # Remove first 2 columns
   select(-c(sex: worried_boolean, fr_total_produced)) %>%
   # Convert to long data
-  pivot_longer(-c(subject_id:fr_est_total_produced), names_to = "french_item", values_to = "fr_acquired") %>%
+  pivot_longer(-c(study_id:fr_est_total_produced), names_to = "french_item", values_to = "fr_acquired") %>%
   # Add item_id for each vocab
-  group_by(subject_id, n_months) %>%
-  mutate(french_item_id = row_number(subject_id)) %>%
+  group_by(study_id, n_months) %>%
+  mutate(french_item_id = row_number(study_id)) %>%
   mutate(french_item_id = as.numeric(french_item_id)) %>%
   ungroup() %>%
   select(study_id, TRUE_months, n_months, completed, fr_est_total_produced, age, french_item, french_item_id, fr_acquired) %>% 
