@@ -18,7 +18,7 @@ Eng_01_df <- read_csv("data/01_Eng_columns.csv")
 
 Fr_01_df <- read_csv("data/01_Fr_columns.csv") 
 
-activity_status_recruitment_log <- read_csv("data/BabysNewWords_activity_status_from_recruitment_log.csv") %>%
+activity_status_recruitment_log <- read_csv("data/BabysNewWords_activity_status.csv") %>%
   slice(1:138)
 ```
 
