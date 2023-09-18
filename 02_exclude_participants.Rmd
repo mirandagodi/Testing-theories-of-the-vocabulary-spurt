@@ -18,7 +18,7 @@ Eng_01_df <- read_csv("data/01_Eng_columns.csv")
 
 Fr_01_df <- read_csv("data/01_Fr_columns.csv") 
 
-activity_status_recruitment_log <- read_csv("data/BabysNewWords_activity_status.csv") %>%
+activity_status <- read_csv("data/BabysNewWords_activity_status.csv") %>%
   slice(1:138)
 ```
 
@@ -103,11 +103,12 @@ L3_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L3_exclude_exposure 
 L4_df_exclude_exposure <- LEQ_df_exposure_change %>% filter(L4_exclude_exposure == 'exclude') %>% distinct(study_id)
 ```
 
+
 ```{r}
 # Identify participants with three consecutive missing months #HK note: after the changes made in script 01, this section is now excluding 4 additional participants for inactivity: S045, S046, S086 and S133.
 
 # Get IDs of infants who withdrew
-activity_status_df <- activity_status_recruitment_log %>% 
+activity_status_df <- activity_status %>% 
     # Get study ID
   separate("Study ID", c(NA, "study_id")) %>% 
   # Format study_id to be "S" followed by 3 digits (e.g., S001, S086, S123)
@@ -123,7 +124,7 @@ Eng_df_three_missing <- Eng_01_df %>%
   left_join(activity_status_df, by = "study_id") %>% 
   relocate(Enrolled, .after = study_id) %>% 
 # Arrange in chronological order
-  arrange(last_modified) %>%
+  arrange(n_months) %>%
 # Group by baby; it will produce several THREE MISSING if not done
   group_by(study_id) %>%
 # Create column where it says THREE MISSING on the third consecutive missing month
@@ -148,7 +149,7 @@ Fr_df_three_missing <- Fr_01_df %>%
   left_join(activity_status_df, by = "study_id") %>% 
   relocate(Enrolled, .after = study_id) %>% 
 # Arrange in chronological order
-  arrange(last_modified) %>%
+  arrange(n_months) %>%
 # Group by baby; it will produce several THREE MISSING if not done
   group_by(study_id) %>%
 # Create column where it says THREE MISSING on the third consecutive missing month
