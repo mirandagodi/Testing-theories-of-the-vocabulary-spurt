@@ -18,6 +18,7 @@ Scripts should be run in numerical order, as they produce files used in the foll
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
 
+`data_dictionary.Rmd` : Data dictionary for the datasets used for the project. They are organized in order by the number of script they are used for.
 
 DATA
 
