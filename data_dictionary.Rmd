@@ -1,0 +1,215 @@
+---
+title: "data_dictionary"
+author: "Miranda Gómez Díaz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r}
+# Load packages
+library(tidyverse)
+library(datadictionary)
+library(pointblank)
+library(rio)
+# library(dplyr)
+```
+
+```{r}
+################# Datasets used for Script 02 ################# 
+```
+
+```{r}
+# Data dictionary for 01_LEQ_columns.csv
+
+# Read csv file
+LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
+
+# Create dictionary
+LEQ_01_dictionary <- create_informant(LEQ_01_df) %>% 
+  info_tabular(
+    Description = "Dataset of language exposure data.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "phase",
+    info = "Number of the current language exposure situation being reported for a participant.") %>%
+  info_columns(
+    columns = "end_age",
+    info = "Participant's age in months at which the current phage ended.") %>%
+  info_columns(
+    columns = "cumulative_exp_Eng",
+    info = "Exposure to English that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_Fre",
+    info = "Exposure to French that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_L3",
+    info = "Exposure to a third language that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_L4",
+    info = "Exposure to a fourth language that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "lang_status",
+    info = "Specifies if a participant is bilingual, English-monolingual or French-monolingual.") %>%
+  info_columns(
+    columns = "dominant_lang",
+    info = "Specifies a participant's dominant language.") 
+```
+
+```{r}
+# Data dictionary for 01_Eng_columns.csv
+
+# Read csv file
+Eng_01_df <- read_csv("data/01_Eng_columns.csv") 
+
+# Create dictionary
+Eng_01_dictionary <- create_informant(Eng_01_df) %>% 
+  info_tabular(
+    Description = "Dataset of English vocabulary data. It includes all participants.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>%
+  info_columns(
+    columns = "baa_baa":"then",
+    info = "Shows if a participant produces (1) or does not produce (0) the word.") %>%
+  info_columns(
+    columns = "eng_total_produced",
+    info = "Estimated expressive voabulary size.") 
+```
+```{r}
+# Data dictionary for 01_Eng_columns.csv
+
+# Read csv file
+Fr_01_df <- read_csv("data/01_Fr_columns.csv") 
+
+# Create dictionary
+Fr_01_dictionary <- create_informant(Fr_01_df) %>% 
+  info_tabular(
+    Description = "Dataset of French vocabulary data. It includes all participants.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>%
+  info_columns(
+    columns = "aie":"si",
+    info = "Shows if a participant produces (1) or does not produce (0) the word.") %>%
+  info_columns(
+    columns = "fr_total_produced",
+    info = "Estimated expressive voabulary size.")  
+```
+```{r}
+################# Datasets used for Script 03 ################# 
+```
+
+```{r}
+# Data dictionary for 02_Eng_keepers.csv
+
+# Read csv file
+Eng_02_df <- read_csv("data/02_Eng_keepers.csv")
+
+# Create dictionary
+Eng_02_dictionary <- create_informant(Eng_02_df) %>% 
+  info_tabular(
+    Description = "Dataset of English vocabulary data. It includes only participants that met inclusion criteria.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>%
+  info_columns(
+    columns = "baa_baa":"then",
+    info = "Shows if a participant produces (1) or does not produce (0) the word.") %>%
+  info_columns(
+    columns = "eng_total_produced",
+    info = "Estimated expressive voabulary size.") 
+```
+
+```{r}
+# Data dictionary for 02_Fr_keepers.csv
+
+# Read csv file
+Fr_02_df <- read_csv("data/02_Fr_keepers.csv")
+
+# Create dictionary
+Fr_02_dictionary <- create_informant(Fr_02_df) %>% 
+  info_tabular(
+    Description = "Dataset of French vocabulary data. It includes only participants that met inclusion criteria.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>%
+  info_columns(
+    columns = "aie":"si",
+    info = "Shows if a participant produces (1) or does not produce (0) the word.") %>%
+  info_columns(
+    columns = "fr_total_produced",
+    info = "Estimated expressive voabulary size.") 
+```
+
+```{r}
+# Data dictionary for ws_te_list_full.csv
+
+# Read csv file
+TE_list <- read_csv("data/ws_te_list_full.csv") %>%
+  # remove unnecessary columns
+  select(-c(word_en, word_fr, one_to_many)) %>%
+  rename(eng_item_num = en_item_num)
+
+# Create dictionary
+TE_list_dictionary <- create_informant(TE_list) %>% 
+  info_tabular(
+    Description = "Dataset of translation equivalents included in the English and French CDI.") %>%
+  info_columns(
+    columns = "eng_item_num",
+    info = "Item ID in the English CDI.") %>%
+  info_columns(
+    columns = "fr_item_num",
+    info = "Item ID in the French CDI.") %>%
+  info_columns(
+    columns = "te_id",
+    info = "ID assigned to translation equivalent pair.")
+```
+
+```{r}
+################# Datasets used for Script 04 ################# 
+```
+
+```{r}
+# Data dictionary for 03_vocabulary_scores.csv
+
+# Read csv file
+vocabulary_scores_03_df <- read_csv("data/03_vocabulary_scores.csv") 
+
+# Create dictionary
+vocabulary_scores_03_dictionary <- create_informant(vocabulary_scores_03_df) %>% 
+  info_tabular(
+    Description = "Dataset includes vocabulary data for English, French, word, and concept vocabularies.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = ends_with("_produced"),
+    info = "Indicates the number of words produced in that vocabulary type by a participant in that month.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") 
+
+```
+
