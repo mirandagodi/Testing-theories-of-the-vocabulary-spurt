@@ -93,7 +93,7 @@ lang_status_df <- step1_df %>%
 ```
 
 ```{r}
-# Fit logistic curve to individual data (single-language, word, and concept vocabularies): LL.3 (lower limit fixed at 0), continuous type of data. This data framme is used for following analyses.
+# Fit logistic curve to individual data (single-language, word, and concept vocabularies): LL.3 (lower limit fixed at 0), continuous type of data. This data frame is used for following analyses.
 # THIS APPROACH ALLOWS FOR CURVE-FITTING AND CHECKING MODEL FIT
 
 # Clean and prepare dataframe
