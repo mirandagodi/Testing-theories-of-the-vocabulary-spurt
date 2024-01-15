@@ -19,7 +19,7 @@ LEQ_01_df <- read_csv("data/01_LEQ_columns.csv")
 vocabulary_scores_df <- read_csv("data/04_analysis_step_1_dataset.csv") 
 final_exposure_df <- read_csv("data/05_final_exposure_dataset.csv")
 final_vocabulary_scores_df <- read_csv("data/05_final_vocabulary_scores_dataset.csv")
-words_at_spurt_distinct <- read_csv('data/05_words_at_apurt_distinct_dataset.csv')
+words_at_spurt_distinct <- read_csv('data/05_words_at_spurt_distinct_dataset.csv')
 
 # These babies had been excluded in one but not the other language (they had missing data or exposure change in only one language)
 to_be_excluded <- read_csv("data/02_total_excluded.csv")

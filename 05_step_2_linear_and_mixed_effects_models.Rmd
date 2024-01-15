@@ -436,7 +436,7 @@ word_table
 # Save dataframe as csv file
 write_csv(final_exposure_df, 'data/05_final_exposure_dataset.csv')
 write_csv(final_vocabulary_scores_df, 'data/05_final_vocabulary_scores_dataset.csv')
-write_csv(words_at_spurt_distinct, 'data/05_words_at_apurt_distinct_dataset.csv')
+write_csv(words_at_spurt_distinct, 'data/05_words_at_spurt_distinct_dataset.csv')
 write_csv(step2_df, 'data/05_analysis_step_2_dataset.csv')
 ```
 
