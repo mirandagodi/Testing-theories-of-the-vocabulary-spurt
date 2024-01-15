@@ -79,6 +79,7 @@ Eng_01_dictionary <- create_informant(Eng_01_df) %>%
     columns = "eng_total_produced",
     info = "Estimated expressive voabulary size.") 
 ```
+
 ```{r}
 # Data dictionary for 01_Eng_columns.csv
 
@@ -102,6 +103,7 @@ Fr_01_dictionary <- create_informant(Fr_01_df) %>%
     columns = "fr_total_produced",
     info = "Estimated expressive voabulary size.")  
 ```
+
 ```{r}
 ################# Datasets used for Script 03 ################# 
 ```
@@ -211,5 +213,346 @@ vocabulary_scores_03_dictionary <- create_informant(vocabulary_scores_03_df) %>%
     columns = "starting_age",
     info = "Participant's age in months when they joined the study.") 
 
+```
+
+```{r}
+################# Datasets used for Scripts 05 and 05.2 ################# 
+```
+
+```{r}
+# Data dictionary for 04_analysis_step_1_coefficients.csv
+
+# Read csv file
+coefficients_04_df <- read_csv("data/04_analysis_step_1_coefficients.csv")
+
+# Create dictionary
+coefficients_04_dictionary <- create_informant(coefficients_04_df) %>% 
+  info_tabular(
+    Description = "Dataset includes mispoint, slope, and upper limit coefficients of the logistic curves fit to individual vocabulary data. It also includes AIC values for different types or curves.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the coefficients correspond to English, French, word, or concept vocabulary.") %>%
+  info_columns(
+    columns = "AIC_LL.3",
+    info = "AIC value for three-parameter logistic curve.") %>%
+  info_columns(
+    columns = "AIC_Cubic",
+    info = "AIC value for cubic curve.") %>%
+  info_columns(
+    columns = "AIC_Quad",
+    info = "AIC value for quadratic curve.") %>%
+  info_columns(
+    columns = "AIC_Lin",
+    info = "AIC value for linear equation.") 
+```
+
+```{r}
+# Data dictionary for 04_analysis_step_1_dataset.csv
+
+# Read csv file
+vocabulary_scores_df <- read_csv("data/04_analysis_step_1_dataset.csv") 
+
+# Create dictionary
+vocabulary_scores_dictionary <- create_informant(vocabulary_scores_df) %>% 
+  info_tabular(
+    Description = "Dataset includes information to estimate the number of words a participant learned during the vocbaulary spurt.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+   info_columns(
+    columns = "vocabulary_score",
+    info = "Number of words produced in that month for that vocabulary type.") %>% 
+  info_columns(
+    columns = "num_missing_datapts",
+    info = "Number of missing data points by each participant in each vocabulary type.") %>% 
+  info_columns(
+    columns = "total",
+    info = "Number of words that a participant could potentially produce in each vocabulary type.") 
+```
+
+```{r}
+################# Datasets used for Script 05.1 ################# 
+```
+
+```{r}
+# Data dictionary for 05_final_exposure_dataset.csv
+
+# Read csv file
+final_exposure_df <- read_csv("data/05_final_exposure_dataset.csv")
+
+# Create dictionary
+final_exposure_dictionary <- create_informant(final_exposure_df) %>% 
+  info_tabular(
+    Description = "Dataset includes information about participants' language exposure at the end of the study.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "end_age",
+    info = "Participant's age in months at which the current phage ended.") %>%
+  info_columns(
+    columns = "cumulative_exp_Eng",
+    info = "Exposure to English that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_Fre",
+    info = "Exposure to French that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "lang_status",
+    info = "Specifies if a participant is bilingual, English-monolingual or French-monolingual.") %>%
+  info_columns(
+    columns = "dominant_lang",
+    info = "Specifies a participant's dominant language.") %>%
+  info_columns(
+    columns = "exposure_balance",
+    info = "Specifies a participant's language exposure balance, computed as the exposure to the non-dominant language.")
+
+```
+
+```{r}
+# Data dictionary for 05_final_vocabulary_scores_dataset.csv
+
+# Read csv file
+final_vocabulary_scores_df <- read_csv("data/05_final_vocabulary_scores_dataset.csv")
+
+# Create dictionary
+final_vocabulary_scores_dictionary <- create_informant(final_vocabulary_scores_df) %>% 
+  info_tabular(
+    Description = "Dataset includes vocabulary data for English, French, word, and concept vocabularies on the final month of the study.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the data correspond to English, French, word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "vocabulary_score",
+    info = "Number of words produced in that month for that vocabulary type.") %>% 
+  info_columns(
+    columns = "num_missing_datapts",
+    info = "Number of missing data points by each participant in each vocabulary type.") %>% 
+  info_columns(
+    columns = "total",
+    info = "Number of words that a participant could potentially produce in each vocabulary type.")
+```
+
+```{r}
+# Data dictionary for 05_words_at_spurt_distinct_dataset.csv
+
+# Read csv file
+words_at_spurt_distinct <- read_csv('data/05_words_at_spurt_distinct_dataset.csv')
+
+# Create dictionary
+words_at_spurt_distinct_dictionary <- create_informant(words_at_spurt_distinct) %>% 
+  info_tabular(
+    Description = "Dataset includes the estimated number of words learned by each participant during the vocabulary spurt in each vocabulary type.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the data correspond to English, French, word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "words_learned",
+    info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
+```
+
+```{r}
+################# Datasets used for Script 06 ################# 
+
+# All the csv files used for the robustness checks have been used in previous scripts. "RC_" has been added to the original dataframe name (e.g., RC_vocabulary_scores_03_df is the same dataset as vocabulary_scores_03_df).
+```
+
+```{r}
+################# Datasets used for Script 07 ################# 
+
+# Most csv files used for the manuscript script have been used in previous scripts. Some csv files were read and assigned to a name different than the original dataframe name. These are the dataframes with different names:
+
+# step1_df is the same as vocabulary_scores_df
+```
+
+```{r}
+# Data dictionary for 05_analysis_step_2_dataset.csv
+
+# Read csv file
+step2_df <- read_csv('data/05_analysis_step_2_dataset.csv')
+
+# Create dictionary
+step2_dictionary <- create_informant(step2_df) %>% 
+  info_tabular(
+    Description = "Dataset includes all the vocabulary and language exposure information for the regression models.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the data correspond to English, French, word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step2",
+    info = "Specifices if the data correspond to single-language (English or French), word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "midpoint":"upper_limit",
+    info = "Coefficient estimated by fitting a logistic curve to individual vocabulary data.") %>%
+  info_columns(
+    columns = "AIC_LL.3",
+    info = "AIC value for three-parameter logistic curve.") %>%
+  info_columns(
+    columns = "AIC_Cubic",
+    info = "AIC value for cubic curve.") %>%
+  info_columns(
+    columns = "AIC_Quad",
+    info = "AIC value for quadratic curve.") %>%
+  info_columns(
+    columns = "AIC_Lin",
+    info = "AIC value for linear equation.") %>%
+  info_columns(
+    columns = "cumulative_exp_Eng",
+    info = "Exposure to English that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_Fre",
+    info = "Exposure to French that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>% 
+  info_columns(
+    columns = "end_age",
+    info = "Participant's age in months at which the current phage ended.") %>%
+  info_columns(
+    columns = "lang_status",
+    info = "Specifies if a participant is bilingual, English-monolingual or French-monolingual.") %>%
+  info_columns(
+    columns = "dominant_lang",
+    info = "Specifies a participant's dominant language.") %>%
+  info_columns(
+    columns = "exposure_balance",
+    info = "Specifies a participant's language exposure balance, computed as the exposure to the non-dominant language.") %>% 
+  info_columns(
+    columns = "exposure_percent",
+    info = "Exposure to the specified language expressed in percentage.") %>% 
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") %>% 
+  info_columns(
+    columns = "vocabulary_score",
+    info = "Number of words produced in that month for that vocabulary type.") %>% 
+  info_columns(
+    columns = "num_missing_datapts",
+    info = "Number of missing data points by each participant in each vocabulary type.") %>% 
+  info_columns(
+    columns = "total",
+    info = "Number of words that a participant could potentially produce in each vocabulary type.") %>% 
+  info_columns(
+    columns = "dominance",
+    info = "Specifies if the language referred to is the participant-s dominant or non/dominant language.") %>% 
+  info_columns(
+    columns = "words_learned",
+    info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
+```
+
+```{r}
+# Data dictionary for 05.1_midpoint_identification.csv
+
+### The same variables are included in 05.1_midpoint_identification_summary.csv
+
+# Read csv file
+midpoint_identification <- read_csv('data/05.1_midpoint_identification.csv')
+
+# Create dictionary
+midpoint_identification_dictionary <- create_informant(midpoint_identification) %>% 
+  info_tabular(
+    Description = "Dataset includes all the vocabulary and language exposure information for the comparisson between spurters and non/spurters.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the data correspond to English, French, word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "midpoint":"upper_limit",
+    info = "Coefficient estimated by fitting a logistic curve to individual vocabulary data.") %>%
+  info_columns(
+    columns = "AIC_LL.3",
+    info = "AIC value for three-parameter logistic curve.") %>%
+  info_columns(
+    columns = "AIC_Cubic",
+    info = "AIC value for cubic curve.") %>%
+  info_columns(
+    columns = "AIC_Quad",
+    info = "AIC value for quadratic curve.") %>%
+  info_columns(
+    columns = "AIC_Lin",
+    info = "AIC value for linear equation.") %>%
+  info_columns(
+    columns = "cumulative_exp_Eng",
+    info = "Exposure to English that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_Fre",
+    info = "Exposure to French that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>% 
+  info_columns(
+    columns = "end_age",
+    info = "Participant's age in months at which the current phage ended.") %>%
+  info_columns(
+    columns = "lang_status",
+    info = "Specifies if a participant is bilingual, English-monolingual or French-monolingual.") %>%
+  info_columns(
+    columns = "dominant_lang",
+    info = "Specifies a participant's dominant language.") %>%
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") %>% 
+  info_columns(
+    columns = "vocabulary_score",
+    info = "Number of words produced in that month for that vocabulary type.") %>% 
+  info_columns(
+    columns = "num_missing_datapts",
+    info = "Number of missing data points by each participant in each vocabulary type.") %>% 
+  info_columns(
+    columns = "total",
+    info = "Number of words that a participant could potentially produce in each vocabulary type.") %>% 
+  info_columns(
+    columns = "midp_identify",
+    info = "Specifies if a vocabulary spurt (i.e., midpoint) was identified within the study's age range.") 
+  
 ```
 
