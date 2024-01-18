@@ -2,7 +2,7 @@ SCRIPTS DESCRIPTION
 
 Scripts are organized in numerical order. Each script produces csv files used in subsequent scripts.
 
-`Data cleaning scripts`: These scripts are not included here as they contain identifiable information. All shared data in this repository is anonymized. 
+`01_data_cleaning`: These scripts are not included here as they contain identifiable information. All shared data in this repository is anonymized. 
 
 `02_exclude_participants.Rmd`: This script documents the exclusion of participants due to health/developmental issues, language exposure criteria, and missing data in the English and French data sets separately.
 
@@ -20,8 +20,7 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
 
-`data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. Some dataframes are used in multiple scripts; these can be found in the set of the first script where they are used. To see a particular dictionary, call it in the console.
-
+`data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. Some dataframes are used in multiple scripts; these can be found in the set of the first script where they are used. 
 DATA FOLDER
 
 This folder includes all the csv files used and produced by the scripts. The number at the beginning of the file name, corresponds to the number of the script where the data frame was produced (e.g., file "02_Eng_keepers" was produced by script "02_exclude_participants").
