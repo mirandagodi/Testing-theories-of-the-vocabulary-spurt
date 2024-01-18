@@ -1,6 +1,6 @@
 SCRIPTS DESCRIPTION
 
-Scripts should be run in numerical order, as they produce files used in the following scripts. Scripts 5.01 and 5.02 do not produce files used in the following scripts.
+Scripts are organized in numerical order.
 
 `Data cleaning scripts`: These scripts are not included here as they contain identifiable information. All shared data in this repository is anonymized. 
 
