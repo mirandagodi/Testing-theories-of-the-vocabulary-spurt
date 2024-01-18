@@ -20,7 +20,7 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
 
-`data_dictionary.Rmd` : Data dictionary for the datasets used for the project. They are organized in order by the number of script they are used for. Some datasets are used in multiple scripts; these can be found in the set of the first script where they are used. To see a particular dictionary, call it in the console.
+`data_dictionary.Rmd` : Data dictionary for the datasets used for the project. They include variable type and a description of relevant variables. They are organized in order by the number of script they are used for. Some datasets are used in multiple scripts; these can be found in the set of the first script where they are used. To see a particular dictionary, call it in the console.
 
 DATA FOLDER
 
