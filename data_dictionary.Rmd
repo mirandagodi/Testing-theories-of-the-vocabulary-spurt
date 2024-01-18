@@ -54,6 +54,8 @@ LEQ_01_dictionary <- create_informant(LEQ_01_df) %>%
   info_columns(
     columns = "dominant_lang",
     info = "Specifies a participant's dominant language.") 
+
+LEQ_01_dictionary
 ```
 
 ```{r}
@@ -78,6 +80,8 @@ Eng_01_dictionary <- create_informant(Eng_01_df) %>%
   info_columns(
     columns = "eng_total_produced",
     info = "Estimated expressive voabulary size.") 
+
+Eng_01_dictionary
 ```
 
 ```{r}
@@ -101,7 +105,9 @@ Fr_01_dictionary <- create_informant(Fr_01_df) %>%
     info = "Shows if a participant produces (1) or does not produce (0) the word.") %>%
   info_columns(
     columns = "fr_total_produced",
-    info = "Estimated expressive voabulary size.")  
+    info = "Estimated expressive voabulary size.") 
+
+Fr_01_dictionary
 ```
 
 ```{r}
@@ -130,6 +136,8 @@ Eng_02_dictionary <- create_informant(Eng_02_df) %>%
   info_columns(
     columns = "eng_total_produced",
     info = "Estimated expressive voabulary size.") 
+
+Eng_02_dictionary
 ```
 
 ```{r}
@@ -154,6 +162,8 @@ Fr_02_dictionary <- create_informant(Fr_02_df) %>%
   info_columns(
     columns = "fr_total_produced",
     info = "Estimated expressive voabulary size.") 
+
+Fr_02_dictionary
 ```
 
 ```{r}
@@ -178,6 +188,8 @@ TE_list_dictionary <- create_informant(TE_list) %>%
   info_columns(
     columns = "te_id",
     info = "ID assigned to translation equivalent pair.")
+
+TE_list_dictionary
 ```
 
 ```{r}
@@ -213,6 +225,7 @@ vocabulary_scores_03_dictionary <- create_informant(vocabulary_scores_03_df) %>%
     columns = "starting_age",
     info = "Participant's age in months when they joined the study.") 
 
+vocabulary_scores_03_dictionary
 ```
 
 ```{r}
@@ -247,6 +260,8 @@ coefficients_04_dictionary <- create_informant(coefficients_04_df) %>%
   info_columns(
     columns = "AIC_Lin",
     info = "AIC value for linear equation.") 
+
+coefficients_04_dictionary
 ```
 
 ```{r}
@@ -283,6 +298,8 @@ vocabulary_scores_dictionary <- create_informant(vocabulary_scores_df) %>%
   info_columns(
     columns = "total",
     info = "Number of words that a participant could potentially produce in each vocabulary type.") 
+
+vocabulary_scores_dictionary
 ```
 
 ```{r}
@@ -321,6 +338,7 @@ final_exposure_dictionary <- create_informant(final_exposure_df) %>%
     columns = "exposure_balance",
     info = "Specifies a participant's language exposure balance, computed as the exposure to the non-dominant language.")
 
+final_exposure_dictionary
 ```
 
 ```{r}
@@ -360,6 +378,8 @@ final_vocabulary_scores_dictionary <- create_informant(final_vocabulary_scores_d
   info_columns(
     columns = "total",
     info = "Number of words that a participant could potentially produce in each vocabulary type.")
+
+final_vocabulary_scores_dictionary
 ```
 
 ```{r}
@@ -381,6 +401,8 @@ words_at_spurt_distinct_dictionary <- create_informant(words_at_spurt_distinct) 
   info_columns(
     columns = "words_learned",
     info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
+
+words_at_spurt_distinct_dictionary
 ```
 
 ```{r}
@@ -479,6 +501,8 @@ step2_dictionary <- create_informant(step2_df) %>%
   info_columns(
     columns = "words_learned",
     info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
+
+step2_dictionary
 ```
 
 ```{r}
@@ -554,5 +578,6 @@ midpoint_identification_dictionary <- create_informant(midpoint_identification) 
     columns = "midp_identify",
     info = "Specifies if a vocabulary spurt (i.e., midpoint) was identified within the study's age range.") 
   
+midpoint_identification_dictionary
 ```
 
