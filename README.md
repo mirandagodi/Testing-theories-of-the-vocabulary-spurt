@@ -20,7 +20,7 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
 
-`data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. Some dataframes are used in multiple scripts; these can be found in the set of the first script where they are used. 
+`data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. For dataframes that are used in multiple scripts, a dictionary is created only the first time that they appear. Thus, refer to a previous chunk on the script to see the dictionary of that specific dataframe. 
 
 DATA FOLDER
 
