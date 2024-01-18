@@ -1,6 +1,6 @@
 SCRIPTS DESCRIPTION
 
-Scripts are organized in numerical order.
+Scripts are organized in numerical order. Each script produces csv files used in subsequent scripts.
 
 `Data cleaning scripts`: These scripts are not included here as they contain identifiable information. All shared data in this repository is anonymized. 
 
