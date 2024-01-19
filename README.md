@@ -22,6 +22,8 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. For dataframes that are used in multiple scripts, a dictionary is created only the first time that they appear. Thus, refer to a previous chunk on the script to see the dictionary of that specific dataframe. 
 
+`packages_versions.Rmd` : This script loads all the packages used for the project and generates a txt file with the version for each package.
+
 DATA FOLDER
 
 This folder includes all the csv files used and produced by the scripts. The number at the beginning of the file name, corresponds to the number of the script where the data frame was produced (e.g., file "02_Eng_keepers" was produced by script "02_exclude_participants").
@@ -34,6 +36,8 @@ Some files do not have a corresponding script, as they were created manually or 
  `BabysNewWords_activity_status.csv` : Contains whether participants completed or withdrew from the study; it is used to exclude participants that do not have a complete data set.
 
  `ws_te_list_full.csv` : Contains a list of translation equivalents used to estimate concept vocabulary size.
+
+ `packages_vresions.txt` : Contains the version of each package used for the project.
 
 FIGURES FOLDER
 
