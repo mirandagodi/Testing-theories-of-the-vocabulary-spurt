@@ -1,0 +1,37 @@
+---
+title: "packages_versions"
+author: "Miranda Gómez Díaz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+# Load packages used in the project
+library(tidyverse)
+library(drc)
+library(RColorBrewer)
+library(tibble)
+library(gridExtra)
+library(ggpubr)
+library(tidylog)
+library(rempsyc)
+library(lmerTest)
+library(lme4)
+library(performance)
+library(report)
+library(jtools)
+library(sjPlot)
+library(gridExtra)
+library(cowplot)
+library(ggpubr)
+library(janitor)
+library(ez)
+library(kableExtra)
+library(sessioninfo)
+```
+
+```{r}
+# Create text file with the version for each package used in the project
+session_info(pkgs = "!attached", to_file = "data/packages_versions.txt")
+```
+
