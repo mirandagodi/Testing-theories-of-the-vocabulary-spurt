@@ -16,6 +16,8 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `05.2_reestimate_words_learned_during_spurt_Frank_etal_method.Rmd` : This script documents the procedure used to estimate the number of words that participants learned during their vocabulary spurt.
 
+`05.3_control_demographic_variables.Rmd` : Runs analyses from script 05 controlling for demographic variables.
+
 `06_robustness_checks.Rmd` : This script documents the robustness checks conducted. Results are reported in supplementary materials.
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
