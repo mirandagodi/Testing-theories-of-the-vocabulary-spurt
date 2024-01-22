@@ -27,9 +27,50 @@ library(janitor)
 step2_df <- read_csv('data/05_analysis_step_2_dataset.csv')
 demographics_df <- read_csv('data/07_demographics_dataset.csv')
 ```
+
 ```{r}
-# Join dataframes
-step2_demographics_df <- step2_df %>% 
-  left_join(demographics_df, by = "study_id")
+# Filter demographics for infants in step2_df
+step2_demographics_df <- demographics_df %>% 
+  filter(study_id %in% step2_df$study_id) %>% 
+  # Fix income
+  mutate(correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
+                             is.na(annual_income_eng) ~ annual_income_fr,
+                             is.na(annual_income_fr) ~ annual_income_eng,
+                             annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_fr,
+                             annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_eng,
+                             annual_income_eng == annual_income_fr ~ annual_income_eng#,
+                                              # income_eng > mother_education_fr ~ income_eng, # Keep Eng answer if it is highest
+                                              # income_eng < mother_education_fr ~ income_fr # Keep Fr answer if it is highest
+                             )) 
 ```
 
+```{r}
+# Visualize SES and parental education 
+
+# income_hist
+
+mother_education_hist <- hist(step2_demographics_df$correct_mother_education)
+
+father_education_hist <- hist(step2_demographics_df$correct_father_education)
+```
+
+```{r}
+# Correlations between income and parental education
+step2_demographics_complete_df <- step2_demographics_df %>% 
+  filter(!is.na(correct_father_education))
+
+cor(step2_demographics_complete_df$correct_mother_education, step2_demographics_complete_df$correct_father_education)
+
+ggscatter(step2_demographics_df, x = "correct_mother_education", y = "correct_father_education", 
+          add = "reg.line", 
+          conf.int = TRUE, 
+          cor.coef = TRUE, 
+          cor.method = "pearson",
+          xlab = "Mother education", ylab = "Father education")
+```
+
+```{r}
+# Join dataframes
+step2_full_df <- step2_df %>% 
+  left_join(demographics_df, by = "study_id")
+```
