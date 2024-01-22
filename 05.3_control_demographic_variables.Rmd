@@ -1,0 +1,35 @@
+---
+title: "05.3_control_demographic_variables"
+author: "Miranda Gómez Díaz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#Read needed packages
+library(tidyverse)
+library(tidylog)
+library(rempsyc)
+library(lmerTest)
+library(lme4)
+library(performance)
+library(report)
+library(jtools)
+library(sjPlot)
+library(gridExtra)
+library(cowplot)
+library(ggpubr)
+library(janitor)
+```
+
+```{r}
+# Read csv files
+step2_df <- read_csv('data/05_analysis_step_2_dataset.csv')
+demographics_df <- read_csv('data/07_demographics_dataset.csv')
+```
+```{r}
+# Join dataframes
+step2_demographics_df <- step2_df %>% 
+  left_join(demographics_df, by = "study_id")
+```
+
