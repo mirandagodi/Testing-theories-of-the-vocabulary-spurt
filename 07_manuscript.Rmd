@@ -45,7 +45,7 @@ Eng_demographics_df <- Eng_keepers_df %>%
   # Keep babies from final sample
   filter(study_id %in% step1_df$study_id) %>% 
   # Keep only demographics columns
-  select(study_id, n_months, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
+  select(study_id, n_months, form_filler, sex, birth_order, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
   # Check that each baby has always the same answer
   group_by(study_id) %>% 
   mutate(check_sex = case_when(sex != lead(sex) ~ "check"),
@@ -67,7 +67,7 @@ Fr_demographics_df <- Fr_keepers_df %>%
   # Keep babies from final sample
   filter(study_id %in% step1_df$study_id) %>% 
   # Keep only demographics columns
-  select(study_id, n_months, form_filler, sex, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
+  select(study_id, n_months, form_filler, sex, birth_order, mother_education, father_education, annual_income, child_hispanic_latino, child_ethnicity) %>% 
   # Check that each baby has always the same answer
   group_by(study_id) %>% 
   mutate(check_sex = case_when(sex != lead(sex) ~ "check"),
@@ -92,6 +92,9 @@ EngFr_demographics_df <-
   mutate(correct_sex = case_when(is.na(sex_eng) ~ sex_fr, 
                                  is.na(sex_fr) ~ sex_eng,
                                  sex_eng == sex_fr ~ sex_eng),
+         correct_birth_order = case_when(is.na(birth_order_eng) ~ birth_order_fr, 
+                                 is.na(birth_order_fr) ~ birth_order_eng,
+                                 birth_order_eng == birth_order_fr ~ birth_order_eng), # S097 and S098 are twins
          correct_mother_education = case_when(is.na(mother_education_eng) ~ mother_education_fr,
                                               is.na(mother_education_fr) ~ mother_education_eng,
                                               mother_education_eng == mother_education_fr ~ mother_education_eng,
@@ -125,6 +128,9 @@ demographics_ethnicity_summary <- EngFr_demographics_df %>%
   ungroup() %>% 
   count(correct_ethnicity) %>% 
   mutate(percent_ethnicity = round((n * 100 / sum(n)), digits = 2))
+
+# Save dataframe as csv file. It will be used in Script 05.3 to control for demographic variables
+write_csv(EngFr_demographics_df, 'data/07_demographics_dataset.csv')
 ```
 
 ```{r}

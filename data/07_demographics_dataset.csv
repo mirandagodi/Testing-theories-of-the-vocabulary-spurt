@@ -1,0 +1,46 @@
+study_id,n_months_eng,form_filler_eng,sex_eng,birth_order_eng,mother_education_eng,father_education_eng,annual_income_eng,child_hispanic_latino_eng,child_ethnicity_eng,n_months_fr,form_filler_fr,sex_fr,birth_order_fr,mother_education_fr,father_education_fr,annual_income_fr,child_hispanic_latino_fr,child_ethnicity_fr,correct_sex,correct_birth_order,correct_mother_education,correct_father_education,correct_ethnicity
+S001,1,Mother,Male,2,16,16,125000-150000,FALSE,['W'],1,Mother,Male,2,16,16,100000-125000,FALSE,['W'],Male,2,16,16,['W']
+S006,1,Mother,Male,1,16,18,125000-150000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,1,16,18,['W']
+S009,1,Mother,Female,2,18,18,150000-175000,FALSE,"['A', 'W']",1,Father,Female,2,17,NA,175000-200000,FALSE,"['A', 'W']",Female,2,18,18,"['A', 'W']"
+S010,1,Mother,Male,3,18,18,175000-200000,FALSE,['W'],1,Mother,Male,3,18,18,125000-150000,FALSE,['W'],Male,3,18,18,['W']
+S015,1,Father,Male,1,18,18,75000-100000,FALSE,['W'],1,Father,Male,1,16,16,75000-100000,TRUE,['W'],Male,1,18,18,['W']
+S019,1,Mother,Male,1,17,18,50000-75000,FALSE,['W'],1,Mother,Male,1,16,18,50000-75000,FALSE,['W'],Male,1,17,18,['W']
+S023,1,Mother,Female,1,18,18,50000-75000,FALSE,['W'],1,Mother,Female,1,17,17,50000-75000,FALSE,['W'],Female,1,18,18,['W']
+S032,1,Mother,Male,3,18,18,75000-100000,FALSE,['W'],1,Mother,Male,3,16,16,75000-100000,FALSE,['W'],Male,3,18,18,['W']
+S033,1,Mother,Female,2,18,21,150000-175000,FALSE,['W'],1,Mother,Female,2,18,21,150000-175000,FALSE,['W'],Female,2,18,21,['W']
+S036,1,Both caregivers,Female,1,16,23,125000-150000,FALSE,"['A', 'W']",1,Both caregivers,Female,1,23,16,125000-150000,FALSE,"['A', 'W']",Female,1,23,23,"['A', 'W']"
+S039,1,Mother,Male,1,12,12,50000-75000,NA,['W'],1,Mother,Male,1,11,11,50000-75000,NA,['W'],Male,1,12,12,['W']
+S047,1,Mother,Female,1,18,NA,100000-125000,FALSE,['W'],1,Mother,Female,1,18,NA,100000-125000,FALSE,['W'],Female,1,18,NA,['W']
+S050,1,Mother,Female,2,18,12,75000-100000,FALSE,['O'],1,Mother,Female,2,16,11,75000-100000,FALSE,['O'],Female,2,18,12,['O']
+S057,1,Mother,Other,1,23,23,150000-175000,FALSE,['W'],1,Mother,Other,1,23,23,150000-175000,FALSE,['W'],Other,1,23,23,['W']
+S058,1,Mother,Other,1,18,15,25000-50000,FALSE,['W'],1,Mother,Other,1,16,14,25000-50000,FALSE,['W'],Other,1,18,15,['W']
+S063,1,Mother,Male,4,18,16,75000-100000,FALSE,"['B', 'W']",1,Mother,Male,4,18,16,75000-100000,FALSE,"['B', 'W']",Male,4,18,16,"['B', 'W']"
+S064,1,Mother,Male,1,18,16,125000-150000,TRUE,"['W', 'O']",1,Mother,Male,1,18,16,125000-150000,TRUE,"['W', 'O']",Male,1,18,16,"['W', 'O']"
+S069,1,Mother,Female,2,17,18,150000-175000,FALSE,['W'],1,Mother,Female,2,15,16,150000-175000,FALSE,['W'],Female,2,17,18,['W']
+S073,1,Mother,Male,2,18,18,175000-200000,FALSE,['O'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,2,18,18,['O']
+S079,1,Mother,Female,1,18,18,100000-125000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Female,1,18,18,['W']
+S081,1,Mother,Female,0,16,18,100000-125000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Female,0,16,18,['W']
+S088,1,Mother,Male,1,18,16,Prefer not to disclose,FALSE,['W'],1,Mother,Male,1,16,13,Prefer not to disclose,FALSE,['W'],Male,1,18,16,['W']
+S097,1,Mother,Male,3,20,22,175000-200000,FALSE,['W'],1,Mother,Male,2,18,20,175000-200000,FALSE,['W'],Male,NA,20,22,['W']
+S098,1,Mother,Male,3,18,20,175000-200000,FALSE,['W'],1,Mother,Male,3,18,20,175000-200000,FALSE,['W'],Male,3,18,20,['W']
+S100,1,Mother,Male,1,18,16,75000-100000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,1,18,16,['W']
+S101,1,Mother,Male,1,16,12,75000-100000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,1,16,12,['W']
+S103,1,Father,Female,1,14,16,25000-50000,FALSE,['W'],1,Mother,Female,1,12,20,25000-50000,FALSE,['W'],Female,1,14,20,['W']
+S104,1,Mother,Male,1,12,12,75000-100000,FALSE,"['N', 'W']",1,Mother,Male,1,12,12,75000-100000,FALSE,"['N', 'W']",Male,1,12,12,"['N', 'W']"
+S108,1,Mother,Male,1,19,16,75000-100000,FALSE,['W'],1,Mother,Male,1,19,15,75000-100000,FALSE,['W'],Male,1,19,16,['W']
+S116,1,Mother,Male,2,16,18,175000-200000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,2,16,18,['W']
+S118,1,Mother,Female,1,16,15,Prefer not to disclose,FALSE,['W'],1,Mother,Female,1,16,15,Prefer not to disclose,FALSE,['W'],Female,1,16,15,['W']
+S120,2,Mother,Male,2,18,18,>200000,FALSE,['W'],1,Mother,Male,2,16,16,>200000,FALSE,['W'],Male,2,18,18,['W']
+S122,1,Mother,Male,1,18,18,50000-75000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,1,18,18,['W']
+S125,1,Mother,Male,1,16,16,125000-150000,FALSE,"['A', 'B']",1,Mother,Male,1,13,16,125000-150000,FALSE,"['A', 'B']",Male,1,16,16,"['A', 'B']"
+S126,1,Father,Male,1,18,16,100000-125000,FALSE,['W'],1,Mother,Male,1,16,13,100000-125000,FALSE,['W'],Male,1,18,16,['W']
+S131,1,Mother,Male,1,18,16,150000-175000,FALSE,['W'],NA,NA,NA,NA,NA,NA,NA,NA,NA,Male,1,18,16,['W']
+S132,1,Mother,Male,1,21,16,175000-200000,FALSE,['W'],1,Mother,Male,1,21,16,175000-200000,FALSE,['W'],Male,1,21,16,['W']
+S072,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,Mother,Female,3,19,16,Prefer not to disclose,FALSE,['W'],Female,3,19,16,['W']
+S087,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Female,1,20,16,75000-100000,FALSE,['W'],Female,1,20,16,['W']
+S096,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Male,2,16,16,>200000,FALSE,NA,Male,2,16,16,NA
+S106,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Female,1,18,20,100000-125000,FALSE,['W'],Female,1,18,20,['W']
+S107,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Male,1,16,NA,125000-150000,FALSE,['W'],Male,1,16,NA,['W']
+S113,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Female,1,17,NA,75000-100000,FALSE,['W'],Female,1,17,NA,['W']
+S115,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Female,2,18,18,150000-175000,FALSE,['W'],Female,2,18,18,['W']
+S130,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,Mother,Male,2,16,16,100000-125000,FALSE,['W'],Male,2,16,16,['W']
