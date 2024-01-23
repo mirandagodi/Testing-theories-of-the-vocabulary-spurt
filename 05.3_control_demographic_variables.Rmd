@@ -36,30 +36,67 @@ step2_demographics_df <- demographics_df %>%
   mutate(correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
                              is.na(annual_income_eng) ~ annual_income_fr,
                              is.na(annual_income_fr) ~ annual_income_eng,
-                             annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_fr,
-                             annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_eng,
-                             annual_income_eng == annual_income_fr ~ annual_income_eng#,
-                                              # income_eng > mother_education_fr ~ income_eng, # Keep Eng answer if it is highest
-                                              # income_eng < mother_education_fr ~ income_fr # Keep Fr answer if it is highest
-                             )) 
+                             annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_eng,
+                             annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_fr,
+                             annual_income_eng > annual_income_fr ~ annual_income_eng, # Keep Eng answer if it is highest
+                             annual_income_eng < annual_income_fr ~ annual_income_fr, # Keep Fr answer if it is highest
+                             annual_income_eng == annual_income_fr ~ annual_income_eng
+                             ),
+         # Convert income ranges into a facor. "Prefer not to disclose" will be considered NA.
+         income_factor = case_when(correct_income == "25000-50000" ~ 1,
+                                   correct_income == "50000-75000" ~ 2,
+                                   correct_income == "75000-100000" ~ 3 ,
+                                   correct_income == "100000-125000" ~ 4,
+                                   correct_income == "125000-150000" ~ 5,
+                                   correct_income == "150000-175000" ~ 6,
+                                   correct_income == "175000-200000" ~ 7,
+                                   correct_income == ">200000" ~ 8),
+         # Estimate parental education
+         parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education,
+                                        TRUE ~ (correct_mother_education + correct_father_education) / 2
+         # parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education)
+         )) 
 ```
 
 ```{r}
 # Visualize SES and parental education 
 
-# income_hist
+income_hist <- hist(step2_demographics_df$income_factor)
 
-mother_education_hist <- hist(step2_demographics_df$correct_mother_education)
+mother_education_hist <- hist(step2_demographics_df$correct_mother_education, 
+                              # breaks = 12
+                              # breaks = seq(min(step2_demographics_df$correct_mother_education), max(step2_demographics_df$correct_mother_education),
+                              #              length.out = 12)
+                              )
 
 father_education_hist <- hist(step2_demographics_df$correct_father_education)
 ```
 
 ```{r}
 # Correlations between income and parental education
-step2_demographics_complete_df <- step2_demographics_df %>% 
-  filter(!is.na(correct_father_education))
+# step2_demographics_complete_df <- step2_demographics_df %>% 
+#   filter(!is.na(correct_father_education))
 
-cor(step2_demographics_complete_df$correct_mother_education, step2_demographics_complete_df$correct_father_education)
+ggscatter(step2_demographics_df, x = "income_factor", y = "correct_mother_education", 
+          add = "reg.line", 
+          conf.int = TRUE, 
+          cor.coef = TRUE, 
+          cor.method = "pearson",
+          xlab = "Annual income factor", ylab = "Mother education")
+
+ggscatter(step2_demographics_df, x = "income_factor", y = "correct_father_education", 
+          add = "reg.line", 
+          conf.int = TRUE, 
+          cor.coef = TRUE, 
+          cor.method = "pearson",
+          xlab = "Annual income factor", ylab = "Father education")
+
+ggscatter(step2_demographics_df, x = "income_factor", y = "parental_education", 
+          add = "reg.line", 
+          conf.int = TRUE, 
+          cor.coef = TRUE, 
+          cor.method = "pearson",
+          xlab = "Annual income factor", ylab = "Parental education")
 
 ggscatter(step2_demographics_df, x = "correct_mother_education", y = "correct_father_education", 
           add = "reg.line", 
@@ -67,10 +104,402 @@ ggscatter(step2_demographics_df, x = "correct_mother_education", y = "correct_fa
           cor.coef = TRUE, 
           cor.method = "pearson",
           xlab = "Mother education", ylab = "Father education")
+
 ```
 
 ```{r}
 # Join dataframes
 step2_full_df <- step2_df %>% 
-  left_join(demographics_df, by = "study_id")
+  left_join(step2_demographics_df, by = "study_id")
 ```
+
+```{r}
+# Single-language midpoint model
+single_lang_df <- step2_full_df %>%
+  filter(vocabulary_type_step2 == "single") 
+
+# All demographic variables: only exposure_percent is significant
+midpoint_single_model <- 
+  lmer(midpoint ~ exposure_percent + 
+         income_factor + correct_mother_education + correct_father_education + correct_birth_order +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model)
+model_performance(midpoint_single_model)
+summary(midpoint_single_model)
+summ(midpoint_single_model, digits = 3)
+report(midpoint_single_model, digits = 3)
+
+# Only income: only exposure_percent is significant
+midpoint_single_model_income <- 
+  lmer(midpoint ~ exposure_percent + 
+         income_factor +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model_income)
+model_performance(midpoint_single_model_income)
+summary(midpoint_single_model_income)
+summ(midpoint_single_model_income, digits = 3)
+report(midpoint_single_model_income, digits = 3)
+
+# Only mother education: only exposure_percent is significant
+midpoint_single_model_mother <- 
+  lmer(midpoint ~ exposure_percent + 
+         correct_mother_education +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model_mother)
+model_performance(midpoint_single_model_mother)
+summary(midpoint_single_model_mother)
+summ(midpoint_single_model_mother, digits = 3)
+report(midpoint_single_model_mother, digits = 3)
+
+# Only father education: only exposure_percent is significant
+midpoint_single_model_father <- 
+  lmer(midpoint ~ exposure_percent + 
+         correct_father_education +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model_father)
+model_performance(midpoint_single_model_father)
+summary(midpoint_single_model_father)
+summ(midpoint_single_model_father, digits = 3)
+report(midpoint_single_model_father, digits = 3)
+
+# Only birth order: only exposure_percent is significant
+midpoint_single_model_birth_order <- 
+  lmer(midpoint ~ exposure_percent + 
+         correct_birth_order +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model_birth_order)
+model_performance(midpoint_single_model_birth_order)
+summary(midpoint_single_model_birth_order)
+summ(midpoint_single_model_birth_order, digits = 3)
+report(midpoint_single_model_birth_order, digits = 3)
+```
+
+```{r}
+# Single-language slope model
+
+# All demographic variables: no predictor is significant
+slope_single_model <- 
+  lmer(slope ~ exposure_percent + 
+         income_factor + correct_mother_education + correct_father_education + correct_birth_order +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model)
+model_performance(slope_single_model)
+summary(slope_single_model)
+summ(slope_single_model, digits = 3)
+report(slope_single_model, digits = 3)
+
+# Only income: no predictor is significant
+slope_single_model_income <- 
+  lmer(slope ~ exposure_percent + 
+         income_factor +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model_income)
+model_performance(slope_single_model_income)
+summary(slope_single_model_income)
+summ(slope_single_model_income, digits = 3)
+report(slope_single_model_income, digits = 3)
+
+# Only mother education: no predictor is significant
+slope_single_model_mother <- 
+  lmer(slope ~ exposure_percent + 
+         correct_mother_education +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model_mother)
+model_performance(slope_single_model_mother)
+summary(slope_single_model_mother)
+summ(slope_single_model_mother, digits = 3)
+report(slope_single_model_mother, digits = 3)
+
+# Only father education: no predictor is significant
+slope_single_model_father <- 
+  lmer(slope ~ exposure_percent + 
+         correct_father_education +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model_father)
+model_performance(slope_single_model_father)
+summary(slope_single_model_father)
+summ(slope_single_model_father, digits = 3)
+report(slope_single_model_father, digits = 3)
+
+# Only birth order: birth_order is marginally significant (beta = -1.37, Std.beta = -0.32, p = 0.058)
+slope_single_model_birth_order <- 
+  lmer(slope ~ exposure_percent + 
+         correct_birth_order +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model_birth_order)
+model_performance(slope_single_model_birth_order)
+summary(slope_single_model_birth_order)
+summ(slope_single_model_birth_order, digits = 3)
+report(slope_single_model_birth_order, digits = 3)
+```
+
+```{r}
+# Concept vocabulary midpoint model
+concept_df <- step2_full_df %>%
+  filter(vocabulary_type_step2 == "concept")
+
+# All demographic variables: only exposure_balance is significant
+midpoint_concept_model <- 
+  lm(midpoint ~ exposure_balance +
+       income_factor + correct_mother_education + correct_father_education + correct_birth_order,
+     data = concept_df)
+
+check_model(midpoint_concept_model)
+model_performance(midpoint_concept_model)
+summary(midpoint_concept_model)
+summ(midpoint_concept_model, digits = 3)
+report(midpoint_concept_model, digits = 3)
+
+# Only income: only exposure_balance is significant
+midpoint_concept_model_income <- 
+  lm(midpoint ~ exposure_balance + 
+         income_factor,
+       data = concept_df)
+
+check_model(midpoint_concept_model_income)
+model_performance(midpoint_concept_model_income)
+summary(midpoint_concept_model_income)
+summ(midpoint_concept_model_income, digits = 3)
+report(midpoint_concept_model_income, digits = 3)
+
+# Only mother education:  exposure_percent is marginally significant (beta = 0.05, Std.beta = 0.33, p = 0.075)
+midpoint_concept_model_mother <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_mother_education,
+     data = concept_df)
+
+check_model(midpoint_concept_model_mother)
+model_performance(midpoint_concept_model_mother)
+summary(midpoint_concept_model_mother)
+summ(midpoint_concept_model_mother, digits = 3)
+report(midpoint_concept_model_mother, digits = 3)
+
+# Only father education: only exposure_balance is significant
+midpoint_concept_model_father <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_father_education,
+     data = concept_df)
+
+check_model(midpoint_concept_model_father)
+model_performance(midpoint_concept_model_father)
+summary(midpoint_concept_model_father)
+summ(midpoint_concept_model_father, digits = 3)
+report(midpoint_concept_model_father, digits = 3)
+
+# Only birth order: no predictor is significant
+midpoint_concept_model_birth_order <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_birth_order,
+     data = concept_df)
+
+check_model(midpoint_concept_model_birth_order)
+model_performance(midpoint_concept_model_birth_order)
+summary(midpoint_concept_model_birth_order)
+summ(midpoint_concept_model_birth_order, digits = 3)
+report(midpoint_concept_model_birth_order, digits = 3)
+```
+
+```{r}
+# Concept vocabulary slope model
+
+# All demographic variables: no predictor is significant
+slope_concept_model <- 
+  lm(slope ~ exposure_balance +
+       income_factor + correct_mother_education + correct_father_education + correct_birth_order, 
+     data = concept_df)
+
+check_model(slope_concept_model)
+model_performance(slope_concept_model)
+summary(slope_concept_model)
+summ(slope_concept_model, digits = 3)
+report(slope_concept_model, digits = 3)
+
+# Only income: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.37, p = 0.062)
+slope_concept_model_income <- 
+  lm(slope ~ exposure_balance + 
+         income_factor,
+       data = concept_df)
+
+check_model(slope_concept_model_income)
+model_performance(slope_concept_model_income)
+summary(slope_concept_model_income)
+summ(slope_concept_model_income, digits = 3)
+report(slope_concept_model_income, digits = 3)
+
+# Only mother education: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.34, p = 0.071)
+slope_concept_model_mother <- 
+  lm(slope ~ exposure_balance + 
+         correct_mother_education,
+     data = concept_df)
+
+check_model(slope_concept_model_mother)
+model_performance(slope_concept_model_mother)
+summary(slope_concept_model_mother)
+summ(slope_concept_model_mother, digits = 3)
+report(slope_concept_model_mother, digits = 3)
+
+# Only father education: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.32, p = 0.096)
+slope_concept_model_father <- 
+  lm(slope ~ exposure_balance + 
+         correct_father_education,
+     data = concept_df)
+
+check_model(slope_concept_model_father)
+model_performance(slope_concept_model_father)
+summary(slope_concept_model_father)
+summ(slope_concept_model_father, digits = 3)
+report(slope_concept_model_father, digits = 3)
+
+# Only birth order: no predictor is significant
+slope_concept_model_birth_order <- 
+  lm(slope ~ exposure_balance + 
+         correct_birth_order,
+     data = concept_df)
+
+check_model(slope_concept_model_birth_order)
+model_performance(slope_concept_model_birth_order)
+summary(slope_concept_model_birth_order)
+summ(slope_concept_model_birth_order, digits = 3)
+report(slope_concept_model_birth_order, digits = 3)
+```
+
+```{r}
+# Word vocabulary midpoint model
+word_df <- step2_full_df %>%
+  filter(vocabulary_type_step2 == "word")
+
+# All demographic variables: only exposure_balance is significant
+midpoint_word_model <- 
+  lm(midpoint ~ exposure_balance +
+       income_factor + correct_mother_education + correct_father_education + correct_birth_order,
+     data = word_df)
+
+check_model(midpoint_word_model)
+model_performance(midpoint_word_model)
+summary(midpoint_word_model)
+summ(midpoint_word_model, digits = 3)
+report(midpoint_word_model, digits = 3)
+
+# Only income: only exposure_balance is significant
+midpoint_word_model_income <- 
+  lm(midpoint ~ exposure_balance + 
+         income_factor,
+       data = word_df)
+
+check_model(midpoint_word_model_income)
+model_performance(midpoint_word_model_income)
+summary(midpoint_word_model_income)
+summ(midpoint_word_model_income, digits = 3)
+report(midpoint_word_model_income, digits = 3)
+
+# Only mother education: only exposure_balance is significant
+midpoint_word_model_mother <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_mother_education,
+     data = word_df)
+
+check_model(midpoint_word_model_mother)
+model_performance(midpoint_word_model_mother)
+summary(midpoint_word_model_mother)
+summ(midpoint_word_model_mother, digits = 3)
+report(midpoint_word_model_mother, digits = 3)
+
+# Only father education: only exposure_balance is significant
+midpoint_word_model_father <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_father_education,
+     data = word_df)
+
+check_model(midpoint_word_model_father)
+model_performance(midpoint_word_model_father)
+summary(midpoint_word_model_father)
+summ(midpoint_word_model_father, digits = 3)
+report(midpoint_word_model_father, digits = 3)
+
+# Only birth order: only exposure_balance is significant
+midpoint_word_model_birth_order <- 
+  lm(midpoint ~ exposure_balance + 
+         correct_birth_order,
+     data = word_df)
+
+check_model(midpoint_word_model_birth_order)
+model_performance(midpoint_word_model_birth_order)
+summary(midpoint_word_model_birth_order)
+summ(midpoint_word_model_birth_order, digits = 3)
+report(midpoint_word_model_birth_order, digits = 3)
+```
+
+```{r}
+# Word vocabulary slope model
+
+# All demographic variables: no predictor is significant
+slope_word_model <- 
+  lm(slope ~ exposure_balance +
+       income_factor + correct_mother_education + correct_father_education + correct_birth_order,
+     data = word_df)
+
+check_model(slope_word_model)
+model_performance(slope_word_model)
+summary(slope_word_model)
+summ(slope_word_model, digits = 3)
+report(slope_word_model, digits = 3)
+
+# Only income: only exposure_balance is significant
+slope_word_model_income <- 
+  lm(slope ~ exposure_balance + 
+         income_factor,
+       data = word_df)
+
+check_model(slope_word_model_income)
+model_performance(slope_word_model_income)
+summary(slope_word_model_income)
+summ(slope_word_model_income, digits = 3)
+report(slope_word_model_income, digits = 3)
+
+# Only mother education: only exposure_balance is significant
+slope_word_model_mother <- 
+  lm(slope ~ exposure_balance + 
+         correct_mother_education,
+     data = word_df)
+
+check_model(slope_word_model_mother)
+model_performance(slope_word_model_mother)
+summary(slope_word_model_mother)
+summ(slope_word_model_mother, digits = 3)
+report(slope_word_model_mother, digits = 3)
+
+# Only father education: only exposure_balance is significant
+slope_word_model_father <- 
+  lm(slope ~ exposure_balance + 
+         correct_father_education,
+     data = word_df)
+
+check_model(slope_word_model_father)
+model_performance(slope_word_model_father)
+summary(slope_word_model_father)
+summ(slope_word_model_father, digits = 3)
+report(slope_word_model_father, digits = 3)
+
+# Only birth order: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.35, p = 0.050)
+slope_word_model_birth_order <- 
+  lm(slope ~ exposure_balance + 
+         correct_birth_order,
+     data = word_df)
+
+check_model(slope_word_model_birth_order)
+model_performance(slope_word_model_birth_order)
+summary(slope_word_model_birth_order)
+summ(slope_word_model_birth_order, digits = 3)
+report(slope_word_model_birth_order, digits = 3)
+```
+
