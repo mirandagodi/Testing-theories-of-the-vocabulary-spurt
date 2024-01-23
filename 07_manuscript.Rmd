@@ -107,7 +107,28 @@ EngFr_demographics_df <-
                                               father_education_eng < father_education_fr ~ father_education_fr), # Keep Fr answer if it is highest
          correct_ethnicity = case_when(is.na(child_ethnicity_eng) ~ child_ethnicity_fr, 
                                  is.na(child_ethnicity_fr) ~ child_ethnicity_eng, # A French-monolingual baby never reported ethnicity (has NA in both languages)
-                                 child_ethnicity_eng == child_ethnicity_fr ~ child_ethnicity_eng)) 
+                                 child_ethnicity_eng == child_ethnicity_fr ~ child_ethnicity_eng),
+         correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
+                             is.na(annual_income_eng) ~ annual_income_fr,
+                             is.na(annual_income_fr) ~ annual_income_eng,
+                             annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_eng,
+                             annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_fr,
+                             annual_income_eng > annual_income_fr ~ annual_income_eng, # Keep Eng answer if it is highest
+                             annual_income_eng < annual_income_fr ~ annual_income_fr, # Keep Fr answer if it is highest
+                             annual_income_eng == annual_income_fr ~ annual_income_eng),
+         # Convert income ranges into a facor. "Prefer not to disclose" will be considered NA.
+         income_factor = case_when(correct_income == "25000-50000" ~ 1,
+                                   correct_income == "50000-75000" ~ 2,
+                                   correct_income == "75000-100000" ~ 3 ,
+                                   correct_income == "100000-125000" ~ 4,
+                                   correct_income == "125000-150000" ~ 5,
+                                   correct_income == "150000-175000" ~ 6,
+                                   correct_income == "175000-200000" ~ 7,
+                                   correct_income == ">200000" ~ 8),
+         # Estimate parental education
+         parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education,
+                                        TRUE ~ (correct_mother_education + correct_father_education) / 2)
+         ) 
 
 # Demographics: Sex 
 demographics_sex_summary <- EngFr_demographics_df %>% 
@@ -115,7 +136,13 @@ demographics_sex_summary <- EngFr_demographics_df %>%
   count(correct_sex) %>% 
   mutate(percent_sex = round((n * 100 / sum(n)), digits = 2))
 
-# Demographics: Socioeconomic status (SES) based on parental education
+# Demographics: Sex 
+demographics_income_summary <- EngFr_demographics_df %>% 
+  ungroup() %>% 
+  count(correct_income) %>% 
+  mutate(percent_income = round((n * 100 / sum(n)), digits = 2))
+
+# Demographics: parental education
 demographics_ses_summary <- EngFr_demographics_df %>% 
   ungroup() %>% 
   summarise(mother_education_M = round(mean(correct_mother_education, na.rm = TRUE), digits = 2),

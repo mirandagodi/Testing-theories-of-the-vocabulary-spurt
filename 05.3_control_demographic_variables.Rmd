@@ -31,31 +31,31 @@ demographics_df <- read_csv('data/07_demographics_dataset.csv')
 ```{r}
 # Filter demographics for infants in step2_df
 step2_demographics_df <- demographics_df %>% 
-  filter(study_id %in% step2_df$study_id) %>% 
-  # Fix income
-  mutate(correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
-                             is.na(annual_income_eng) ~ annual_income_fr,
-                             is.na(annual_income_fr) ~ annual_income_eng,
-                             annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_eng,
-                             annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_fr,
-                             annual_income_eng > annual_income_fr ~ annual_income_eng, # Keep Eng answer if it is highest
-                             annual_income_eng < annual_income_fr ~ annual_income_fr, # Keep Fr answer if it is highest
-                             annual_income_eng == annual_income_fr ~ annual_income_eng
-                             ),
-         # Convert income ranges into a facor. "Prefer not to disclose" will be considered NA.
-         income_factor = case_when(correct_income == "25000-50000" ~ 1,
-                                   correct_income == "50000-75000" ~ 2,
-                                   correct_income == "75000-100000" ~ 3 ,
-                                   correct_income == "100000-125000" ~ 4,
-                                   correct_income == "125000-150000" ~ 5,
-                                   correct_income == "150000-175000" ~ 6,
-                                   correct_income == "175000-200000" ~ 7,
-                                   correct_income == ">200000" ~ 8),
-         # Estimate parental education
-         parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education,
-                                        TRUE ~ (correct_mother_education + correct_father_education) / 2
-         # parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education)
-         )) 
+  filter(study_id %in% step2_df$study_id) #%>% 
+  # # Fix income
+  # mutate(correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
+  #                            is.na(annual_income_eng) ~ annual_income_fr,
+  #                            is.na(annual_income_fr) ~ annual_income_eng,
+  #                            annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_eng,
+  #                            annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_fr,
+  #                            annual_income_eng > annual_income_fr ~ annual_income_eng, # Keep Eng answer if it is highest
+  #                            annual_income_eng < annual_income_fr ~ annual_income_fr, # Keep Fr answer if it is highest
+  #                            annual_income_eng == annual_income_fr ~ annual_income_eng
+  #                            ),
+  #        # Convert income ranges into a facor. "Prefer not to disclose" will be considered NA.
+  #        income_factor = case_when(correct_income == "25000-50000" ~ 1,
+  #                                  correct_income == "50000-75000" ~ 2,
+  #                                  correct_income == "75000-100000" ~ 3 ,
+  #                                  correct_income == "100000-125000" ~ 4,
+  #                                  correct_income == "125000-150000" ~ 5,
+  #                                  correct_income == "150000-175000" ~ 6,
+  #                                  correct_income == "175000-200000" ~ 7,
+  #                                  correct_income == ">200000" ~ 8),
+  #        # Estimate parental education
+  #        parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education,
+  #                                       TRUE ~ (correct_mother_education + correct_father_education) / 2
+  #        # parental_education = case_when(is.na(correct_father_education) ~ correct_mother_education)
+  #        )) 
 ```
 
 ```{r}
