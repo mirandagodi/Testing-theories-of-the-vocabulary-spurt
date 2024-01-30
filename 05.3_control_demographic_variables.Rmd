@@ -201,6 +201,18 @@ summary(midpoint_single_model)
 summ(midpoint_single_model, digits = 3)
 report(midpoint_single_model, digits = 3)
 
+# Only sex: only exposure_percent is significant
+midpoint_single_model_sex <- 
+  lmer(midpoint ~ exposure_percent + 
+         correct_sex +
+         (1|study_id), data = single_lang_df)
+
+check_model(midpoint_single_model_sex)
+model_performance(midpoint_single_model_sex)
+summary(midpoint_single_model_sex)
+summ(midpoint_single_model_sex, digits = 3)
+report(midpoint_single_model_sex, digits = 3)
+
 # Only income: only exposure_percent is significant
 midpoint_single_model_income <- 
   lmer(midpoint ~ exposure_percent + 
@@ -215,7 +227,7 @@ report(midpoint_single_model_income, digits = 3)
 
 # Only mother education: only exposure_percent is significant
 midpoint_single_model_mother <- 
-  lmer(midpoint ~ exposure_percent + 
+  lmer(midpoint ~ exposure_percent * 
          correct_mother_education +
          (1|study_id), data = single_lang_df)
 
@@ -285,6 +297,18 @@ report(slope_single_model, digits = 3)
 # summ(slope_single_model_centered, digits = 3)
 # report(slope_single_model_centered, digits = 3)
 
+# Only sex: no predictor is significant
+slope_single_model_sex <- 
+  lmer(slope ~ exposure_percent + 
+         correct_sex +
+         (1|study_id), data = single_lang_df)
+
+check_model(slope_single_model_sex)
+model_performance(slope_single_model_sex)
+summary(slope_single_model_sex)
+summ(slope_single_model_sex, digits = 3)
+report(slope_single_model_sex, digits = 3)
+
 # Only income: no predictor is significant
 slope_single_model_income <- 
   lmer(slope ~ exposure_percent + 
@@ -323,7 +347,7 @@ report(slope_single_model_mother, digits = 3)
 
 # Only birth order: birth_order is marginally significant (beta = -1.37, Std.beta = -0.32, p = 0.058)
 slope_single_model_birth_order <- 
-  lmer(slope ~ exposure_percent * 
+  lmer(slope ~ exposure_percent + 
          birth_order_categorical +
          (1|study_id), data = single_lang_df)
 
@@ -353,6 +377,18 @@ summary(midpoint_concept_model)
 summ(midpoint_concept_model, digits = 3)
 report(midpoint_concept_model, digits = 3)
 
+# Only sex: only exposure_balance is significant
+midpoint_concept_model_sex <- 
+  lm(midpoint ~ exposure_balance * 
+         correct_sex,
+       data = concept_df)
+
+check_model(midpoint_concept_model_sex)
+model_performance(midpoint_concept_model_sex)
+summary(midpoint_concept_model_sex)
+summ(midpoint_concept_model_sex, digits = 3)
+report(midpoint_concept_model_sex, digits = 3)
+
 # Only income: only exposure_balance is significant
 midpoint_concept_model_income <- 
   lm(midpoint ~ exposure_balance + 
@@ -367,7 +403,7 @@ report(midpoint_concept_model_income, digits = 3)
 
 # Only mother education:  exposure_percent is marginally significant (beta = 0.05, Std.beta = 0.33, p = 0.075)
 midpoint_concept_model_mother <- 
-  lm(midpoint ~ exposure_balance + 
+  lm(midpoint ~ exposure_balance * 
          correct_mother_education,
      data = concept_df)
 
@@ -421,6 +457,18 @@ summary(slope_concept_model)
 summ(slope_concept_model, digits = 3)
 report(slope_concept_model, digits = 3)
 
+# Only sex: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.37, p = 0.062)
+slope_concept_model_sex <- 
+  lm(slope ~ exposure_balance + 
+         correct_sex,
+       data = concept_df)
+
+check_model(slope_concept_model_sex)
+model_performance(slope_concept_model_sex)
+summary(slope_concept_model_sex)
+summ(slope_concept_model_sex, digits = 3)
+report(slope_concept_model_sex, digits = 3)
+
 # Only income: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.37, p = 0.062)
 slope_concept_model_income <- 
   lm(slope ~ exposure_balance + 
@@ -459,7 +507,7 @@ report(slope_concept_model_mother, digits = 3)
 
 # Only birth order: no predictor is significant
 slope_concept_model_birth_order <- 
-  lm(slope ~ exposure_balance + 
+  lm(slope ~ exposure_balance * 
          birth_order_categorical,
      data = concept_df)
 
@@ -489,6 +537,18 @@ summary(midpoint_word_model)
 summ(midpoint_word_model, digits = 3)
 report(midpoint_word_model, digits = 3)
 
+# Only sex: no predictor is significant
+midpoint_word_model_sex <- 
+  lm(midpoint ~ exposure_balance * 
+         correct_sex,
+       data = word_df)
+
+check_model(midpoint_word_model_sex)
+model_performance(midpoint_word_model_sex)
+summary(midpoint_word_model_sex)
+summ(midpoint_word_model_sex, digits = 3)
+report(midpoint_word_model_sex, digits = 3)
+
 # Only income: only exposure_balance is significant
 midpoint_word_model_income <- 
   lm(midpoint ~ exposure_balance + 
@@ -503,7 +563,7 @@ report(midpoint_word_model_income, digits = 3)
 
 # Only mother education: only exposure_balance is significant
 midpoint_word_model_mother <- 
-  lm(midpoint ~ exposure_balance + 
+  lm(midpoint ~ exposure_balance * 
          correct_mother_education,
      data = word_df)
 
@@ -557,6 +617,18 @@ summary(slope_word_model)
 summ(slope_word_model, digits = 3)
 report(slope_word_model, digits = 3)
 
+# Only sex: only exposure_balance is significant
+slope_word_model_sex <- 
+  lm(slope ~ exposure_balance + 
+         correct_sex,
+       data = word_df)
+
+check_model(slope_word_model_sex)
+model_performance(slope_word_model_sex)
+summary(slope_word_model_sex)
+summ(slope_word_model_sex, digits = 3)
+report(slope_word_model_sex, digits = 3)
+
 # Only income: only exposure_balance is significant
 slope_word_model_income <- 
   lm(slope ~ exposure_balance + 
@@ -595,7 +667,7 @@ report(slope_word_model_mother, digits = 3)
 
 # Only birth order: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.35, p = 0.050)
 slope_word_model_birth_order <- 
-  lm(slope ~ exposure_balance + 
+  lm(slope ~ exposure_balance * 
          birth_order_categorical,
      data = word_df)
 
