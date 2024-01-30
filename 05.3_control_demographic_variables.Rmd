@@ -581,17 +581,17 @@ summary(slope_word_model_mother)
 summ(slope_word_model_mother, digits = 3)
 report(slope_word_model_mother, digits = 3)
 
-# Only father education: only exposure_balance is significant
-slope_word_model_father <- 
-  lm(slope ~ exposure_balance + 
-         correct_father_education,
-     data = word_df)
-
-check_model(slope_word_model_father)
-model_performance(slope_word_model_father)
-summary(slope_word_model_father)
-summ(slope_word_model_father, digits = 3)
-report(slope_word_model_father, digits = 3)
+# # Only father education: only exposure_balance is significant
+# slope_word_model_father <- 
+#   lm(slope ~ exposure_balance + 
+#          correct_father_education,
+#      data = word_df)
+# 
+# check_model(slope_word_model_father)
+# model_performance(slope_word_model_father)
+# summary(slope_word_model_father)
+# summ(slope_word_model_father, digits = 3)
+# report(slope_word_model_father, digits = 3)
 
 # Only birth order: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.35, p = 0.050)
 slope_word_model_birth_order <- 
