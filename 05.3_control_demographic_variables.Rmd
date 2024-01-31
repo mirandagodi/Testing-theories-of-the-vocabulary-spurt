@@ -32,19 +32,8 @@ demographics_df <- read_csv('data/07_demographics_dataset.csv')
 # Filter demographics for infants in step2_df
 step2_demographics_df <- demographics_df %>% 
   filter(study_id %in% step2_df$study_id) %>% 
-  # Fix income
-  mutate(
-    # correct_income = case_when(#is.na(annual_income_eng) & is.na(annual_income_eng) ~ NA,
-    #                          is.na(annual_income_eng) ~ annual_income_fr,
-    #                          is.na(annual_income_fr) ~ annual_income_eng,
-    #                          annual_income_eng == "Prefer not to disclose" & !is.na(annual_income_fr) ~ annual_income_eng,
-    #                          annual_income_fr == "Prefer not to disclose" & !is.na(annual_income_eng) ~ annual_income_fr,
-    #                          annual_income_eng > annual_income_fr ~ annual_income_eng, # Keep Eng answer if it is highest
-    #                          annual_income_eng < annual_income_fr ~ annual_income_fr, # Keep Fr answer if it is highest
-    #                          annual_income_eng == annual_income_fr ~ annual_income_eng
-    #                          ),
-    # Convert income ranges into the range average. "Prefer not to disclose" will be considered NA.
-    income_range_average = case_when(correct_income == "25000-50000" ~ (25000+50000)/2,
+  # Convert income ranges into the range average. "Prefer not to disclose" will be considered NA.
+  mutate(income_range_average = case_when(correct_income == "25000-50000" ~ (25000+50000)/2,
                                      correct_income == "50000-75000" ~ (50000+75000)/2,
                                      correct_income == "75000-100000" ~ (75000+100000)/2,
                                      correct_income == "100000-125000" ~ (100000+125000)/2,
@@ -74,29 +63,15 @@ step2_demographics_df <- demographics_df %>%
 ```{r}
 # Visualize SES and parental education 
 
-income_hist <- hist(step2_demographics_df$income_factor)
 av_income_hist <- hist(step2_demographics_df$income_range_average)
 
-mother_education_hist <- hist(step2_demographics_df$correct_mother_education, 
-                              # breaks = 12
-                              # breaks = seq(min(step2_demographics_df$correct_mother_education), max(step2_demographics_df$correct_mother_education),
-                              #              length.out = 12)
-                              )
+mother_education_hist <- hist(step2_demographics_df$correct_mother_education)
 
 father_education_hist <- hist(step2_demographics_df$correct_father_education)
 ```
 
 ```{r}
 # Correlations between income and parental education
-# step2_demographics_complete_df <- step2_demographics_df %>% 
-#   filter(!is.na(correct_father_education))
-
-ggscatter(step2_demographics_df, x = "income_factor", y = "correct_mother_education", 
-          add = "reg.line", 
-          conf.int = TRUE, 
-          cor.coef = TRUE, 
-          cor.method = "pearson",
-          xlab = "Annual income factor", ylab = "Mother education")
 
 ggscatter(step2_demographics_df, x = "income_range_average", y = "correct_mother_education", 
           add = "reg.line", 
@@ -105,14 +80,14 @@ ggscatter(step2_demographics_df, x = "income_range_average", y = "correct_mother
           cor.method = "pearson",
           xlab = "Annual income average range", ylab = "Mother education")
 
-ggscatter(step2_demographics_df, x = "income_factor", y = "correct_father_education", 
+ggscatter(step2_demographics_df, x = "income_range_average", y = "correct_father_education", 
           add = "reg.line", 
           conf.int = TRUE, 
           cor.coef = TRUE, 
           cor.method = "pearson",
           xlab = "Annual income factor", ylab = "Father education")
 
-ggscatter(step2_demographics_df, x = "income_factor", y = "parental_education", 
+ggscatter(step2_demographics_df, x = "income_range_average", y = "parental_education", 
           add = "reg.line", 
           conf.int = TRUE, 
           cor.coef = TRUE, 
@@ -125,12 +100,6 @@ ggscatter(step2_demographics_df, x = "correct_mother_education", y = "correct_fa
           cor.coef = TRUE, 
           cor.method = "pearson",
           xlab = "Mother education", ylab = "Father education")
-
-# ggscatter(single_lang_df, x = "correct_mother_education", y = "exposure_percent",
-#           conf.int = TRUE, 
-#           cor.coef = TRUE, 
-#           cor.method = "pearson",
-#           xlab = "Mother education", ylab = "Language exposure")
 
 ```
 
@@ -153,39 +122,9 @@ word_df <- step2_full_df %>%
 ```
 
 ```{r}
-# # Single-language midpoint model WITH INCOME RANGE AVERAGE
-# 
-# # All demographic variables: only exposure_percent is significant
-# midpoint_single_model_2 <- 
-#   lmer(midpoint ~ exposure_percent + 
-#          income_range_average + correct_mother_education + correct_father_education + correct_birth_order +
-#          (1|study_id), data = single_lang_df)
-# 
-# check_model(midpoint_single_model_2)
-# model_performance(midpoint_single_model_2)
-# summary(midpoint_single_model_2)
-# summ(midpoint_single_model_2, digits = 3)
-# report(midpoint_single_model_2, digits = 3)
-# 
-# # Single-language slope model
-# 
-# # All demographic variables: no predictor is significant
-# slope_single_model_2 <- 
-#   lmer(slope ~ exposure_percent + 
-#          income_range_average + correct_mother_education + correct_father_education + correct_birth_order +
-#          (1|study_id), data = single_lang_df)
-# 
-# check_model(slope_single_model_2)
-# model_performance(slope_single_model_2)
-# summary(slope_single_model_2)
-# summ(slope_single_model_2, digits = 3)
-# report(slope_single_model_2, digits = 3)
-```
-
-```{r}
 # Single-language midpoint model
 
-# All demographic variables: only exposure_percent is significant
+# All demographic variables
 midpoint_single_model <- 
   lmer(midpoint ~ exposure_percent + 
          correct_sex +
@@ -201,7 +140,7 @@ summary(midpoint_single_model)
 summ(midpoint_single_model, digits = 3)
 report(midpoint_single_model, digits = 3)
 
-# Only sex: only exposure_percent is significant
+# Only sex
 midpoint_single_model_sex <- 
   lmer(midpoint ~ exposure_percent + 
          correct_sex +
@@ -213,7 +152,7 @@ summary(midpoint_single_model_sex)
 summ(midpoint_single_model_sex, digits = 3)
 report(midpoint_single_model_sex, digits = 3)
 
-# Only income: only exposure_percent is significant
+# Only income
 midpoint_single_model_income <- 
   lmer(midpoint ~ exposure_percent + 
          income_range_average +
@@ -225,7 +164,7 @@ summary(midpoint_single_model_income)
 summ(midpoint_single_model_income, digits = 3)
 report(midpoint_single_model_income, digits = 3)
 
-# Only mother education: only exposure_percent is significant
+# Only mother education
 midpoint_single_model_mother <- 
   lmer(midpoint ~ exposure_percent * 
          correct_mother_education +
@@ -237,7 +176,7 @@ summary(midpoint_single_model_mother)
 summ(midpoint_single_model_mother, digits = 3)
 report(midpoint_single_model_mother, digits = 3)
 
-# # Only father education: only exposure_percent is significant
+# # Only father education
 # midpoint_single_model_father <- 
 #   lmer(midpoint ~ exposure_percent + 
 #          correct_father_education +
@@ -249,7 +188,7 @@ report(midpoint_single_model_mother, digits = 3)
 # summ(midpoint_single_model_father, digits = 3)
 # report(midpoint_single_model_father, digits = 3)
 
-# Only birth order: only exposure_percent is significant
+# Only birth order
 midpoint_single_model_birth_order <- 
   lmer(midpoint ~ exposure_percent + 
          birth_order_categorical +
@@ -265,7 +204,7 @@ report(midpoint_single_model_birth_order, digits = 3)
 ```{r}
 # Single-language slope model
 
-# All demographic variables: no predictor is significant
+# All demographic variables
 slope_single_model <- 
   lmer(slope ~ exposure_percent + 
          correct_sex +
@@ -281,23 +220,7 @@ summary(slope_single_model)
 summ(slope_single_model, digits = 3)
 report(slope_single_model, digits = 3)
 
-# # All demographic variables (centered): no predictor is significant
-# slope_single_model_centered <- 
-#   lmer(slope ~ exposure_percent + 
-#          sex_s +
-#          income_z +
-#          maternal_education_z +
-#          birth_order_s +
-#          # correct_father_education + 
-#          (1|study_id), data = single_lang_df)
-# 
-# check_model(slope_single_model_centered)
-# model_performance(slope_single_model_centered)
-# summary(slope_single_model_centered)
-# summ(slope_single_model_centered, digits = 3)
-# report(slope_single_model_centered, digits = 3)
-
-# Only sex: no predictor is significant
+# Only sex
 slope_single_model_sex <- 
   lmer(slope ~ exposure_percent + 
          correct_sex +
@@ -309,7 +232,7 @@ summary(slope_single_model_sex)
 summ(slope_single_model_sex, digits = 3)
 report(slope_single_model_sex, digits = 3)
 
-# Only income: no predictor is significant
+# Only income
 slope_single_model_income <- 
   lmer(slope ~ exposure_percent + 
          income_range_average +
@@ -321,7 +244,7 @@ summary(slope_single_model_income)
 summ(slope_single_model_income, digits = 3)
 report(slope_single_model_income, digits = 3)
 
-# Only mother education: no predictor is significant
+# Only mother education
 slope_single_model_mother <- 
   lmer(slope ~ exposure_percent + 
          correct_mother_education +
@@ -333,7 +256,7 @@ summary(slope_single_model_mother)
 summ(slope_single_model_mother, digits = 3)
 report(slope_single_model_mother, digits = 3)
 
-# # Only father education: no predictor is significant
+# # Only father education
 # slope_single_model_father <- 
 #   lmer(slope ~ exposure_percent + 
 #          correct_father_education +
@@ -345,7 +268,7 @@ report(slope_single_model_mother, digits = 3)
 # summ(slope_single_model_father, digits = 3)
 # report(slope_single_model_father, digits = 3)
 
-# Only birth order: birth_order is marginally significant (beta = -1.37, Std.beta = -0.32, p = 0.058)
+# Only birth order
 slope_single_model_birth_order <- 
   lmer(slope ~ exposure_percent + 
          birth_order_categorical +
@@ -361,7 +284,7 @@ report(slope_single_model_birth_order, digits = 3)
 ```{r}
 # Concept vocabulary midpoint model
 
-# All demographic variables: only exposure_balance is significant
+# All demographic variables
 midpoint_concept_model <- 
   lm(midpoint ~ exposure_balance +
        correct_sex +
@@ -377,7 +300,7 @@ summary(midpoint_concept_model)
 summ(midpoint_concept_model, digits = 3)
 report(midpoint_concept_model, digits = 3)
 
-# Only sex: only exposure_balance is significant
+# Only sex
 midpoint_concept_model_sex <- 
   lm(midpoint ~ exposure_balance * 
          correct_sex,
@@ -389,7 +312,7 @@ summary(midpoint_concept_model_sex)
 summ(midpoint_concept_model_sex, digits = 3)
 report(midpoint_concept_model_sex, digits = 3)
 
-# Only income: only exposure_balance is significant
+# Only income
 midpoint_concept_model_income <- 
   lm(midpoint ~ exposure_balance + 
          income_range_average,
@@ -401,7 +324,7 @@ summary(midpoint_concept_model_income)
 summ(midpoint_concept_model_income, digits = 3)
 report(midpoint_concept_model_income, digits = 3)
 
-# Only mother education:  exposure_percent is marginally significant (beta = 0.05, Std.beta = 0.33, p = 0.075)
+# Only mother education
 midpoint_concept_model_mother <- 
   lm(midpoint ~ exposure_balance * 
          correct_mother_education,
@@ -413,7 +336,7 @@ summary(midpoint_concept_model_mother)
 summ(midpoint_concept_model_mother, digits = 3)
 report(midpoint_concept_model_mother, digits = 3)
 
-# # Only father education: only exposure_balance is significant
+# # Only father education
 # midpoint_concept_model_father <- 
 #   lm(midpoint ~ exposure_balance + 
 #          correct_father_education,
@@ -425,7 +348,7 @@ report(midpoint_concept_model_mother, digits = 3)
 # summ(midpoint_concept_model_father, digits = 3)
 # report(midpoint_concept_model_father, digits = 3)
 
-# Only birth order: no predictor is significant
+# Only birth order
 midpoint_concept_model_birth_order <- 
   lm(midpoint ~ exposure_balance + 
          birth_order_categorical,
@@ -441,7 +364,7 @@ report(midpoint_concept_model_birth_order, digits = 3)
 ```{r}
 # Concept vocabulary slope model
 
-# All demographic variables: only exposure_balance is significant
+# All demographic variables
 slope_concept_model <- 
   lm(slope ~ exposure_balance +
        correct_sex +
@@ -457,7 +380,7 @@ summary(slope_concept_model)
 summ(slope_concept_model, digits = 3)
 report(slope_concept_model, digits = 3)
 
-# Only sex: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.37, p = 0.062)
+# Only sex
 slope_concept_model_sex <- 
   lm(slope ~ exposure_balance + 
          correct_sex,
@@ -469,7 +392,7 @@ summary(slope_concept_model_sex)
 summ(slope_concept_model_sex, digits = 3)
 report(slope_concept_model_sex, digits = 3)
 
-# Only income: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.37, p = 0.062)
+# Only income
 slope_concept_model_income <- 
   lm(slope ~ exposure_balance + 
          income_range_average,
@@ -481,7 +404,7 @@ summary(slope_concept_model_income)
 summ(slope_concept_model_income, digits = 3)
 report(slope_concept_model_income, digits = 3)
 
-# Only mother education: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.34, p = 0.071)
+# Only mother education
 slope_concept_model_mother <- 
   lm(slope ~ exposure_balance + 
          correct_mother_education,
@@ -493,7 +416,7 @@ summary(slope_concept_model_mother)
 summ(slope_concept_model_mother, digits = 3)
 report(slope_concept_model_mother, digits = 3)
 
-# # Only father education: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.32, p = 0.096)
+# # Only father education
 # slope_concept_model_father <- 
 #   lm(slope ~ exposure_balance + 
 #          correct_father_education,
@@ -505,7 +428,7 @@ report(slope_concept_model_mother, digits = 3)
 # summ(slope_concept_model_father, digits = 3)
 # report(slope_concept_model_father, digits = 3)
 
-# Only birth order: no predictor is significant
+# Only birth order
 slope_concept_model_birth_order <- 
   lm(slope ~ exposure_balance * 
          birth_order_categorical,
@@ -521,7 +444,7 @@ report(slope_concept_model_birth_order, digits = 3)
 ```{r}
 # Word vocabulary midpoint model
 
-# All demographic variables: only exposure_balance is significant
+# All demographic variables
 midpoint_word_model <- 
   lm(midpoint ~ exposure_balance +
        correct_sex +
@@ -537,7 +460,7 @@ summary(midpoint_word_model)
 summ(midpoint_word_model, digits = 3)
 report(midpoint_word_model, digits = 3)
 
-# Only sex: no predictor is significant
+# Only sex
 midpoint_word_model_sex <- 
   lm(midpoint ~ exposure_balance * 
          correct_sex,
@@ -549,7 +472,7 @@ summary(midpoint_word_model_sex)
 summ(midpoint_word_model_sex, digits = 3)
 report(midpoint_word_model_sex, digits = 3)
 
-# Only income: only exposure_balance is significant
+# Only income
 midpoint_word_model_income <- 
   lm(midpoint ~ exposure_balance + 
          income_range_average,
@@ -561,7 +484,7 @@ summary(midpoint_word_model_income)
 summ(midpoint_word_model_income, digits = 3)
 report(midpoint_word_model_income, digits = 3)
 
-# Only mother education: only exposure_balance is significant
+# Only mother education
 midpoint_word_model_mother <- 
   lm(midpoint ~ exposure_balance * 
          correct_mother_education,
@@ -573,7 +496,7 @@ summary(midpoint_word_model_mother)
 summ(midpoint_word_model_mother, digits = 3)
 report(midpoint_word_model_mother, digits = 3)
 
-# # Only father education: only exposure_balance is significant
+# # Only father education
 # midpoint_word_model_father <- 
 #   lm(midpoint ~ exposure_balance + 
 #          correct_father_education,
@@ -585,7 +508,7 @@ report(midpoint_word_model_mother, digits = 3)
 # summ(midpoint_word_model_father, digits = 3)
 # report(midpoint_word_model_father, digits = 3)
 
-# Only birth order: only exposure_balance is significant
+# Only birth order
 midpoint_word_model_birth_order <- 
   lm(midpoint ~ exposure_balance + 
          birth_order_categorical,
@@ -601,7 +524,7 @@ report(midpoint_word_model_birth_order, digits = 3)
 ```{r}
 # Word vocabulary slope model
 
-# All demographic variables: only exposure_balance is significant
+# All demographic variables
 slope_word_model <- 
   lm(slope ~ exposure_balance +
        correct_sex +
@@ -617,7 +540,7 @@ summary(slope_word_model)
 summ(slope_word_model, digits = 3)
 report(slope_word_model, digits = 3)
 
-# Only sex: only exposure_balance is significant
+# Only sex
 slope_word_model_sex <- 
   lm(slope ~ exposure_balance + 
          correct_sex,
@@ -629,7 +552,7 @@ summary(slope_word_model_sex)
 summ(slope_word_model_sex, digits = 3)
 report(slope_word_model_sex, digits = 3)
 
-# Only income: only exposure_balance is significant
+# Only income
 slope_word_model_income <- 
   lm(slope ~ exposure_balance + 
          income_range_average,
@@ -641,7 +564,7 @@ summary(slope_word_model_income)
 summ(slope_word_model_income, digits = 3)
 report(slope_word_model_income, digits = 3)
 
-# Only mother education: only exposure_balance is significant
+# Only mother education
 slope_word_model_mother <- 
   lm(slope ~ exposure_balance + 
          correct_mother_education,
@@ -653,7 +576,7 @@ summary(slope_word_model_mother)
 summ(slope_word_model_mother, digits = 3)
 report(slope_word_model_mother, digits = 3)
 
-# # Only father education: only exposure_balance is significant
+# # Only father education
 # slope_word_model_father <- 
 #   lm(slope ~ exposure_balance + 
 #          correct_father_education,
@@ -665,7 +588,7 @@ report(slope_word_model_mother, digits = 3)
 # summ(slope_word_model_father, digits = 3)
 # report(slope_word_model_father, digits = 3)
 
-# Only birth order: exposure_balance is marginally significant (beta = -0.06, Std.beta = -0.35, p = 0.050)
+# Only birth order
 slope_word_model_birth_order <- 
   lm(slope ~ exposure_balance * 
          birth_order_categorical,
