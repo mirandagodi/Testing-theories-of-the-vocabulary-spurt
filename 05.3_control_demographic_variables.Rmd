@@ -108,6 +108,8 @@ ggscatter(step2_demographics_df, x = "correct_mother_education", y = "correct_fa
 step2_full_df <- step2_df %>% 
   left_join(step2_demographics_df, by = "study_id")
 
+write_csv(step2_full_df, 'data/05.3_demographics_analysis_step_2_dataset.csv')
+
 # Prepare dataframes for models
 
 # Single-language vocabulary
