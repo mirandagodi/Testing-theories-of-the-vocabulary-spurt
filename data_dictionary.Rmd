@@ -241,7 +241,7 @@ coefficients_04_df <- read_csv("data/04_analysis_step_1_coefficients.csv")
 # Create dictionary
 coefficients_04_dictionary <- create_informant(coefficients_04_df) %>% 
   info_tabular(
-    Description = "Dataset includes mispoint, slope, and upper limit coefficients of the logistic curves fit to individual vocabulary data. It also includes AIC values for different types or curves.") %>%
+    Description = "Dataset includes midpoint, slope, and upper limit coefficients of the logistic curves fit to individual vocabulary data. It also includes AIC values for different types or curves.") %>%
   info_columns(
     columns = "study_id",
     info = "Unique participant identifier.") %>%
@@ -403,6 +403,123 @@ words_at_spurt_distinct_dictionary <- create_informant(words_at_spurt_distinct) 
     info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
 
 words_at_spurt_distinct_dictionary
+```
+
+```{r}
+################# Datasets used for Script 05.3 ################# 
+```
+
+```{r}
+# Data dictionary for 05.3_demographics_analysis_step_2_dataset.csv
+
+# Read csv file
+step2_full_df <- read_csv('data/05.3_demographics_analysis_step_2_dataset.csv')
+
+# Create dictionary
+step2_full_dictionary <- create_informant(step2_full_df) %>% 
+  info_tabular(
+    Description = "Dataset includes all the variables needed to run regression models controling for demographic charactersitics. Some columns share a name buthad different ending; columns that end in '_eng' correspond those values entered in the English CDI, those that en in '_fr' corresponde to the French CDI. Discrepencies between the two forms were corrected.") %>%
+  info_columns(
+    columns = "study_id",
+    info = "Unique participant identifier.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step1",
+    info = "Specifices if the data correspond to English, French, word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "vocabulary_type_step2",
+    info = "Specifices if the data correspond to single-language (English or French), word, or concept vocabulary.") %>% 
+  info_columns(
+    columns = "midpoint":"upper_limit",
+    info = "Coefficient estimated by fitting a logistic curve to individual vocabulary data.") %>%
+  info_columns(
+    columns = "AIC_LL.3",
+    info = "AIC value for three-parameter logistic curve.") %>%
+  info_columns(
+    columns = "AIC_Cubic",
+    info = "AIC value for cubic curve.") %>%
+  info_columns(
+    columns = "AIC_Quad",
+    info = "AIC value for quadratic curve.") %>%
+  info_columns(
+    columns = "AIC_Lin",
+    info = "AIC value for linear equation.") %>%
+  info_columns(
+    columns = "cumulative_exp_Eng",
+    info = "Exposure to English that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>%
+  info_columns(
+    columns = "cumulative_exp_Fre",
+    info = "Exposure to French that a participant has had from birth to the current phase. Percentage expressed in decimal.") %>% 
+  info_columns(
+    columns = "end_age",
+    info = "Participant's age in months at which the current phage ended.") %>%
+  info_columns(
+    columns = "lang_status",
+    info = "Specifies if a participant is bilingual, English-monolingual or French-monolingual.") %>%
+  info_columns(
+    columns = "dominant_lang",
+    info = "Specifies a participant's dominant language.") %>%
+  info_columns(
+    columns = "exposure_balance",
+    info = "Specifies a participant's language exposure balance, computed as the exposure to the non-dominant language.") %>% 
+  info_columns(
+    columns = "exposure_percent",
+    info = "Exposure to the specified language expressed in percentage.") %>% 
+  info_columns(
+    columns = "n_months",
+    info = "The month of administration, where 1 means the participant contributed data the first month after they entered the study. The subsequent numbers refer to the month when they contributed data along the study.") %>% 
+  info_columns(
+    columns = "num_datapts",
+    info = "Number of data points submitted by each participant along the study.") %>% 
+  info_columns(
+    columns = "age",
+    info = "Participant's age in months.") %>% 
+  info_columns(
+    columns = "starting_age",
+    info = "Participant's age in months when they joined the study.") %>% 
+  info_columns(
+    columns = "vocabulary_score",
+    info = "Number of words produced in that month for that vocabulary type.") %>% 
+  info_columns(
+    columns = "num_missing_datapts",
+    info = "Number of missing data points by each participant in each vocabulary type.") %>% 
+  info_columns(
+    columns = "total",
+    info = "Number of words that a participant could potentially produce in each vocabulary type.") %>% 
+  info_columns(
+    columns = "dominance",
+    info = "Specifies if the language referred to is the participant-s dominant or non/dominant language.") %>% 
+  info_columns(
+    columns = "words_learned",
+    info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.") %>%
+  info_columns(
+    columns = "correct_sex",
+    info = "Child sex corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "correct_birth_order",
+    info = "Birth order corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "correct_mother_education",
+    info = "Mother education in years corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "correct_father_education",
+    info = "Father education in years corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "correct_ethnicity",
+    info = "Ethnicity corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "correct_income",
+    info = "Family annual income reported as ranges corrected in case of discrepancies between forms.") %>%
+  info_columns(
+    columns = "parental_education",
+    info = "Average for mother and father education.") %>%
+  info_columns(
+    columns = "income_range_average",
+    info = "Midpoint (average) of the income ranges.") %>%
+  info_columns(
+    columns = "birth_order_categorical",
+    info = "Participants divided in two groups based on birth order: first-borns and later-borns.") 
+
+step2_full_dictionary
 ```
 
 ```{r}
