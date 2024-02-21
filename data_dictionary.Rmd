@@ -56,6 +56,8 @@ LEQ_01_dictionary <- create_informant(LEQ_01_df) %>%
     info = "Specifies a participant's dominant language.") 
 
 LEQ_01_dictionary
+
+export_report(LEQ_01_dictionary, filename = "01_LEQ_columns_dictionary.html")
 ```
 
 ```{r}
