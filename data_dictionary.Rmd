@@ -57,7 +57,11 @@ LEQ_01_dictionary <- create_informant(LEQ_01_df) %>%
 
 LEQ_01_dictionary
 
-export_report(LEQ_01_dictionary, filename = "01_LEQ_columns_dictionary.html")
+dictionary_01_LEQ_columns <- get_informant_report(LEQ_01_dictionary, 
+            title = "01_LEQ_columns_dictionary")
+export_report(dictionary_01_LEQ_columns, filename = "01_LEQ_columns_dictionary.html"
+              # , path = "www"
+              )
 ```
 
 ```{r}
