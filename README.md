@@ -22,7 +22,7 @@ Scripts are organized in numerical order. Each script produces csv files used in
 
 `07_manuscript.Rmd` : This script includes code that produces descriptions, figures, and tables used in the manuscript.
 
-`data_dictionary.Rmd` : Data dictionary for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. For dataframes that are used in multiple scripts, a dictionary is created only the first time that they appear. Thus, refer to a previous chunk on the script to see the dictionary of that specific dataframe. 
+`data_dictionary.Rmd` : Tis script generate and displays data dictionaries for the dataframes used for the project. They include variable type and a description of relevant variables. They are organized by script number and by order of appearance. For dataframes that are used in multiple scripts, a dictionary is created only the first time that they appear. Thus, refer to a previous chunk on the script to see the dictionary of that specific dataframe. 
 
 `packages_versions.Rmd` : This script loads all the packages used for the project and generates a txt file with the version for each package.
 
@@ -44,3 +44,7 @@ Some files do not have a corresponding script, as they were created manually or 
 FIGURES FOLDER
 
 This folder includes the figures produced by `07_manuscript.Rmd` and used in the manuscript.
+
+DATA DICTIONARIES FOLDER
+
+This folder includes the html files for the data dictionaries generated in script `data_dictionary.Rmd`.
