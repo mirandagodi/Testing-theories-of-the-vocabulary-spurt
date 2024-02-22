@@ -56,6 +56,11 @@ LEQ_01_dictionary <- create_informant(LEQ_01_df) %>%
     info = "Specifies a participant's dominant language.") 
 
 LEQ_01_dictionary
+
+# Export html file
+dictionary_01_LEQ_columns <- get_informant_report(LEQ_01_dictionary, 
+            title = "01_LEQ_columns_dictionary")
+export_report(dictionary_01_LEQ_columns, filename = "data_dictionaries/01_LEQ_columns_dictionary.html")
 ```
 
 ```{r}
@@ -82,6 +87,11 @@ Eng_01_dictionary <- create_informant(Eng_01_df) %>%
     info = "Estimated expressive voabulary size.") 
 
 Eng_01_dictionary
+
+# Export html file
+dictionary_01_Eng_columns <- get_informant_report(Eng_01_dictionary, 
+            title = "01_Eng_columns_dictionary")
+export_report(dictionary_01_Eng_columns, filename = "data_dictionaries/01_Eng_columns_dictionary.html")
 ```
 
 ```{r}
@@ -108,6 +118,11 @@ Fr_01_dictionary <- create_informant(Fr_01_df) %>%
     info = "Estimated expressive voabulary size.") 
 
 Fr_01_dictionary
+
+# Export html file
+dictionary_01_Fr_columns <- get_informant_report(Fr_01_dictionary, 
+            title = "01_Fr_columns_dictionary")
+export_report(dictionary_01_Fr_columns, filename = "data_dictionaries/01_Fr_columns_dictionary.html")
 ```
 
 ```{r}
@@ -138,6 +153,11 @@ Eng_02_dictionary <- create_informant(Eng_02_df) %>%
     info = "Estimated expressive voabulary size.") 
 
 Eng_02_dictionary
+
+# Export html file
+dictionary_02_Eng_keepers <- get_informant_report(Eng_02_dictionary, 
+            title = "02_Eng_keepers_dictionary")
+export_report(dictionary_02_Eng_keepers, filename = "data_dictionaries/02_Eng_keepers_dictionary.html")
 ```
 
 ```{r}
@@ -164,6 +184,11 @@ Fr_02_dictionary <- create_informant(Fr_02_df) %>%
     info = "Estimated expressive voabulary size.") 
 
 Fr_02_dictionary
+
+# Export html file
+dictionary_02_Fr_keepers <- get_informant_report(Fr_02_dictionary, 
+            title = "02_Fr_keepers_dictionary")
+export_report(dictionary_02_Fr_keepers, filename = "data_dictionaries/02_Fr_keepers_dictionary.html")
 ```
 
 ```{r}
@@ -190,6 +215,11 @@ TE_list_dictionary <- create_informant(TE_list) %>%
     info = "ID assigned to translation equivalent pair.")
 
 TE_list_dictionary
+
+# Export html file
+dictionary_ws_te_list_full <- get_informant_report(TE_list_dictionary, 
+            title = "ws_te_list_full_dictionary")
+export_report(dictionary_ws_te_list_full, filename = "data_dictionaries/ws_te_list_full_dictionary.html")
 ```
 
 ```{r}
@@ -226,6 +256,11 @@ vocabulary_scores_03_dictionary <- create_informant(vocabulary_scores_03_df) %>%
     info = "Participant's age in months when they joined the study.") 
 
 vocabulary_scores_03_dictionary
+
+# Export html file
+dictionary_03_vocabulary_scores <- get_informant_report(vocabulary_scores_03_dictionary, 
+            title = "03_vocabulary_scores_dictionary")
+export_report(dictionary_03_vocabulary_scores, filename = "data_dictionaries/03_vocabulary_scores_dictionary.html")
 ```
 
 ```{r}
@@ -262,6 +297,11 @@ coefficients_04_dictionary <- create_informant(coefficients_04_df) %>%
     info = "AIC value for linear equation.") 
 
 coefficients_04_dictionary
+
+# Export html file
+dictionary_04_analysis_step_1_coefficients <- get_informant_report(coefficients_04_dictionary, 
+            title = "04_analysis_step_1_coefficients_dictionary")
+export_report(dictionary_04_analysis_step_1_coefficients, filename = "data_dictionaries/04_analysis_step_1_coefficients_dictionary.html")
 ```
 
 ```{r}
@@ -300,6 +340,11 @@ vocabulary_scores_dictionary <- create_informant(vocabulary_scores_df) %>%
     info = "Number of words that a participant could potentially produce in each vocabulary type.") 
 
 vocabulary_scores_dictionary
+
+# Export html file
+dictionary_04_analysis_step_1_dataset <- get_informant_report(vocabulary_scores_dictionary, 
+            title = "04_analysis_step_1_dataset_dictionary")
+export_report(dictionary_04_analysis_step_1_dataset, filename = "data_dictionaries/04_analysis_step_1_dataset_dictionary.html")
 ```
 
 ```{r}
@@ -339,6 +384,11 @@ final_exposure_dictionary <- create_informant(final_exposure_df) %>%
     info = "Specifies a participant's language exposure balance, computed as the exposure to the non-dominant language.")
 
 final_exposure_dictionary
+
+# Export html file
+dictionary_05_final_exposure_dataset <- get_informant_report(final_exposure_dictionary, 
+            title = "05_final_exposure_dataset_dictionary")
+export_report(dictionary_05_final_exposure_dataset, filename = "data_dictionaries/05_final_exposure_dataset.html")
 ```
 
 ```{r}
@@ -380,6 +430,11 @@ final_vocabulary_scores_dictionary <- create_informant(final_vocabulary_scores_d
     info = "Number of words that a participant could potentially produce in each vocabulary type.")
 
 final_vocabulary_scores_dictionary
+
+# Export html file
+dictionary_05_final_vocabulary_scores_dataset <- get_informant_report(final_vocabulary_scores_dictionary, 
+            title = "05_final_vocabulary_scores_dataset_dictionary")
+export_report(dictionary_05_final_vocabulary_scores_dataset, filename = "data_dictionaries/05_final_vocabulary_scores_dataset_dictionary.html")
 ```
 
 ```{r}
@@ -403,6 +458,11 @@ words_at_spurt_distinct_dictionary <- create_informant(words_at_spurt_distinct) 
     info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
 
 words_at_spurt_distinct_dictionary
+
+# Export html file
+dictionary_05_words_at_spurt_distinct_dataset <- get_informant_report(words_at_spurt_distinct_dictionary, 
+            title = "05_words_at_spurt_distinct_dataset_dictionary")
+export_report(dictionary_05_words_at_spurt_distinct_dataset, filename = "data_dictionaries/05_words_at_spurt_distinct_dataset_dictionary.html")
 ```
 
 ```{r}
@@ -520,6 +580,11 @@ step2_full_dictionary <- create_informant(step2_full_df) %>%
     info = "Participants divided in two groups based on birth order: first-borns and later-borns.") 
 
 step2_full_dictionary
+
+# Export html file
+dictionary_05.3_demographics_analysis_step_2_dataset <- get_informant_report(step2_full_dictionary, 
+            title = "05.3_demographics_analysis_step_2_dataset_dictionary")
+export_report(dictionary_05.3_demographics_analysis_step_2_dataset, filename = "data_dictionaries/05.3_demographics_analysis_step_2_dataset_dictionary.html")
 ```
 
 ```{r}
@@ -620,6 +685,11 @@ step2_dictionary <- create_informant(step2_df) %>%
     info = "Estimated number of words learned by a participant during the month-long period around the vocabulary spurt. It is expressed in decimals because it was prorated, as measures were not taken exactly one month apart.")
 
 step2_dictionary
+
+# Export html file
+dictionary_05_analysis_step_2_dataset <- get_informant_report(step2_dictionary, 
+            title = "05_analysis_step_2_dataset_dictionary")
+export_report(dictionary_05_analysis_step_2_dataset, filename = "data_dictionaries/05_analysis_step_2_dataset_dictionary.html")
 ```
 
 ```{r}
@@ -696,5 +766,10 @@ midpoint_identification_dictionary <- create_informant(midpoint_identification) 
     info = "Specifies if a vocabulary spurt (i.e., midpoint) was identified within the study's age range.") 
   
 midpoint_identification_dictionary
+
+# Export html file
+dictionary_05.1_midpoint_identification <- get_informant_report(midpoint_identification_dictionary, 
+            title = "05.1_midpoint_identification_dictionary")
+export_report(dictionary_05.1_midpoint_identification, filename = "data_dictionaries/05.1_midpoint_identification_dictionary.html")
 ```
 
