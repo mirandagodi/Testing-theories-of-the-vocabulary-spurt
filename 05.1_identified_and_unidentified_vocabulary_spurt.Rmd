@@ -102,7 +102,11 @@ curve <- id_voc_ages %>%
 # Create df with vocabulary size at 18 months
 vocab_at_18m <- 
   # curve %>% filter(age == 18) # Use this line to use vocabulary size estimated by the logistic equation
-  midpoint_identification %>% filter(age >= 18 & age < 19) # Use this line to use actual vocabulary size (there might be babies with missing data)
+  midpoint_identification %>% filter(age >= 18 & age < 19) %>% # Use this line to use actual vocabulary size (there might be babies with missing data)
+  group_by(study_id, vocabulary_type_step1) %>%
+  filter(row_number() == 1) %>% 
+  # Remove columns
+  ungroup()  
 
 # Vocabulary size at 18 months descriptives
 vocab_at_18m_summary <- vocab_at_18m %>%
@@ -186,6 +190,7 @@ vocab_french_30m_test <- t.test(vocabulary_score ~ midp_identify, data = Fr_30m_
 report(vocab_french_30m_test, digits = 3)
 
 ```
+
 ```{r}
 # t-tests for word vocabulary
 # Vocabulary size at 18 m
@@ -203,6 +208,7 @@ vocab_word_30m_test <- t.test(vocabulary_score ~ midp_identify, data = word_30m_
 report(vocab_word_30m_test, digits = 3)
 
 ```
+
 ```{r}
 # t-tests for concept vocabulary
 # Vocabulary size at 18 m
